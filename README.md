@@ -18,6 +18,8 @@ Development and static preview use port 3001. Browser tests start the production
 
 `pnpm check` runs formatting, lint, strict type checking, script/unit tests, bilingual content gates, snapshot integrity and the production export. TypeScript's API-compatible package supports ESLint, while the separately pinned native compiler supplies `tsc`. Coverage is not part of ordinary local checks; full-mode PR CI retains the original 90% changed-file thresholds.
 
+The tracked `wrangler.jsonc` pins the export directory and the compatibility date supported by the locked Wrangler/workerd version for local preview and deployment. Review that date when updating Wrangler; see [Pages configuration](https://developers.cloudflare.com/pages/functions/wrangler-configuration/). The deployment command explicitly selects the environment's project name.
+
 ## Content ownership
 
 Product guides and the site live here. ADRs, API contracts, plans, research, evidence and operational documents remain in the product repository. Entries listed in `integrations/cognia.json` are read-only publication snapshots with exact source commit, paths, SHA-256 and timestamps. Their edit links point back to the real owner.

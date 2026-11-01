@@ -8,7 +8,7 @@
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build --webpack && node scripts/build/prepare-docs-pages.mjs",
     "start": "node scripts/serve-static.mjs --port 3001",
     "preview": "pnpm start",
-    "preview:pages": "wrangler pages dev out --port 8789 --ip 127.0.0.1 --compatibility-date 2026-11-01",
+    "preview:pages": "wrangler pages dev --port 8789 --ip 127.0.0.1",
     "typecheck": "fumadocs-mdx && tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
     "test": "jest --runInBand",
