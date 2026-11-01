@@ -64,8 +64,11 @@ export function renderCorpusModule(corpus) {
   return `${JSON.stringify({ schemaVersion: 1, locales: corpus })}\n`
 }
 
-export function writeCorpusIfChanged(root = DOCS_ROOT, output = OUT_FILE) {
-  const rendered = renderCorpusModule(buildCorpus(root))
+export function writeCorpusIfChanged(
+  root = DOCS_ROOT,
+  output = OUT_FILE,
+  rendered = renderCorpusModule(buildCorpus(root))
+) {
   if (existsSync(output) && readFileSync(output, "utf8") === rendered) return false
   mkdirSync(path.dirname(output), { recursive: true })
   writeFileAtomic.sync(output, rendered)
@@ -114,7 +117,7 @@ export function writePublicationArtifacts(
       throw new Error("Documentation artifacts are stale; run pnpm artifacts:build")
     return false
   }
-  const changed = writeCorpusIfChanged(root, output)
+  const changed = writeCorpusIfChanged(root, output, corpus)
   const pagesChanged = !same(indexPath, pages)
   if (pagesChanged) writeFileAtomic.sync(indexPath, pages)
   return changed || pagesChanged

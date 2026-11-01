@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test"
 import { mkdirSync } from "node:fs"
-import publication from "../integrations/cognia.json"
+import publication from "../integrations/cognia.json" with { type: "json" }
 
 test("localized home pages render from the static export", async ({ page }) => {
   await page.goto("/")

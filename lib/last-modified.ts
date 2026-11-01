@@ -1,9 +1,6 @@
 import { execFileSync } from "node:child_process"
 import { pageOrigin } from "./page-origin"
 
-/** Where the MDX tree lives, relative to the repository root. */
-export const DOCS_CONTENT_ROOT = "content/docs"
-
 let repositoryRoot: string | null | undefined
 
 function findRepositoryRoot(): string | null {
