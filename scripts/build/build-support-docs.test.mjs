@@ -18,6 +18,8 @@ import {
   extractDocument,
   parseArgs,
   renderCorpusModule,
+  renderPageIndex,
+  writePublicationArtifacts,
 } from "./build-support-docs.mjs"
 
 test("parseArgs supports check mode and rejects unknown options", () => {
@@ -83,6 +85,32 @@ test("unchanged corpus preserves mtime and changed or damaged output is repaired
     rmSync(path.join(root, "zh/guide.md"))
     assert.equal(writeCorpusIfChanged(root, output), true)
     assert.deepEqual(JSON.parse(readFileSync(output, "utf8")).locales.zh, [])
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test("publication indexes include shared pages and checks reject stale artifacts", () => {
+  const root = mkdtempSync(path.join(tmpdir(), "docs-artifacts-"))
+  try {
+    for (const lang of ["en", "zh"]) {
+      mkdirSync(path.join(root, lang))
+      writeFileSync(path.join(root, lang, "index.mdx"), "# Guide")
+    }
+    mkdirSync(path.join(root, "plugin-dev"))
+    writeFileSync(path.join(root, "plugin-dev", "shared.mdx"), "# Shared")
+    const pages = JSON.parse(renderPageIndex(root)).urls
+    assert.deepEqual(pages, [
+      "/en/docs",
+      "/en/docs/plugin-dev/shared",
+      "/zh/docs",
+      "/zh/docs/plugin-dev/shared",
+    ])
+    const output = path.join(root, "artifacts", "support-docs.json")
+    assert.equal(writePublicationArtifacts({}, root, output), true)
+    assert.equal(writePublicationArtifacts({ check: true }, root, output), false)
+    writeFileSync(path.join(root, "artifacts", "doc-pages.json"), "tampered")
+    assert.throws(() => writePublicationArtifacts({ check: true }, root, output), /stale/)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

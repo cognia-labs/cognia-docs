@@ -3,13 +3,13 @@ import type { NextConfig } from "next"
 
 const config: NextConfig = {
   // D8 (ADR-0059 P0.6): the docs site is a fully static export so it can be
-  // hosted on Cloudflare Pages (`wrangler pages deploy docs/out`). Locale
+  // hosted on Cloudflare Pages (`wrangler pages deploy out`). Locale
   // prefixes are always explicit (`hideLocale: "never"`) because there is no
   // middleware at runtime; `public/_redirects` sends `/` to the default
   // locale on Pages.
   output: "export",
   reactStrictMode: true,
-  experimental: { useTypeScriptCli: true },
+  experimental: { useTypeScriptCli: true, cpus: 2 },
   allowedDevOrigins: ["localhost", "127.0.0.1", "[::1]"],
 }
 

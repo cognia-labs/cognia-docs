@@ -1,0 +1,3417 @@
+{
+  "schemaVersion": 1,
+  "repository": "cognia-labs/cognia",
+  "branch": "dev",
+  "revision": "93ac2ee9dd6c4bb98e0b8677009a284873b15809",
+  "files": [
+    {
+      "path": "en/adr/0001-backup-schema-v3.md",
+      "sourcePath": "docs/content/docs/en/adr/0001-backup-schema-v3.md",
+      "sha256": "1e2982237ee455c139fa602de68d04d461f590998ad8163f2c0223749c1fb116",
+      "sourceSha256": "1e2982237ee455c139fa602de68d04d461f590998ad8163f2c0223749c1fb116",
+      "lastModified": "2026-10-23T19:27:27+08:00"
+    },
+    {
+      "path": "en/adr/0002-scheduler-full-agent-resolution.md",
+      "sourcePath": "docs/content/docs/en/adr/0002-scheduler-full-agent-resolution.md",
+      "sha256": "3f625fa2738d37a25286a9e98f65519d899dc94b479f2b2b9f0a4a59e7ae0d01",
+      "sourceSha256": "3f625fa2738d37a25286a9e98f65519d899dc94b479f2b2b9f0a4a59e7ae0d01",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0003-employee-digital-twin.md",
+      "sourcePath": "docs/content/docs/en/adr/0003-employee-digital-twin.md",
+      "sha256": "cba19b0a7604abbad88c9098f93a5d9fd6233e7452f7df0b1752e7f93480355f",
+      "sourceSha256": "cba19b0a7604abbad88c9098f93a5d9fd6233e7452f7df0b1752e7f93480355f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0004-vector-native-backend.md",
+      "sourcePath": "docs/content/docs/en/adr/0004-vector-native-backend.md",
+      "sha256": "4066bb2cce0b9b5fe75ed7320b434cbabc7b9494cb1acc8f8fce1323a687d9f8",
+      "sourceSha256": "4066bb2cce0b9b5fe75ed7320b434cbabc7b9494cb1acc8f8fce1323a687d9f8",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0005-remote-control.md",
+      "sourcePath": "docs/content/docs/en/adr/0005-remote-control.md",
+      "sha256": "eaa705f8c470e9cdc1b8597b61aa83f484eed5a24d4aee370ff13b4585f09313",
+      "sourceSha256": "eaa705f8c470e9cdc1b8597b61aa83f484eed5a24d4aee370ff13b4585f09313",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0006-plugin-system.md",
+      "sourcePath": "docs/content/docs/en/adr/0006-plugin-system.md",
+      "sha256": "d0106afcc1f2c99f53e39216546bba2d647c24378a60ba792718440093842a38",
+      "sourceSha256": "d0106afcc1f2c99f53e39216546bba2d647c24378a60ba792718440093842a38",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0007-theme-and-background-fix.md",
+      "sourcePath": "docs/content/docs/en/adr/0007-theme-and-background-fix.md",
+      "sha256": "89d539bcf8abca24b5952a139dab687ea24d2b0414e7dec3759e005317d55f60",
+      "sourceSha256": "89d539bcf8abca24b5952a139dab687ea24d2b0414e7dec3759e005317d55f60",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0008-external-bridge.md",
+      "sourcePath": "docs/content/docs/en/adr/0008-external-bridge.md",
+      "sha256": "926c03b7773a51748345ef5778d6043c59869647b85fef7ca4b4dc5f30018c7a",
+      "sourceSha256": "926c03b7773a51748345ef5778d6043c59869647b85fef7ca4b4dc5f30018c7a",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0009-platform-connectors.md",
+      "sourcePath": "docs/content/docs/en/adr/0009-platform-connectors.md",
+      "sha256": "c7309cd8b84d8cc75c3db6657df96ba6e07ff37858709a7edc6a041ca7da7f1d",
+      "sourceSha256": "c7309cd8b84d8cc75c3db6657df96ba6e07ff37858709a7edc6a041ca7da7f1d",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0010-claude-subscription-oauth.md",
+      "sourcePath": "docs/content/docs/en/adr/0010-claude-subscription-oauth.md",
+      "sha256": "619122190a9be766a79ae8b260f0f29fc02b65343d330f23487f1324ea65caf6",
+      "sourceSha256": "619122190a9be766a79ae8b260f0f29fc02b65343d330f23487f1324ea65caf6",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0011-workflows-subsystem.md",
+      "sourcePath": "docs/content/docs/en/adr/0011-workflows-subsystem.md",
+      "sha256": "bf6471cfd91b03bff18d25e06a9485d86f2ac735337e89b4961dad649ad7a57f",
+      "sourceSha256": "bf6471cfd91b03bff18d25e06a9485d86f2ac735337e89b4961dad649ad7a57f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0012-transport-abstraction.md",
+      "sourcePath": "docs/content/docs/en/adr/0012-transport-abstraction.md",
+      "sha256": "44ccec7a7831e5690974197c553c1b77213297166014baefe81ac78434f8a686",
+      "sourceSha256": "44ccec7a7831e5690974197c553c1b77213297166014baefe81ac78434f8a686",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0013-command-manifest.md",
+      "sourcePath": "docs/content/docs/en/adr/0013-command-manifest.md",
+      "sha256": "02acae944204c5c996f66238268725e755acc370cf2cf0a4c84cf4ef8d6799b3",
+      "sourceSha256": "02acae944204c5c996f66238268725e755acc370cf2cf0a4c84cf4ef8d6799b3",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0013-wasm-plugins.md",
+      "sourcePath": "docs/content/docs/en/adr/0013-wasm-plugins.md",
+      "sha256": "119c1e5e02ced47f4d5be00a144f6e178acd707ff4fd316456b0df760489cbc2",
+      "sourceSha256": "119c1e5e02ced47f4d5be00a144f6e178acd707ff4fd316456b0df760489cbc2",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0014-capacitor-mobile-shell.md",
+      "sourcePath": "docs/content/docs/en/adr/0014-capacitor-mobile-shell.md",
+      "sha256": "d372c5f28659342f6d8d90eed99dd7e43589f062bde164122c3a2aa7f43cb00a",
+      "sourceSha256": "d372c5f28659342f6d8d90eed99dd7e43589f062bde164122c3a2aa7f43cb00a",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0015-mobile-v2-completion.md",
+      "sourcePath": "docs/content/docs/en/adr/0015-mobile-v2-completion.md",
+      "sha256": "9da7d0868baa96447b08d78881c5336fdac690dc65667ed7fd2d609ac9951b28",
+      "sourceSha256": "9da7d0868baa96447b08d78881c5336fdac690dc65667ed7fd2d609ac9951b28",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0016-plugin-system-completion.md",
+      "sourcePath": "docs/content/docs/en/adr/0016-plugin-system-completion.md",
+      "sha256": "71f22cf555e1c3334a0541851dfc6db0f8256a48ac0ea7979fd9afe81ee666fb",
+      "sourceSha256": "71f22cf555e1c3334a0541851dfc6db0f8256a48ac0ea7979fd9afe81ee666fb",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0017-workflow-plugin-extension-points.md",
+      "sourcePath": "docs/content/docs/en/adr/0017-workflow-plugin-extension-points.md",
+      "sha256": "4958c56a725c1f29c63df25bc54dd1e82cc2d7ce90d92ff642077d9b6eacb846",
+      "sourceSha256": "4958c56a725c1f29c63df25bc54dd1e82cc2d7ce90d92ff642077d9b6eacb846",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0018-github-delivery.md",
+      "sourcePath": "docs/content/docs/en/adr/0018-github-delivery.md",
+      "sha256": "e244d5063ac51cb6f010116bb1d95dfaf8d8ec53ef15b699a16dd93ba4a0c385",
+      "sourceSha256": "e244d5063ac51cb6f010116bb1d95dfaf8d8ec53ef15b699a16dd93ba4a0c385",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0019-goal-command.md",
+      "sourcePath": "docs/content/docs/en/adr/0019-goal-command.md",
+      "sha256": "c471655d4c8f4e4caf11fc0542142412795f5f349b6d292ee3345c6a69295860",
+      "sourceSha256": "c471655d4c8f4e4caf11fc0542142412795f5f349b6d292ee3345c6a69295860",
+      "lastModified": "2026-10-09T23:37:37+08:00"
+    },
+    {
+      "path": "en/adr/0020-computer-use-completeness.md",
+      "sourcePath": "docs/content/docs/en/adr/0020-computer-use-completeness.md",
+      "sha256": "9ee8713a737066ef5fe9cc9b846277f78cb773848db6bdc318b85040456a5024",
+      "sourceSha256": "9ee8713a737066ef5fe9cc9b846277f78cb773848db6bdc318b85040456a5024",
+      "lastModified": "2026-10-09T23:37:58+08:00"
+    },
+    {
+      "path": "en/adr/0021-webrtc-datachannel-wan-transport.md",
+      "sourcePath": "docs/content/docs/en/adr/0021-webrtc-datachannel-wan-transport.md",
+      "sha256": "6163f909da424c7b7af1e50a4f746737e8febb167a7bf9378503e3ae420674cd",
+      "sourceSha256": "6163f909da424c7b7af1e50a4f746737e8febb167a7bf9378503e3ae420674cd",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0022-agent-team-runtime-hardening.md",
+      "sourcePath": "docs/content/docs/en/adr/0022-agent-team-runtime-hardening.md",
+      "sha256": "8d000edd5c8e7bb7f554ae6a83061eddefe81fec1d2300b6470e7fdc4ab651fc",
+      "sourceSha256": "8d000edd5c8e7bb7f554ae6a83061eddefe81fec1d2300b6470e7fdc4ab651fc",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0023-vector-cloud-backends-in-rust.md",
+      "sourcePath": "docs/content/docs/en/adr/0023-vector-cloud-backends-in-rust.md",
+      "sha256": "2a7f5521784f563feaa912698e55340fdab7c59681d2eaad304fe6322833a345",
+      "sourceSha256": "2a7f5521784f563feaa912698e55340fdab7c59681d2eaad304fe6322833a345",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0024-ocr-subsystem.md",
+      "sourcePath": "docs/content/docs/en/adr/0024-ocr-subsystem.md",
+      "sha256": "208cf80dcf07279b001585cbd933acad2b2de1d969a104ce7e7a2ff230533176",
+      "sourceSha256": "208cf80dcf07279b001585cbd933acad2b2de1d969a104ce7e7a2ff230533176",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0025-a2ui-im-bridge.md",
+      "sourcePath": "docs/content/docs/en/adr/0025-a2ui-im-bridge.md",
+      "sha256": "7949077cf227dacc13da91e26d77eaf883dfb2d588283ef13c9f6c7247f8a447",
+      "sourceSha256": "7949077cf227dacc13da91e26d77eaf883dfb2d588283ef13c9f6c7247f8a447",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0025-unified-subscription-module.md",
+      "sourcePath": "docs/content/docs/en/adr/0025-unified-subscription-module.md",
+      "sha256": "64a28c6b3597afc48df7395a72aa3ea21fc01af5eca0aa2307d9077af2bedace",
+      "sourceSha256": "64a28c6b3597afc48df7395a72aa3ea21fc01af5eca0aa2307d9077af2bedace",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0026-builtin-skills-and-lark-cli-bridge.md",
+      "sourcePath": "docs/content/docs/en/adr/0026-builtin-skills-and-lark-cli-bridge.md",
+      "sha256": "74ccde5e7d23bfbd401dcf7544448a72d46015da935bcc4e3091ae28b728c794",
+      "sourceSha256": "74ccde5e7d23bfbd401dcf7544448a72d46015da935bcc4e3091ae28b728c794",
+      "lastModified": "2026-10-30T20:50:56+08:00"
+    },
+    {
+      "path": "en/adr/0026-plugin-extension-point-expansion.md",
+      "sourcePath": "docs/content/docs/en/adr/0026-plugin-extension-point-expansion.md",
+      "sha256": "063d529e8a01524a10a20c8b96529528857fda2ffd535d6fd89b0aee022e861d",
+      "sourceSha256": "063d529e8a01524a10a20c8b96529528857fda2ffd535d6fd89b0aee022e861d",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0027-mobile-offline-and-discovery.md",
+      "sourcePath": "docs/content/docs/en/adr/0027-mobile-offline-and-discovery.md",
+      "sha256": "365b52dac8f953b33e35e0f2f193c043eec6cef751a61edb11afdc41f3676baa",
+      "sourceSha256": "365b52dac8f953b33e35e0f2f193c043eec6cef751a61edb11afdc41f3676baa",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0028-per-session-claude-isolation.md",
+      "sourcePath": "docs/content/docs/en/adr/0028-per-session-claude-isolation.md",
+      "sha256": "a0f582262a502e50c4d8794f6585c8918abc471e9484bfe16a42d0d55a9102cc",
+      "sourceSha256": "a0f582262a502e50c4d8794f6585c8918abc471e9484bfe16a42d0d55a9102cc",
+      "lastModified": "2026-10-17T14:36:18+08:00"
+    },
+    {
+      "path": "en/adr/0030-character-pack-overlay-capability.md",
+      "sourcePath": "docs/content/docs/en/adr/0030-character-pack-overlay-capability.md",
+      "sha256": "6bdcb0598c39843b1e3d362f6d7ae118eb9839409533c1795496cd992d653a84",
+      "sourceSha256": "6bdcb0598c39843b1e3d362f6d7ae118eb9839409533c1795496cd992d653a84",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0031-integrated-terminal.md",
+      "sourcePath": "docs/content/docs/en/adr/0031-integrated-terminal.md",
+      "sha256": "fd82d9135c0dc117e878588a2978db8e6e835f5a2d58ddd406602f73eea6aaf2",
+      "sourceSha256": "fd82d9135c0dc117e878588a2978db8e6e835f5a2d58ddd406602f73eea6aaf2",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0032-agent-team-plugin-integration.md",
+      "sourcePath": "docs/content/docs/en/adr/0032-agent-team-plugin-integration.md",
+      "sha256": "40f4f89a4d7ecd058505629eb12d674a39e022f9e540210ac5414ee198671003",
+      "sourceSha256": "40f4f89a4d7ecd058505629eb12d674a39e022f9e540210ac5414ee198671003",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0033-integrated-terminal-phase-3.md",
+      "sourcePath": "docs/content/docs/en/adr/0033-integrated-terminal-phase-3.md",
+      "sha256": "3c2b35f9abf2beac17899f430792bbd36ddf8a0e10347083a6c73a81358dd75c",
+      "sourceSha256": "3c2b35f9abf2beac17899f430792bbd36ddf8a0e10347083a6c73a81358dd75c",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0034-workflow-editor-completeness-and-plugin-parity.md",
+      "sourcePath": "docs/content/docs/en/adr/0034-workflow-editor-completeness-and-plugin-parity.md",
+      "sha256": "f1d0a2415bc2acba0a016d752bf07dbbe3e107925fa367b0ffd4ac0aad43ad1b",
+      "sourceSha256": "f1d0a2415bc2acba0a016d752bf07dbbe3e107925fa367b0ffd4ac0aad43ad1b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0035-rust-performance-dashboard.md",
+      "sourcePath": "docs/content/docs/en/adr/0035-rust-performance-dashboard.md",
+      "sha256": "55156b75b143636b5b8c3bddcc2b6d1510c369602aa8d74203b5621c7a2808fe",
+      "sourceSha256": "55156b75b143636b5b8c3bddcc2b6d1510c369602aa8d74203b5621c7a2808fe",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0036-wechat-wecom-connectors.md",
+      "sourcePath": "docs/content/docs/en/adr/0036-wechat-wecom-connectors.md",
+      "sha256": "01963697ad0ab2563acc340489db79e1a465e85af13e2c2544714f8468640ba9",
+      "sourceSha256": "01963697ad0ab2563acc340489db79e1a465e85af13e2c2544714f8468640ba9",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0037-public-share-links.md",
+      "sourcePath": "docs/content/docs/en/adr/0037-public-share-links.md",
+      "sha256": "d9dd60818f8feff12efffdde21454ce8fff44a896c6aea6691ce3528462c440b",
+      "sourceSha256": "d9dd60818f8feff12efffdde21454ce8fff44a896c6aea6691ce3528462c440b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0038-source-control-panel.md",
+      "sourcePath": "docs/content/docs/en/adr/0038-source-control-panel.md",
+      "sha256": "603795843187ceb757b1890223e5f696b099994f78700357de03b13bb0af412e",
+      "sourceSha256": "603795843187ceb757b1890223e5f696b099994f78700357de03b13bb0af412e",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0039-terminal-autocomplete-and-script-types.md",
+      "sourcePath": "docs/content/docs/en/adr/0039-terminal-autocomplete-and-script-types.md",
+      "sha256": "a279a050809c6104fdebc21cb568ba4e848e0cef2c23fa9085068b6c6dda52d6",
+      "sourceSha256": "a279a050809c6104fdebc21cb568ba4e848e0cef2c23fa9085068b6c6dda52d6",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0040-hooks-mechanism-completion.md",
+      "sourcePath": "docs/content/docs/en/adr/0040-hooks-mechanism-completion.md",
+      "sha256": "dc5ff7c919aebcc1a28191625c4817e511542dde004c8235a3387b9381fe7fe1",
+      "sourceSha256": "dc5ff7c919aebcc1a28191625c4817e511542dde004c8235a3387b9381fe7fe1",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0041-agent-command-auto-mode.md",
+      "sourcePath": "docs/content/docs/en/adr/0041-agent-command-auto-mode.md",
+      "sha256": "f7a254011a02699770effb26a728ba2842344107127e19b6499ae5434c825a95",
+      "sourceSha256": "f7a254011a02699770effb26a728ba2842344107127e19b6499ae5434c825a95",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0042-unified-notification-center.md",
+      "sourcePath": "docs/content/docs/en/adr/0042-unified-notification-center.md",
+      "sha256": "696bd617c1db231873403711104a3991614031074760b6ab53f54293b023b5d1",
+      "sourceSha256": "696bd617c1db231873403711104a3991614031074760b6ab53f54293b023b5d1",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0043-llm-provider-execution.md",
+      "sourcePath": "docs/content/docs/en/adr/0043-llm-provider-execution.md",
+      "sha256": "1b5e47f1cee37f0b706855b432a66761ac11b7337d79a4a1e301ad467b5d6ef2",
+      "sourceSha256": "1b5e47f1cee37f0b706855b432a66761ac11b7337d79a4a1e301ad467b5d6ef2",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0044-unified-lsp-configuration.md",
+      "sourcePath": "docs/content/docs/en/adr/0044-unified-lsp-configuration.md",
+      "sha256": "ba112e1932e9a33133cc6b0228365dd929258b9ef8c70bd2b7acd4d6f67cddd4",
+      "sourceSha256": "ba112e1932e9a33133cc6b0228365dd929258b9ef8c70bd2b7acd4d6f67cddd4",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0045-unified-plan-execution-hub.md",
+      "sourcePath": "docs/content/docs/en/adr/0045-unified-plan-execution-hub.md",
+      "sha256": "881b44d4847caf578fd5a83a8d8c15ffdb8f5c83370995c99f09cead8f6b662e",
+      "sourceSha256": "881b44d4847caf578fd5a83a8d8c15ffdb8f5c83370995c99f09cead8f6b662e",
+      "lastModified": "2026-10-29T12:44:25+08:00"
+    },
+    {
+      "path": "en/adr/0046-lsp-maturity.md",
+      "sourcePath": "docs/content/docs/en/adr/0046-lsp-maturity.md",
+      "sha256": "13e9da37a1041376c6a5f5af364bd12d199cea011157f9ddadbe61ecd1de6f3d",
+      "sourceSha256": "13e9da37a1041376c6a5f5af364bd12d199cea011157f9ddadbe61ecd1de6f3d",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0047-project-instruction-files.md",
+      "sourcePath": "docs/content/docs/en/adr/0047-project-instruction-files.md",
+      "sha256": "a1bdae64dbee5d8bf98f32b7c3095c19e48277da8f8a8ef3c79dc8774041b544",
+      "sourceSha256": "a1bdae64dbee5d8bf98f32b7c3095c19e48277da8f8a8ef3c79dc8774041b544",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0048-codex-support-expansion.md",
+      "sourcePath": "docs/content/docs/en/adr/0048-codex-support-expansion.md",
+      "sha256": "c7395a5efa963283c06f219f85ee32c87ba4ab50e68e6f684e4b79414955d539",
+      "sourceSha256": "c7395a5efa963283c06f219f85ee32c87ba4ab50e68e6f684e4b79414955d539",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0049-external-agent-process-hardening.md",
+      "sourcePath": "docs/content/docs/en/adr/0049-external-agent-process-hardening.md",
+      "sha256": "ec793c1e228c84e781b568d3a541acbc618567256b3128a4dbd9053da4c9f5f0",
+      "sourceSha256": "ec793c1e228c84e781b568d3a541acbc618567256b3128a4dbd9053da4c9f5f0",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0050-cli-tui-operation-experience.md",
+      "sourcePath": "docs/content/docs/en/adr/0050-cli-tui-operation-experience.md",
+      "sha256": "e85afa1a407c330910b1b7e41e93d9a17729bc936a045e11aba76d8fd7f313d6",
+      "sourceSha256": "e85afa1a407c330910b1b7e41e93d9a17729bc936a045e11aba76d8fd7f313d6",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0051-external-agent-adapter-plugin-type.md",
+      "sourcePath": "docs/content/docs/en/adr/0051-external-agent-adapter-plugin-type.md",
+      "sha256": "5c1dcaa8014295c60239784aa603fb76f5a5c054a95f394c58691030a2a556f1",
+      "sourceSha256": "5c1dcaa8014295c60239784aa603fb76f5a5c054a95f394c58691030a2a556f1",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0052-cli-tui-fixed-region-layout.md",
+      "sourcePath": "docs/content/docs/en/adr/0052-cli-tui-fixed-region-layout.md",
+      "sha256": "94892b1ed2118204583d9b35510b702d98fb295d05eed36ef0c4e9a4642ecf1f",
+      "sourceSha256": "94892b1ed2118204583d9b35510b702d98fb295d05eed36ef0c4e9a4642ecf1f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0053-cli-tui-rendering-and-tool-invocation.md",
+      "sourcePath": "docs/content/docs/en/adr/0053-cli-tui-rendering-and-tool-invocation.md",
+      "sha256": "8c7436f7f22a322b62f4414d24601a091366b974d68c1faef2eda804f2884094",
+      "sourceSha256": "8c7436f7f22a322b62f4414d24601a091366b974d68c1faef2eda804f2884094",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0054-local-multi-account-isolation.md",
+      "sourcePath": "docs/content/docs/en/adr/0054-local-multi-account-isolation.md",
+      "sha256": "4c917fd807295a4672556f189abb0045ba16fbb6ee4696fa3956ed14135fd8ad",
+      "sourceSha256": "4c917fd807295a4672556f189abb0045ba16fbb6ee4696fa3956ed14135fd8ad",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0055-agent-browser-loop.md",
+      "sourcePath": "docs/content/docs/en/adr/0055-agent-browser-loop.md",
+      "sha256": "76502ba4c566077cb444a7d169f7cba9c63d0ae427d1d84117d843ff91a9e759",
+      "sourceSha256": "76502ba4c566077cb444a7d169f7cba9c63d0ae427d1d84117d843ff91a9e759",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0056-mobile-settings-parity.md",
+      "sourcePath": "docs/content/docs/en/adr/0056-mobile-settings-parity.md",
+      "sha256": "0d8b8c8bffbc0fd95d989ec8d97e4cf6eda676ce0296b6a7a78c7f091a788abb",
+      "sourceSha256": "0d8b8c8bffbc0fd95d989ec8d97e4cf6eda676ce0296b6a7a78c7f091a788abb",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0057-chat-rendering-completeness.md",
+      "sourcePath": "docs/content/docs/en/adr/0057-chat-rendering-completeness.md",
+      "sha256": "0819facfe25773bf90a4439e699e56084f501bb9d534a26d37d79bdb7a46481c",
+      "sourceSha256": "0819facfe25773bf90a4439e699e56084f501bb9d534a26d37d79bdb7a46481c",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0058-desktop-pet-subsystem.md",
+      "sourcePath": "docs/content/docs/en/adr/0058-desktop-pet-subsystem.md",
+      "sha256": "940a3b03cc1f4a0e44b67f7db2daabe134da0bdba16f6d0bc909d12ce155d053",
+      "sourceSha256": "940a3b03cc1f4a0e44b67f7db2daabe134da0bdba16f6d0bc909d12ce155d053",
+      "lastModified": "2026-10-27T23:15:53+08:00"
+    },
+    {
+      "path": "en/adr/0059-cloud-deployment-headless-brain.md",
+      "sourcePath": "docs/content/docs/en/adr/0059-cloud-deployment-headless-brain.md",
+      "sha256": "d54e18ec1ad6ef0a53170469deed07d45ee6a636486315fa7d0a030586b57454",
+      "sourceSha256": "d54e18ec1ad6ef0a53170469deed07d45ee6a636486315fa7d0a030586b57454",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0060-personal-knowledge-capture-and-insights.md",
+      "sourcePath": "docs/content/docs/en/adr/0060-personal-knowledge-capture-and-insights.md",
+      "sha256": "b8eace3d4cee3c3270c53ae3306fb23f99abea07514147aee1e538de963a96df",
+      "sourceSha256": "b8eace3d4cee3c3270c53ae3306fb23f99abea07514147aee1e538de963a96df",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0061-cross-device-workflow-execution.md",
+      "sourcePath": "docs/content/docs/en/adr/0061-cross-device-workflow-execution.md",
+      "sha256": "02e176429482126030c86d86e39f53ae3c265511bba32ea47dc2c79bb7b49392",
+      "sourceSha256": "02e176429482126030c86d86e39f53ae3c265511bba32ea47dc2c79bb7b49392",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0062-external-agent-session-import.md",
+      "sourcePath": "docs/content/docs/en/adr/0062-external-agent-session-import.md",
+      "sha256": "f0c360a6f950428160a0e9f2bb48a0d8cc0694e3b055fb2b657a6736cc241407",
+      "sourceSha256": "f0c360a6f950428160a0e9f2bb48a0d8cc0694e3b055fb2b657a6736cc241407",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0063-optical-context-compaction.md",
+      "sourcePath": "docs/content/docs/en/adr/0063-optical-context-compaction.md",
+      "sha256": "6aca442fa4a923b3276e72d2f68ff6185a712619d4c18d899501bf0b630dab36",
+      "sourceSha256": "6aca442fa4a923b3276e72d2f68ff6185a712619d4c18d899501bf0b630dab36",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0064-external-cli-backed-subagent-dispatch-completion.md",
+      "sourcePath": "docs/content/docs/en/adr/0064-external-cli-backed-subagent-dispatch-completion.md",
+      "sha256": "8ad81268f070c5b04c54b1ec88d5b72d19dcfefdced87bd21680be3a4597c507",
+      "sourceSha256": "8ad81268f070c5b04c54b1ec88d5b72d19dcfefdced87bd21680be3a4597c507",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0065-agent-workspace-confinement-and-permission-unification.md",
+      "sourcePath": "docs/content/docs/en/adr/0065-agent-workspace-confinement-and-permission-unification.md",
+      "sha256": "c95f185eccf3ac4443add81e7c901962624be8053f47a519e0a934a81e32a700",
+      "sourceSha256": "c95f185eccf3ac4443add81e7c901962624be8053f47a519e0a934a81e32a700",
+      "lastModified": "2026-10-11T01:13:01+08:00"
+    },
+    {
+      "path": "en/adr/0066-agent-team-task-board.md",
+      "sourcePath": "docs/content/docs/en/adr/0066-agent-team-task-board.md",
+      "sha256": "1e2e02f4be6dce71c52be8ca8902278d0c366e411513e2ea26aeec12e2a6b9db",
+      "sourceSha256": "1e2e02f4be6dce71c52be8ca8902278d0c366e411513e2ea26aeec12e2a6b9db",
+      "lastModified": "2026-10-06T20:52:17+08:00"
+    },
+    {
+      "path": "en/adr/0067-src-tauri-crate-decomposition-and-build-speed.md",
+      "sourcePath": "docs/content/docs/en/adr/0067-src-tauri-crate-decomposition-and-build-speed.md",
+      "sha256": "fe7441a24b33c46fc3b257168265ea0ac6184ca25c0f77f31a15953cc133f12e",
+      "sourceSha256": "fe7441a24b33c46fc3b257168265ea0ac6184ca25c0f77f31a15953cc133f12e",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0068-frontend-package-extraction-and-compile-speed.md",
+      "sourcePath": "docs/content/docs/en/adr/0068-frontend-package-extraction-and-compile-speed.md",
+      "sha256": "1f1af1b2565adadf8855328b494c56c0fb7d2a91e5663e001878b1a106c2b504",
+      "sourceSha256": "1f1af1b2565adadf8855328b494c56c0fb7d2a91e5663e001878b1a106c2b504",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0069-long-term-memory-external-api-surfaces.md",
+      "sourcePath": "docs/content/docs/en/adr/0069-long-term-memory-external-api-surfaces.md",
+      "sha256": "4a8d668b5d17c52137444b685c61c2248be68748fa357f488399ced001d0f721",
+      "sourceSha256": "4a8d668b5d17c52137444b685c61c2248be68748fa357f488399ced001d0f721",
+      "lastModified": "2026-10-11T23:57:17+08:00"
+    },
+    {
+      "path": "en/adr/0070-risk-ceremony-policy-layer.md",
+      "sourcePath": "docs/content/docs/en/adr/0070-risk-ceremony-policy-layer.md",
+      "sha256": "d5e55658911f9098b20890646b6b90dcc32e3d3afef3f770eef942a686adf228",
+      "sourceSha256": "d5e55658911f9098b20890646b6b90dcc32e3d3afef3f770eef942a686adf228",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0071-blocking-lead-task-review.md",
+      "sourcePath": "docs/content/docs/en/adr/0071-blocking-lead-task-review.md",
+      "sha256": "ed79f61b9d71f1110e5c020e7d50788cfc93346f1f370878e4d48cb4b29abdce",
+      "sourceSha256": "ed79f61b9d71f1110e5c020e7d50788cfc93346f1f370878e4d48cb4b29abdce",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0072-browser-action-recording.md",
+      "sourcePath": "docs/content/docs/en/adr/0072-browser-action-recording.md",
+      "sha256": "b75362cec996bff705ae5a377ce37fdfec5609f66648f3f9f3fbc44bfe40a534",
+      "sourceSha256": "b75362cec996bff705ae5a377ce37fdfec5609f66648f3f9f3fbc44bfe40a534",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0073-chromium-cookie-import.md",
+      "sourcePath": "docs/content/docs/en/adr/0073-chromium-cookie-import.md",
+      "sha256": "b824af8eb5eb58cacc98ba7ceda3c3689ea8fc1c9b80bcaff5b4822ae87b4c33",
+      "sourceSha256": "b824af8eb5eb58cacc98ba7ceda3c3689ea8fc1c9b80bcaff5b4822ae87b4c33",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0074-otel-native-telemetry.md",
+      "sourcePath": "docs/content/docs/en/adr/0074-otel-native-telemetry.md",
+      "sha256": "90439d5d57e0c78256b9965cd0ec38fda8255831dde11d587963f38f1b5c708f",
+      "sourceSha256": "90439d5d57e0c78256b9965cd0ec38fda8255831dde11d587963f38f1b5c708f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0075-voice-tts-subsystem.md",
+      "sourcePath": "docs/content/docs/en/adr/0075-voice-tts-subsystem.md",
+      "sha256": "28867ec41dc77f6193e27b2c498878ceb172b6fd23db2b773b4d318bb09c1dab",
+      "sourceSha256": "28867ec41dc77f6193e27b2c498878ceb172b6fd23db2b773b4d318bb09c1dab",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0076-local-provider-management-transport.md",
+      "sourcePath": "docs/content/docs/en/adr/0076-local-provider-management-transport.md",
+      "sha256": "51e6f751f373c6f6fb35af3493437dc76bfeded7382d73376bca7614f7946179",
+      "sourceSha256": "51e6f751f373c6f6fb35af3493437dc76bfeded7382d73376bca7614f7946179",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0077-tui-external-agent-hosting.md",
+      "sourcePath": "docs/content/docs/en/adr/0077-tui-external-agent-hosting.md",
+      "sha256": "68127bf7a9fcec1d75de5cc86b6b2b5090cad51c173e7de578393a71ecc7073b",
+      "sourceSha256": "68127bf7a9fcec1d75de5cc86b6b2b5090cad51c173e7de578393a71ecc7073b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0078-cli-app-bridge.md",
+      "sourcePath": "docs/content/docs/en/adr/0078-cli-app-bridge.md",
+      "sha256": "8b5215146f2e81bec8cc89a6fdf1dd2de37e34c26a25f56eba3a75470c9db3f3",
+      "sourceSha256": "8b5215146f2e81bec8cc89a6fdf1dd2de37e34c26a25f56eba3a75470c9db3f3",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0079-scheduler-extension-contract.md",
+      "sourcePath": "docs/content/docs/en/adr/0079-scheduler-extension-contract.md",
+      "sha256": "a10af142426d5e4bc9cc45a99d59a1e3095638133650f922090278fcb93382cc",
+      "sourceSha256": "a10af142426d5e4bc9cc45a99d59a1e3095638133650f922090278fcb93382cc",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0081-workflow-callable-unit-and-chained-triggers.md",
+      "sourcePath": "docs/content/docs/en/adr/0081-workflow-callable-unit-and-chained-triggers.md",
+      "sha256": "bc3b35de396a35df17bb5de74985ca59d67dd6f568fb18637ed23bc4d9f45fcb",
+      "sourceSha256": "bc3b35de396a35df17bb5de74985ca59d67dd6f568fb18637ed23bc4d9f45fcb",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0082-remote-development-remote-host.md",
+      "sourcePath": "docs/content/docs/en/adr/0082-remote-development-remote-host.md",
+      "sha256": "858b6362a146912fff3b54d7f28ce786f05da07f3669d7d7eec060b91947e3c9",
+      "sourceSha256": "858b6362a146912fff3b54d7f28ce786f05da07f3669d7d7eec060b91947e3c9",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0083-context-workbench.md",
+      "sourcePath": "docs/content/docs/en/adr/0083-context-workbench.md",
+      "sha256": "9887ca501032c91018aaae8a6a4f4f378bcfba90f92bc1241eff105aaedd253c",
+      "sourceSha256": "9887ca501032c91018aaae8a6a4f4f378bcfba90f92bc1241eff105aaedd253c",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0084-cognia-sites.md",
+      "sourcePath": "docs/content/docs/en/adr/0084-cognia-sites.md",
+      "sha256": "4461c6979d51b6ff63db4b5efe5dace4302cb4439b9d74850192a4ccec4d3237",
+      "sourceSha256": "4461c6979d51b6ff63db4b5efe5dace4302cb4439b9d74850192a4ccec4d3237",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0085-cloud-shared-browser.md",
+      "sourcePath": "docs/content/docs/en/adr/0085-cloud-shared-browser.md",
+      "sha256": "dc007909ad921ca6043dd0306f8518e6e8dce9c380426fdc2832fb8a2d6a6e7c",
+      "sourceSha256": "dc007909ad921ca6043dd0306f8518e6e8dce9c380426fdc2832fb8a2d6a6e7c",
+      "lastModified": "2026-10-12T16:39:13+08:00"
+    },
+    {
+      "path": "en/adr/0086-task-scoped-resource-workspaces.md",
+      "sourcePath": "docs/content/docs/en/adr/0086-task-scoped-resource-workspaces.md",
+      "sha256": "557cd8d62edbf1616a039504fc15640a87cc3f054b936fcb2b1c5251c3908cdf",
+      "sourceSha256": "557cd8d62edbf1616a039504fc15640a87cc3f054b936fcb2b1c5251c3908cdf",
+      "lastModified": "2026-10-30T14:32:27+08:00"
+    },
+    {
+      "path": "en/adr/0087-python-backed-plugin-contributions.md",
+      "sourcePath": "docs/content/docs/en/adr/0087-python-backed-plugin-contributions.md",
+      "sha256": "89240a3e1ba7e9657f54797015aa9bec0a8141a33ff596d67638d7dcc7383009",
+      "sourceSha256": "89240a3e1ba7e9657f54797015aa9bec0a8141a33ff596d67638d7dcc7383009",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0088-pro-ide-code-server.md",
+      "sourcePath": "docs/content/docs/en/adr/0088-pro-ide-code-server.md",
+      "sha256": "c57ddec54a3b69ee57f0961ba7ef8ff6033b1756fa5691a8005ba52527edd80b",
+      "sourceSha256": "c57ddec54a3b69ee57f0961ba7ef8ff6033b1756fa5691a8005ba52527edd80b",
+      "lastModified": "2026-10-18T01:25:48+08:00"
+    },
+    {
+      "path": "en/adr/0089-topic-scoped-connector-runtime.md",
+      "sourcePath": "docs/content/docs/en/adr/0089-topic-scoped-connector-runtime.md",
+      "sha256": "43f7c712d5177c3dbb066f1a07c0d66d81de265671505e6dcdcf8d00fc32f5fc",
+      "sourceSha256": "43f7c712d5177c3dbb066f1a07c0d66d81de265671505e6dcdcf8d00fc32f5fc",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0090-unified-agent-execution-and-gateway-compatibility.md",
+      "sourcePath": "docs/content/docs/en/adr/0090-unified-agent-execution-and-gateway-compatibility.md",
+      "sha256": "e8eb4a404918fb5915b6702e70c0e37ee195a77ca80ab9fa454d965f6e5a8049",
+      "sourceSha256": "e8eb4a404918fb5915b6702e70c0e37ee195a77ca80ab9fa454d965f6e5a8049",
+      "lastModified": "2026-10-09T11:39:47+08:00"
+    },
+    {
+      "path": "en/adr/0091-lark-unified-identity-dual-entry.md",
+      "sourcePath": "docs/content/docs/en/adr/0091-lark-unified-identity-dual-entry.md",
+      "sha256": "8a43d11aff819b33eaef05b61748513e59cc10025e6d8a2a301c9493d41a65aa",
+      "sourceSha256": "8a43d11aff819b33eaef05b61748513e59cc10025e6d8a2a301c9493d41a65aa",
+      "lastModified": "2026-10-04T20:46:36+08:00"
+    },
+    {
+      "path": "en/adr/0092-official-website-workspace.md",
+      "sourcePath": "docs/content/docs/en/adr/0092-official-website-workspace.md",
+      "sha256": "3ea94981cfe1a022522dca4ec819abd46f075d6c9adf23552de5a86f8a58e81b",
+      "sourceSha256": "3ea94981cfe1a022522dca4ec819abd46f075d6c9adf23552de5a86f8a58e81b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0093-selection-toolbar-content-hugging-window.md",
+      "sourcePath": "docs/content/docs/en/adr/0093-selection-toolbar-content-hugging-window.md",
+      "sha256": "168a57fb78e71a3534dc2f8c9cfef51e2354c5e1460082bf05f41ea5e4d33090",
+      "sourceSha256": "168a57fb78e71a3534dc2f8c9cfef51e2354c5e1460082bf05f41ea5e4d33090",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0094-conversation-anchors-and-jump.md",
+      "sourcePath": "docs/content/docs/en/adr/0094-conversation-anchors-and-jump.md",
+      "sha256": "4f286ec0c2fcff66f3154e3e765081cff42285101cb487be0f544815f0a04d65",
+      "sourceSha256": "4f286ec0c2fcff66f3154e3e765081cff42285101cb487be0f544815f0a04d65",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0095-desktop-selection-perception.md",
+      "sourcePath": "docs/content/docs/en/adr/0095-desktop-selection-perception.md",
+      "sha256": "12661542d0a19679fc94797b75759dd35fe38f0e2c31d60a9e7a674a830a03d5",
+      "sourceSha256": "12661542d0a19679fc94797b75759dd35fe38f0e2c31d60a9e7a674a830a03d5",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0096-loading-state-motion-and-accessibility.md",
+      "sourcePath": "docs/content/docs/en/adr/0096-loading-state-motion-and-accessibility.md",
+      "sha256": "39c0f29adf4dd8db7d09c3cf8a4f16963375c162c52c7ae7e173ca9cb878439a",
+      "sourceSha256": "39c0f29adf4dd8db7d09c3cf8a4f16963375c162c52c7ae7e173ca9cb878439a",
+      "lastModified": "2026-10-21T16:59:08+08:00"
+    },
+    {
+      "path": "en/adr/0097-cross-device-settings-contract-and-companion-reach.md",
+      "sourcePath": "docs/content/docs/en/adr/0097-cross-device-settings-contract-and-companion-reach.md",
+      "sha256": "13581d210d25ed9fb22020720c2e0adada5b9cc24b5addff2d85f55672c445ef",
+      "sourceSha256": "13581d210d25ed9fb22020720c2e0adada5b9cc24b5addff2d85f55672c445ef",
+      "lastModified": "2026-10-06T17:11:57+08:00"
+    },
+    {
+      "path": "en/adr/0098-persistent-workbench-rail.md",
+      "sourcePath": "docs/content/docs/en/adr/0098-persistent-workbench-rail.md",
+      "sha256": "e93d40508784b5adccd370ac52e5cb9942168169130185a9e0476f144df2c344",
+      "sourceSha256": "e93d40508784b5adccd370ac52e5cb9942168169130185a9e0476f144df2c344",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0100-unified-template-platform.md",
+      "sourcePath": "docs/content/docs/en/adr/0100-unified-template-platform.md",
+      "sha256": "d794394381609fefb093e3b1a68931e14d7ce2e20fa0a116327c44e896c2855b",
+      "sourceSha256": "d794394381609fefb093e3b1a68931e14d7ce2e20fa0a116327c44e896c2855b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0101-model-evaluation-lab.md",
+      "sourcePath": "docs/content/docs/en/adr/0101-model-evaluation-lab.md",
+      "sha256": "15e013a940126397495375f9ddd46ab207a0f95b1ec441496855011f18751f01",
+      "sourceSha256": "15e013a940126397495375f9ddd46ab207a0f95b1ec441496855011f18751f01",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0102-unified-observability-crash-diagnostics.md",
+      "sourcePath": "docs/content/docs/en/adr/0102-unified-observability-crash-diagnostics.md",
+      "sha256": "696806d4d6668e9a766216a79b62c74654000ed88b9521cbf1ca08848b714cb8",
+      "sourceSha256": "a6574e74ee1385cece00fa9acbe75c31af2c9184e7d177687fba17b424a32413",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0103-cross-host-session-handoff.md",
+      "sourcePath": "docs/content/docs/en/adr/0103-cross-host-session-handoff.md",
+      "sha256": "3b61a39db540d5764607a5234cfd502423422408f518ce187a6f47b392c51275",
+      "sourceSha256": "3b61a39db540d5764607a5234cfd502423422408f518ce187a6f47b392c51275",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0104-provider-diagnostics-control-plane.md",
+      "sourcePath": "docs/content/docs/en/adr/0104-provider-diagnostics-control-plane.md",
+      "sha256": "9fc5d4c16c7c84d7b02f8f7322868a84ee99f61245e82f596fcc9493ab38217f",
+      "sourceSha256": "9fc5d4c16c7c84d7b02f8f7322868a84ee99f61245e82f596fcc9493ab38217f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0106-end-to-end-skill-recorder.md",
+      "sourcePath": "docs/content/docs/en/adr/0106-end-to-end-skill-recorder.md",
+      "sha256": "0be5c904ebfcb17f4de8ab564811439bc9cedced7571ffd856968ac86c1706f9",
+      "sourceSha256": "0be5c904ebfcb17f4de8ab564811439bc9cedced7571ffd856968ac86c1706f9",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0107-coding-agent-migration.md",
+      "sourcePath": "docs/content/docs/en/adr/0107-coding-agent-migration.md",
+      "sha256": "6be8a8946ebb7b4b87d7c98a06ab89ad3e08ba7c2d4dc3ba8c3d1f340086dace",
+      "sourceSha256": "6be8a8946ebb7b4b87d7c98a06ab89ad3e08ba7c2d4dc3ba8c3d1f340086dace",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0108-codex-inspired-desktop-workflows.md",
+      "sourcePath": "docs/content/docs/en/adr/0108-codex-inspired-desktop-workflows.md",
+      "sha256": "9baebe08ef2ef0c3f04fb9693636ec666db786aa6a2cf6b3075131adce388f0d",
+      "sourceSha256": "9baebe08ef2ef0c3f04fb9693636ec666db786aa6a2cf6b3075131adce388f0d",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0109-plugin-interface-catalog-governance.md",
+      "sourcePath": "docs/content/docs/en/adr/0109-plugin-interface-catalog-governance.md",
+      "sha256": "f99bf6b9da2765a6c0d70ce17f67f41390466372a947fe97e08a27f56e51bb13",
+      "sourceSha256": "f99bf6b9da2765a6c0d70ce17f67f41390466372a947fe97e08a27f56e51bb13",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0110-mcp-control-plane-governance.md",
+      "sourcePath": "docs/content/docs/en/adr/0110-mcp-control-plane-governance.md",
+      "sha256": "d5c85af932c85fe3fece5c4f1e5db86b94b79deb777b6c83435cc8ba85add8bb",
+      "sourceSha256": "d5c85af932c85fe3fece5c4f1e5db86b94b79deb777b6c83435cc8ba85add8bb",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0111-managed-workspace-registry-and-bundle.md",
+      "sourcePath": "docs/content/docs/en/adr/0111-managed-workspace-registry-and-bundle.md",
+      "sha256": "9c6467e9c40cbb62cd6e435599fd5eb647800e2c9f9c6f903406281723ac2a05",
+      "sourceSha256": "9c6467e9c40cbb62cd6e435599fd5eb647800e2c9f9c6f903406281723ac2a05",
+      "lastModified": "2026-10-15T17:47:47+08:00"
+    },
+    {
+      "path": "en/adr/0112-unified-decision-provenance-conflict-ledger.md",
+      "sourcePath": "docs/content/docs/en/adr/0112-unified-decision-provenance-conflict-ledger.md",
+      "sha256": "53ec7288cf023da84fb9a0aa990c142c3a8eb327be990bc94be51dbe2b7d99ee",
+      "sourceSha256": "53ec7288cf023da84fb9a0aa990c142c3a8eb327be990bc94be51dbe2b7d99ee",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0113-agent-team-multi-host-remote-dispatch.md",
+      "sourcePath": "docs/content/docs/en/adr/0113-agent-team-multi-host-remote-dispatch.md",
+      "sha256": "cb74e5e66ea03a214fcb8885a7e8e1f1e149b40199fa088aec191c57df7f1d3a",
+      "sourceSha256": "cb74e5e66ea03a214fcb8885a7e8e1f1e149b40199fa088aec191c57df7f1d3a",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0114-chat-message-presentation.md",
+      "sourcePath": "docs/content/docs/en/adr/0114-chat-message-presentation.md",
+      "sha256": "ad8e3d263a7ea1695ada9ca89f3d08715b50fbb08225bb72a2b492c2b8afa079",
+      "sourceSha256": "ad8e3d263a7ea1695ada9ca89f3d08715b50fbb08225bb72a2b492c2b8afa079",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0115-unified-memory-rag-infrastructure.md",
+      "sourcePath": "docs/content/docs/en/adr/0115-unified-memory-rag-infrastructure.md",
+      "sha256": "ab6e1625a10edb7e53adcb4e950328495cec056abe1e330b044ba34aee98e043",
+      "sourceSha256": "ab6e1625a10edb7e53adcb4e950328495cec056abe1e330b044ba34aee98e043",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0116-host-authoritative-session-state.md",
+      "sourcePath": "docs/content/docs/en/adr/0116-host-authoritative-session-state.md",
+      "sha256": "5a5708fc939feb0515d3d2f48c76c443d8040fffbbaf4b08654e1be18ce4431e",
+      "sourceSha256": "5a5708fc939feb0515d3d2f48c76c443d8040fffbbaf4b08654e1be18ce4431e",
+      "lastModified": "2026-10-19T16:49:09+08:00"
+    },
+    {
+      "path": "en/adr/0117-composed-agent-modes-and-creator.md",
+      "sourcePath": "docs/content/docs/en/adr/0117-composed-agent-modes-and-creator.md",
+      "sha256": "2051e9780744c1ac4ec8fc0a58be568d5e0c0c710cc4e00bdfb32f8e46958a51",
+      "sourceSha256": "2051e9780744c1ac4ec8fc0a58be568d5e0c0c710cc4e00bdfb32f8e46958a51",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0118-keyless-model-request-replay.md",
+      "sourcePath": "docs/content/docs/en/adr/0118-keyless-model-request-replay.md",
+      "sha256": "a1a29aae234d46cf3b9334aa6bbcb951415e3c02b1ca19cc2f7e6713e5ac5c28",
+      "sourceSha256": "a1a29aae234d46cf3b9334aa6bbcb951415e3c02b1ca19cc2f7e6713e5ac5c28",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0119-pi-native-rpc-integration.md",
+      "sourcePath": "docs/content/docs/en/adr/0119-pi-native-rpc-integration.md",
+      "sha256": "04aaac09d138767ae1930ab7b5c3634854a5146d0ed69e258542c09ea6abb34a",
+      "sourceSha256": "04aaac09d138767ae1930ab7b5c3634854a5146d0ed69e258542c09ea6abb34a",
+      "lastModified": "2026-10-06T18:16:53+08:00"
+    },
+    {
+      "path": "en/adr/0120-deepseek-harness-managed-runtime.md",
+      "sourcePath": "docs/content/docs/en/adr/0120-deepseek-harness-managed-runtime.md",
+      "sha256": "3f88978c8fc8fafa1ecd1c003c838cd062a0ac4ad75a62df18d5c5577bdfe015",
+      "sourceSha256": "3f88978c8fc8fafa1ecd1c003c838cd062a0ac4ad75a62df18d5c5577bdfe015",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0121-workbench-mobile-drawer-and-panel-customization.md",
+      "sourcePath": "docs/content/docs/en/adr/0121-workbench-mobile-drawer-and-panel-customization.md",
+      "sha256": "60b2ae80d228558fc5f3eb703b6f1c1a6e487ab0e68f6a59e6d4c15d0003ac30",
+      "sourceSha256": "60b2ae80d228558fc5f3eb703b6f1c1a6e487ab0e68f6a59e6d4c15d0003ac30",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0122-first-run-onboarding.md",
+      "sourcePath": "docs/content/docs/en/adr/0122-first-run-onboarding.md",
+      "sha256": "70c763fd6b3fa2eb413cce8d6c6bf3f0e59fb2dbd51d2d86fa0ad2c0bd817bfd",
+      "sourceSha256": "70c763fd6b3fa2eb413cce8d6c6bf3f0e59fb2dbd51d2d86fa0ad2c0bd817bfd",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0123-context-workbench-vertical-split.md",
+      "sourcePath": "docs/content/docs/en/adr/0123-context-workbench-vertical-split.md",
+      "sha256": "0823951c42abd8eadc0a3e563e67a835bf5c4075d22cf7bcefceed77adcf28b6",
+      "sourceSha256": "0823951c42abd8eadc0a3e563e67a835bf5c4075d22cf7bcefceed77adcf28b6",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0124-filesystem-viewer-registry.md",
+      "sourcePath": "docs/content/docs/en/adr/0124-filesystem-viewer-registry.md",
+      "sha256": "5eb66b84edf53b27dfcf76f7f8a40f37e63ed72593c4153a7d0eef0d80897fa7",
+      "sourceSha256": "5eb66b84edf53b27dfcf76f7f8a40f37e63ed72593c4153a7d0eef0d80897fa7",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0125-durable-work-submission.md",
+      "sourcePath": "docs/content/docs/en/adr/0125-durable-work-submission.md",
+      "sha256": "f55a02041840de4294f7b3fb1464d0dcb1390badc8b54d1eec416d279577a87d",
+      "sourceSha256": "f55a02041840de4294f7b3fb1464d0dcb1390badc8b54d1eec416d279577a87d",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0126-plugin-subsystem-governance.md",
+      "sourcePath": "docs/content/docs/en/adr/0126-plugin-subsystem-governance.md",
+      "sha256": "14da059943845a8687efbeaa7bc06d7ffd7391e93a7829e0ba26631aa1a57f96",
+      "sourceSha256": "14da059943845a8687efbeaa7bc06d7ffd7391e93a7829e0ba26631aa1a57f96",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0127-chat-render-transport-efficiency.md",
+      "sourcePath": "docs/content/docs/en/adr/0127-chat-render-transport-efficiency.md",
+      "sha256": "c6ee9bea2a6fbc194c13156e81044b2788ed7743289925440e7c49566c9e25bd",
+      "sourceSha256": "c6ee9bea2a6fbc194c13156e81044b2788ed7743289925440e7c49566c9e25bd",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0128-scheduler-host-neutral.md",
+      "sourcePath": "docs/content/docs/en/adr/0128-scheduler-host-neutral.md",
+      "sha256": "49289f2fce1346c137aa132e09dfb56b5dc4cfe8aff6edac2f9f05628295344f",
+      "sourceSha256": "49289f2fce1346c137aa132e09dfb56b5dc4cfe8aff6edac2f9f05628295344f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0129-unified-global-search.md",
+      "sourcePath": "docs/content/docs/en/adr/0129-unified-global-search.md",
+      "sha256": "e54fd5a5049029f09e5d2a71d22e21c6fac50fa4eef3a7ddcdca4de15e5fec59",
+      "sourceSha256": "e54fd5a5049029f09e5d2a71d22e21c6fac50fa4eef3a7ddcdca4de15e5fec59",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0131-cross-shell-inbox-relay.md",
+      "sourcePath": "docs/content/docs/en/adr/0131-cross-shell-inbox-relay.md",
+      "sha256": "971d8c9c0ab8f0d5b54c6b677a42402e1efe4b4aa6856ea6be63c181eb9d7d0b",
+      "sourceSha256": "971d8c9c0ab8f0d5b54c6b677a42402e1efe4b4aa6856ea6be63c181eb9d7d0b",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0132-issue-tracker.md",
+      "sourcePath": "docs/content/docs/en/adr/0132-issue-tracker.md",
+      "sha256": "4530e38f457de2e4d3918d24bb87410690f180566a1c7c25df8d1165322caafe",
+      "sourceSha256": "4530e38f457de2e4d3918d24bb87410690f180566a1c7c25df8d1165322caafe",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0133-terminal-session-sharing.md",
+      "sourcePath": "docs/content/docs/en/adr/0133-terminal-session-sharing.md",
+      "sha256": "e654f3f8b96664064e30848faeec39a41a2b66c81d322655a554b0e259ac7463",
+      "sourceSha256": "e654f3f8b96664064e30848faeec39a41a2b66c81d322655a554b0e259ac7463",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0134-remote-document-providers.md",
+      "sourcePath": "docs/content/docs/en/adr/0134-remote-document-providers.md",
+      "sha256": "6f34392f7a71808a05f3bf209c9010b4dc7c9bf629ed062b2e77560374ce9178",
+      "sourceSha256": "6f34392f7a71808a05f3bf209c9010b4dc7c9bf629ed062b2e77560374ce9178",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0135-diagnostic-service-completion.md",
+      "sourcePath": "docs/content/docs/en/adr/0135-diagnostic-service-completion.md",
+      "sha256": "caf8fa727325570cabd97991e8c3c12d9c105b6631b4df0486a88341872ba8d3",
+      "sourceSha256": "caf8fa727325570cabd97991e8c3c12d9c105b6631b4df0486a88341872ba8d3",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0136-cross-device-placement.md",
+      "sourcePath": "docs/content/docs/en/adr/0136-cross-device-placement.md",
+      "sha256": "7acb030426526beb0674ab071cf8d4b08ac3f9108583cb51e2358f3679b2ea3c",
+      "sourceSha256": "7acb030426526beb0674ab071cf8d4b08ac3f9108583cb51e2358f3679b2ea3c",
+      "lastModified": "2026-10-12T00:21:12+08:00"
+    },
+    {
+      "path": "en/adr/0137-delegation-runtime.md",
+      "sourcePath": "docs/content/docs/en/adr/0137-delegation-runtime.md",
+      "sha256": "c280b034ff815b36753f27c81693b030f550b2c59701c917dd00631f7271352b",
+      "sourceSha256": "c280b034ff815b36753f27c81693b030f550b2c59701c917dd00631f7271352b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0138-reading-area-layout-stability.md",
+      "sourcePath": "docs/content/docs/en/adr/0138-reading-area-layout-stability.md",
+      "sha256": "dca10fc13d99f42d678511246c3c6ce86b10777ce702ee36597b41c38dbdcb31",
+      "sourceSha256": "dca10fc13d99f42d678511246c3c6ce86b10777ce702ee36597b41c38dbdcb31",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0139-visual-output-routing.md",
+      "sourcePath": "docs/content/docs/en/adr/0139-visual-output-routing.md",
+      "sha256": "273c6295bdf5c34c421f4a6cdc6850c7086f8c77ffe46210c281b95946d706cd",
+      "sourceSha256": "273c6295bdf5c34c421f4a6cdc6850c7086f8c77ffe46210c281b95946d706cd",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0140-squad-as-an-executor.md",
+      "sourcePath": "docs/content/docs/en/adr/0140-squad-as-an-executor.md",
+      "sha256": "b0181e586fae446816f1243414319f1d1f11dd05b5466f9a317bf6e325d5e6ea",
+      "sourceSha256": "b0181e586fae446816f1243414319f1d1f11dd05b5466f9a317bf6e325d5e6ea",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0141-onboarding-two-paths.md",
+      "sourcePath": "docs/content/docs/en/adr/0141-onboarding-two-paths.md",
+      "sha256": "ca3d6f8a8db436c2a0e2c3fd26bbbce1a7f7609a85c5d274fe0629ce1667acab",
+      "sourceSha256": "ca3d6f8a8db436c2a0e2c3fd26bbbce1a7f7609a85c5d274fe0629ce1667acab",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0142-agent-sdk-two-layer-product.md",
+      "sourcePath": "docs/content/docs/en/adr/0142-agent-sdk-two-layer-product.md",
+      "sha256": "fcab229f4ad492d769cd4ff6b3e39677ab63dacdc5a74a2b605f3dabdbc6a01a",
+      "sourceSha256": "fcab229f4ad492d769cd4ff6b3e39677ab63dacdc5a74a2b605f3dabdbc6a01a",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0143-device-console.md",
+      "sourcePath": "docs/content/docs/en/adr/0143-device-console.md",
+      "sha256": "81f45404c28c084215dbd5f54ec5cd74be5cd28ecce805435d7c42de4d71d028",
+      "sourceSha256": "81f45404c28c084215dbd5f54ec5cd74be5cd28ecce805435d7c42de4d71d028",
+      "lastModified": "2026-10-16T19:27:39+08:00"
+    },
+    {
+      "path": "en/adr/0144-workspace-as-the-unit-of-work.md",
+      "sourcePath": "docs/content/docs/en/adr/0144-workspace-as-the-unit-of-work.md",
+      "sha256": "7a515c47d5eec8560279536eb79d11ca3940fdf17f3035b2a47a0217ec337805",
+      "sourceSha256": "7a515c47d5eec8560279536eb79d11ca3940fdf17f3035b2a47a0217ec337805",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0145-python-plugin-runtime-alignment.md",
+      "sourcePath": "docs/content/docs/en/adr/0145-python-plugin-runtime-alignment.md",
+      "sha256": "def613f914760926cfd46f51737f857b2f5ea9f7533aa7931a4e54e41f4e627a",
+      "sourceSha256": "def613f914760926cfd46f51737f857b2f5ea9f7533aa7931a4e54e41f4e627a",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0146-repowiki-plugin.md",
+      "sourcePath": "docs/content/docs/en/adr/0146-repowiki-plugin.md",
+      "sha256": "f7addb3d57b9319557dcd928840d4c9268358cc6a4708d89e3f2c8b6a9f0aeff",
+      "sourceSha256": "f7addb3d57b9319557dcd928840d4c9268358cc6a4708d89e3f2c8b6a9f0aeff",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0147-repository-declared-workspace.md",
+      "sourcePath": "docs/content/docs/en/adr/0147-repository-declared-workspace.md",
+      "sha256": "2f8c463209f3192ae58d2e84efafba32e83f335ade58c2c2298b83fbc070a828",
+      "sourceSha256": "2f8c463209f3192ae58d2e84efafba32e83f335ade58c2c2298b83fbc070a828",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0148-style-packs-and-surface-tiers.md",
+      "sourcePath": "docs/content/docs/en/adr/0148-style-packs-and-surface-tiers.md",
+      "sha256": "c4730e1a2342dd7eb87fa5918afd3046b551a1cf481111920cac8d9142eef8d2",
+      "sourceSha256": "c4730e1a2342dd7eb87fa5918afd3046b551a1cf481111920cac8d9142eef8d2",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0149-a-person-is-not-a-device.md",
+      "sourcePath": "docs/content/docs/en/adr/0149-a-person-is-not-a-device.md",
+      "sha256": "09f5f87bbc622fb26fa7f38be491bddfe562aab176cd09c785aa95f4b584c1af",
+      "sourceSha256": "09f5f87bbc622fb26fa7f38be491bddfe562aab176cd09c785aa95f4b584c1af",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0150-repository-supply-and-object-cache.md",
+      "sourcePath": "docs/content/docs/en/adr/0150-repository-supply-and-object-cache.md",
+      "sha256": "a87120d6a809bf315fa5999e91a72d336abf0c45a16b82ddea976146f2306891",
+      "sourceSha256": "a87120d6a809bf315fa5999e91a72d336abf0c45a16b82ddea976146f2306891",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0151-stacks-as-first-class.md",
+      "sourcePath": "docs/content/docs/en/adr/0151-stacks-as-first-class.md",
+      "sha256": "b4bf61256d4ef0443e29410254fd78b5c68b17863587033122c4b8a31eff5a10",
+      "sourceSha256": "b4bf61256d4ef0443e29410254fd78b5c68b17863587033122c4b8a31eff5a10",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0152-connector-controls-name-their-host.md",
+      "sourcePath": "docs/content/docs/en/adr/0152-connector-controls-name-their-host.md",
+      "sha256": "01a81b3e424077a793116135572e713d5a1950d83553defaa6432b5a05b36f07",
+      "sourceSha256": "01a81b3e424077a793116135572e713d5a1950d83553defaa6432b5a05b36f07",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0153-the-host-obtains-the-confirmation.md",
+      "sourcePath": "docs/content/docs/en/adr/0153-the-host-obtains-the-confirmation.md",
+      "sha256": "5fc289bdc676d9ca7bded76dc05d307aa11104d0f2be5c841512990a9533bed9",
+      "sourceSha256": "5fc289bdc676d9ca7bded76dc05d307aa11104d0f2be5c841512990a9533bed9",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0154-browser-companion.md",
+      "sourcePath": "docs/content/docs/en/adr/0154-browser-companion.md",
+      "sha256": "3b1b8d6e0b018ebd4c26b96f09104a38742ce371addb0b988e9af47c4840974f",
+      "sourceSha256": "3b1b8d6e0b018ebd4c26b96f09104a38742ce371addb0b988e9af47c4840974f",
+      "lastModified": "2026-10-16T13:23:16+08:00"
+    },
+    {
+      "path": "en/adr/0155-plugins-reach-the-host-through-one-door.md",
+      "sourcePath": "docs/content/docs/en/adr/0155-plugins-reach-the-host-through-one-door.md",
+      "sha256": "0622a6a3eced66a22c157c8b0b080c810ec02cb7a0813063ba71224cbbbd0e23",
+      "sourceSha256": "0622a6a3eced66a22c157c8b0b080c810ec02cb7a0813063ba71224cbbbd0e23",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0156-every-in-tree-plugin-is-a-third-party-plugin.md",
+      "sourcePath": "docs/content/docs/en/adr/0156-every-in-tree-plugin-is-a-third-party-plugin.md",
+      "sha256": "465b5aca28a5334b624d3ecbb3f5e500d240606bb2553360bdff0cc28a633618",
+      "sourceSha256": "465b5aca28a5334b624d3ecbb3f5e500d240606bb2553360bdff0cc28a633618",
+      "lastModified": "2026-10-12T20:06:47+08:00"
+    },
+    {
+      "path": "en/adr/0157-references-and-result-reuse.md",
+      "sourcePath": "docs/content/docs/en/adr/0157-references-and-result-reuse.md",
+      "sha256": "40c6b8f6c6f431e26618796d9e02528e343cc0f0968c0b93f19659d5f5ab1d51",
+      "sourceSha256": "40c6b8f6c6f431e26618796d9e02528e343cc0f0968c0b93f19659d5f5ab1d51",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0158-artifacts-and-canvas.md",
+      "sourcePath": "docs/content/docs/en/adr/0158-artifacts-and-canvas.md",
+      "sha256": "b67a48f2c4837992d04a5efc31d79440ffd59a433db40a04ac7d9dbe39e189ef",
+      "sourceSha256": "b67a48f2c4837992d04a5efc31d79440ffd59a433db40a04ac7d9dbe39e189ef",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0159-selection-action-platform.md",
+      "sourcePath": "docs/content/docs/en/adr/0159-selection-action-platform.md",
+      "sha256": "4007208ce4cac16986ce4ff4b9a0016f7f1218cae6bf27a870178eeda3c1da64",
+      "sourceSha256": "4007208ce4cac16986ce4ff4b9a0016f7f1218cae6bf27a870178eeda3c1da64",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0160-docker-machines-are-real-machines.md",
+      "sourcePath": "docs/content/docs/en/adr/0160-docker-machines-are-real-machines.md",
+      "sha256": "17c23f9023333539d3763ffffbe2717526cf93973874c7f924b35b4f6f706430",
+      "sourceSha256": "17c23f9023333539d3763ffffbe2717526cf93973874c7f924b35b4f6f706430",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0161-agent-identity-runtime-and-host.md",
+      "sourcePath": "docs/content/docs/en/adr/0161-agent-identity-runtime-and-host.md",
+      "sha256": "223736ef309178c3245eefe0bcea42c2fc7352f54d08ac00918593a68fc72ea0",
+      "sourceSha256": "223736ef309178c3245eefe0bcea42c2fc7352f54d08ac00918593a68fc72ea0",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0162-sftp-is-shell-equivalent.md",
+      "sourcePath": "docs/content/docs/en/adr/0162-sftp-is-shell-equivalent.md",
+      "sha256": "f8505de5e2e251db8c6889efd372fce945be6ae1cc711f0748b6c0defa21b091",
+      "sourceSha256": "f8505de5e2e251db8c6889efd372fce945be6ae1cc711f0748b6c0defa21b091",
+      "lastModified": "2026-10-10T17:54:03+08:00"
+    },
+    {
+      "path": "en/adr/0163-provider-operation-contract.md",
+      "sourcePath": "docs/content/docs/en/adr/0163-provider-operation-contract.md",
+      "sha256": "a91eb235aba1eb04b6365ef72728390e154bd781169718a9ddce13facda1f43c",
+      "sourceSha256": "a91eb235aba1eb04b6365ef72728390e154bd781169718a9ddce13facda1f43c",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0164-templates-squads-and-commands-are-portable-and-iterable.md",
+      "sourcePath": "docs/content/docs/en/adr/0164-templates-squads-and-commands-are-portable-and-iterable.md",
+      "sha256": "2b1215230a2aa60ba6630bffa3af9cde2d48f3fc79822d48cf6d8bf1a4b12dc8",
+      "sourceSha256": "2b1215230a2aa60ba6630bffa3af9cde2d48f3fc79822d48cf6d8bf1a4b12dc8",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0165-ambient-cost-visibility-and-the-optimization-loop.md",
+      "sourcePath": "docs/content/docs/en/adr/0165-ambient-cost-visibility-and-the-optimization-loop.md",
+      "sha256": "b7d2419b092567a1d3cb2c9b95f0c91f393100d38bfe1cdc8d3f33a161180683",
+      "sourceSha256": "b7d2419b092567a1d3cb2c9b95f0c91f393100d38bfe1cdc8d3f33a161180683",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0166-a-branch-knows-where-it-lives.md",
+      "sourcePath": "docs/content/docs/en/adr/0166-a-branch-knows-where-it-lives.md",
+      "sha256": "3228638a06de23363633f3de2e13dadf553c7b4f6c7a60280cf13d2015d03d86",
+      "sourceSha256": "3228638a06de23363633f3de2e13dadf553c7b4f6c7a60280cf13d2015d03d86",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0167-the-schedule-belongs-to-the-account.md",
+      "sourcePath": "docs/content/docs/en/adr/0167-the-schedule-belongs-to-the-account.md",
+      "sha256": "5a4c07b76f5243818d6555460e5ebb72eb18555151d40f61dd9a96c2f9e02003",
+      "sourceSha256": "5a4c07b76f5243818d6555460e5ebb72eb18555151d40f61dd9a96c2f9e02003",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0168-an-edit-is-a-new-version-of-the-same-message.md",
+      "sourcePath": "docs/content/docs/en/adr/0168-an-edit-is-a-new-version-of-the-same-message.md",
+      "sha256": "ad10cd85c688f44a7b1fc8c86115d7bf2bec1fffead827f9bb777337a945a4ca",
+      "sourceSha256": "ad10cd85c688f44a7b1fc8c86115d7bf2bec1fffead827f9bb777337a945a4ca",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0169-one-runtime-one-review-one-control-machine.md",
+      "sourcePath": "docs/content/docs/en/adr/0169-one-runtime-one-review-one-control-machine.md",
+      "sha256": "55fc4c9e1cb6114ae196166a249ad30e04eb13aea4254a464624ab97926ad045",
+      "sourceSha256": "55fc4c9e1cb6114ae196166a249ad30e04eb13aea4254a464624ab97926ad045",
+      "lastModified": "2026-10-06T20:52:17+08:00"
+    },
+    {
+      "path": "en/adr/0170-cognia-relay-and-connectivity-center.md",
+      "sourcePath": "docs/content/docs/en/adr/0170-cognia-relay-and-connectivity-center.md",
+      "sha256": "762220ba4f1e2ce30130f70ec8272a892e8c8fdae4f49ae143ea1e9e824b3add",
+      "sourceSha256": "762220ba4f1e2ce30130f70ec8272a892e8c8fdae4f49ae143ea1e9e824b3add",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0171-the-cli-speaks-the-protocol-not-a-copy-of-it.md",
+      "sourcePath": "docs/content/docs/en/adr/0171-the-cli-speaks-the-protocol-not-a-copy-of-it.md",
+      "sha256": "da3251a1d4402303dbea56d6b34086e1826cd80d68a33808dffa4f21c25f3c6c",
+      "sourceSha256": "da3251a1d4402303dbea56d6b34086e1826cd80d68a33808dffa4f21c25f3c6c",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0172-remote-access-is-verified-not-assumed.md",
+      "sourcePath": "docs/content/docs/en/adr/0172-remote-access-is-verified-not-assumed.md",
+      "sha256": "b72ee51eeeb956dc6cba76b67f107e6732048b26f21046689cde52363938b337",
+      "sourceSha256": "b72ee51eeeb956dc6cba76b67f107e6732048b26f21046689cde52363938b337",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0173-the-tracker-has-one-programmatic-face.md",
+      "sourcePath": "docs/content/docs/en/adr/0173-the-tracker-has-one-programmatic-face.md",
+      "sha256": "9619559ea14b0995190ef837494fef9212f3f945dabaf310ceae28c82f1e0f84",
+      "sourceSha256": "9619559ea14b0995190ef837494fef9212f3f945dabaf310ceae28c82f1e0f84",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0174-the-bot-control-plane.md",
+      "sourcePath": "docs/content/docs/en/adr/0174-the-bot-control-plane.md",
+      "sha256": "0d9b15add149c1b6f53222d93575e07f900cd3059844af8945e2c2f5c2fc59eb",
+      "sourceSha256": "0d9b15add149c1b6f53222d93575e07f900cd3059844af8945e2c2f5c2fc59eb",
+      "lastModified": "2026-10-30T14:31:02+08:00"
+    },
+    {
+      "path": "en/adr/0175-the-rpc-face-has-one-grammar-one-error-and-one-version.md",
+      "sourcePath": "docs/content/docs/en/adr/0175-the-rpc-face-has-one-grammar-one-error-and-one-version.md",
+      "sha256": "4b15758a8d77408837ebf6844e7a384227ee88041723497a8dc01f2c780324d7",
+      "sourceSha256": "4b15758a8d77408837ebf6844e7a384227ee88041723497a8dc01f2c780324d7",
+      "lastModified": "2026-10-16T23:17:35+08:00"
+    },
+    {
+      "path": "en/adr/0176-every-clone-shares-one-object-cache.md",
+      "sourcePath": "docs/content/docs/en/adr/0176-every-clone-shares-one-object-cache.md",
+      "sha256": "aa6ec9fd16a5e5d75022b70a573ae69b169bcdcfc2c9b283dbbff2cee264051f",
+      "sourceSha256": "aa6ec9fd16a5e5d75022b70a573ae69b169bcdcfc2c9b283dbbff2cee264051f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0177-a-room-is-one-conversation-shape.md",
+      "sourcePath": "docs/content/docs/en/adr/0177-a-room-is-one-conversation-shape.md",
+      "sha256": "541030c44bc844a20c16393fdc763f8ad333f655fab9575d2b4b95de7fd2718c",
+      "sourceSha256": "541030c44bc844a20c16393fdc763f8ad333f655fab9575d2b4b95de7fd2718c",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0178-pointing-at-a-rendered-element.md",
+      "sourcePath": "docs/content/docs/en/adr/0178-pointing-at-a-rendered-element.md",
+      "sha256": "72bcf6d85574ec1ea425b812ef4ef43c0afbb4544e8d00b1cc226ba5ccff9bc0",
+      "sourceSha256": "72bcf6d85574ec1ea425b812ef4ef43c0afbb4544e8d00b1cc226ba5ccff9bc0",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0179-the-schedule-answers-one-question.md",
+      "sourcePath": "docs/content/docs/en/adr/0179-the-schedule-answers-one-question.md",
+      "sha256": "3d0cd4dd5175d145c722bd6f8478689f530ab1a52e6a9150c706106d08589ff0",
+      "sourceSha256": "3d0cd4dd5175d145c722bd6f8478689f530ab1a52e6a9150c706106d08589ff0",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0180-a-video-reaches-the-model-as-what-it-can-read.md",
+      "sourcePath": "docs/content/docs/en/adr/0180-a-video-reaches-the-model-as-what-it-can-read.md",
+      "sha256": "5fc7aa28033d55d534d8b1fe844d2556142cbc2da661322162eb8f39650a16aa",
+      "sourceSha256": "5fc7aa28033d55d534d8b1fe844d2556142cbc2da661322162eb8f39650a16aa",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0181-what-the-user-staged-is-what-the-model-reads.md",
+      "sourcePath": "docs/content/docs/en/adr/0181-what-the-user-staged-is-what-the-model-reads.md",
+      "sha256": "747de08e61549a9700fdf91a0073f35c5286f14ae4c84be5ea9a76c78dd3a311",
+      "sourceSha256": "747de08e61549a9700fdf91a0073f35c5286f14ae4c84be5ea9a76c78dd3a311",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0182-a-project-names-the-image-it-runs-in.md",
+      "sourcePath": "docs/content/docs/en/adr/0182-a-project-names-the-image-it-runs-in.md",
+      "sha256": "64661f9b4bb1bbfb4c127fd9b5d1819cc4cd4105992df172b6b2c09bcc0cc108",
+      "sourceSha256": "64661f9b4bb1bbfb4c127fd9b5d1819cc4cd4105992df172b6b2c09bcc0cc108",
+      "lastModified": "2026-10-17T14:22:23+08:00"
+    },
+    {
+      "path": "en/adr/0183-the-agent-is-brought-to-the-image.md",
+      "sourcePath": "docs/content/docs/en/adr/0183-the-agent-is-brought-to-the-image.md",
+      "sha256": "00cf9deb0662117716fab23468d251c75a556ec6ad1a672ad564dbae0ac56eb1",
+      "sourceSha256": "00cf9deb0662117716fab23468d251c75a556ec6ad1a672ad564dbae0ac56eb1",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0188-a-routed-turn-spends-only-what-its-ledger-reserved.md",
+      "sourcePath": "docs/content/docs/en/adr/0188-a-routed-turn-spends-only-what-its-ledger-reserved.md",
+      "sha256": "2c232e757669d54449917ae534356b5300bd100d44fd8032a0c1f89ea5ffbd09",
+      "sourceSha256": "2c232e757669d54449917ae534356b5300bd100d44fd8032a0c1f89ea5ffbd09",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0189-a-plugin-says-which-of-four-things-it-is-doing.md",
+      "sourcePath": "docs/content/docs/en/adr/0189-a-plugin-says-which-of-four-things-it-is-doing.md",
+      "sha256": "99be9c3b5206b39942788423a01291eb43bdce22b7d55e4ee7bebfdad4d44a42",
+      "sourceSha256": "99be9c3b5206b39942788423a01291eb43bdce22b7d55e4ee7bebfdad4d44a42",
+      "lastModified": "2026-10-30T14:31:33+08:00"
+    },
+    {
+      "path": "en/adr/0190-notifications-leave-the-app-as-durable-work.md",
+      "sourcePath": "docs/content/docs/en/adr/0190-notifications-leave-the-app-as-durable-work.md",
+      "sha256": "226f89006be074ebfc985b8d93c820eb68a5e48f0a1f3b69f705e5b4ece7dff2",
+      "sourceSha256": "226f89006be074ebfc985b8d93c820eb68a5e48f0a1f3b69f705e5b4ece7dff2",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0191-the-web-shell-lets-each-column-draw-its-own-header.md",
+      "sourcePath": "docs/content/docs/en/adr/0191-the-web-shell-lets-each-column-draw-its-own-header.md",
+      "sha256": "a40a16cffb55e0605d6afe314845a5928ebf3998ccb9b3c7f18c43c500aa3073",
+      "sourceSha256": "a40a16cffb55e0605d6afe314845a5928ebf3998ccb9b3c7f18c43c500aa3073",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0192-a-bot-turn-borrows-the-runs-stage.md",
+      "sourcePath": "docs/content/docs/en/adr/0192-a-bot-turn-borrows-the-runs-stage.md",
+      "sha256": "28954985729079d625d85932dad92f87462e4afe4ecce3e6c3625eb1cea49511",
+      "sourceSha256": "28954985729079d625d85932dad92f87462e4afe4ecce3e6c3625eb1cea49511",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0193-one-guide-kit.md",
+      "sourcePath": "docs/content/docs/en/adr/0193-one-guide-kit.md",
+      "sha256": "5209daf390b5638f9bba489abc2b5ae8b9b9667984623a3c4d65dffc4af5ed30",
+      "sourceSha256": "5209daf390b5638f9bba489abc2b5ae8b9b9667984623a3c4d65dffc4af5ed30",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0194-a-judgment-is-a-provider-not-a-prompt.md",
+      "sourcePath": "docs/content/docs/en/adr/0194-a-judgment-is-a-provider-not-a-prompt.md",
+      "sha256": "18f1c6a9f73f25842d652981cde3cd28fdd9ff2bcc4fdc86ad352ceca87d53d5",
+      "sourceSha256": "18f1c6a9f73f25842d652981cde3cd28fdd9ff2bcc4fdc86ad352ceca87d53d5",
+      "lastModified": "2026-10-06T18:14:22+08:00"
+    },
+    {
+      "path": "en/adr/0195-a-plugin-writes-to-the-contract-not-around-it.md",
+      "sourcePath": "docs/content/docs/en/adr/0195-a-plugin-writes-to-the-contract-not-around-it.md",
+      "sha256": "8faf30e62f6a88507f2466ffe1bd432622b037901cdae46df8956be9e67c49dc",
+      "sourceSha256": "8faf30e62f6a88507f2466ffe1bd432622b037901cdae46df8956be9e67c49dc",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0196-a-library-crate-links-tauri-only-when-asked.md",
+      "sourcePath": "docs/content/docs/en/adr/0196-a-library-crate-links-tauri-only-when-asked.md",
+      "sha256": "7da7cea8bca681935177076e7fa49695d2f8df7c2d20ab9278ce779ff3d5f1f9",
+      "sourceSha256": "7da7cea8bca681935177076e7fa49695d2f8df7c2d20ab9278ce779ff3d5f1f9",
+      "lastModified": "2026-10-19T14:54:15+08:00"
+    },
+    {
+      "path": "en/adr/0197-the-sidecar-runs-its-typescript-unbuilt.md",
+      "sourcePath": "docs/content/docs/en/adr/0197-the-sidecar-runs-its-typescript-unbuilt.md",
+      "sha256": "341ae129ba838454a0b91ea04f7e037cf5f352072199d1493d9706290cb0cbeb",
+      "sourceSha256": "341ae129ba838454a0b91ea04f7e037cf5f352072199d1493d9706290cb0cbeb",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0198-a-runs-capabilities-are-granted-not-patched.md",
+      "sourcePath": "docs/content/docs/en/adr/0198-a-runs-capabilities-are-granted-not-patched.md",
+      "sha256": "e7e8302603eb5b3b2c582eab419593f1adfba51808af2d5497b7d514b094291f",
+      "sourceSha256": "e7e8302603eb5b3b2c582eab419593f1adfba51808af2d5497b7d514b094291f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0199-an-agent-variant-follows-its-base.md",
+      "sourcePath": "docs/content/docs/en/adr/0199-an-agent-variant-follows-its-base.md",
+      "sha256": "6e49a21c2de5b16a049da1d2ec7626ffbefca881129450a83354dcab5533bb5e",
+      "sourceSha256": "6e49a21c2de5b16a049da1d2ec7626ffbefca881129450a83354dcab5533bb5e",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0200-files-is-a-view-that-keeps-what-you-keep.md",
+      "sourcePath": "docs/content/docs/en/adr/0200-files-is-a-view-that-keeps-what-you-keep.md",
+      "sha256": "a24ce167f1ec2a91af1b5e4ef045f938f9b19c5c4472cc3435430fc3cadcafc1",
+      "sourceSha256": "a24ce167f1ec2a91af1b5e4ef045f938f9b19c5c4472cc3435430fc3cadcafc1",
+      "lastModified": "2026-10-10T16:10:20+08:00"
+    },
+    {
+      "path": "en/adr/0201-the-desktop-browser-runs-chromium-locally.md",
+      "sourcePath": "docs/content/docs/en/adr/0201-the-desktop-browser-runs-chromium-locally.md",
+      "sha256": "128497848d78fe90ec3eeaed291342d4aceea39dd61d542d15ad54122671cb75",
+      "sourceSha256": "128497848d78fe90ec3eeaed291342d4aceea39dd61d542d15ad54122671cb75",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0202-memory-ages-and-every-change-can-be-undone.md",
+      "sourcePath": "docs/content/docs/en/adr/0202-memory-ages-and-every-change-can-be-undone.md",
+      "sha256": "934414f554c2efa097bef8ffa11abb94839291e329ac75e299755190b6f78803",
+      "sourceSha256": "934414f554c2efa097bef8ffa11abb94839291e329ac75e299755190b6f78803",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0203-external-bridge-workspace-tools.md",
+      "sourcePath": "docs/content/docs/en/adr/0203-external-bridge-workspace-tools.md",
+      "sha256": "c1e9273be8b6ae140b79e8ce961108116dd95b3fb862693f0e9965cccdb9c4fb",
+      "sourceSha256": "c1e9273be8b6ae140b79e8ce961108116dd95b3fb862693f0e9965cccdb9c4fb",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0204-a-project-coordinator-runs-threads-in-the-background.md",
+      "sourcePath": "docs/content/docs/en/adr/0204-a-project-coordinator-runs-threads-in-the-background.md",
+      "sha256": "61ff3dbcafbc753d1f7c9a904f425d00e78c686d0dd4f66830a6f93ed3cc9d35",
+      "sourceSha256": "61ff3dbcafbc753d1f7c9a904f425d00e78c686d0dd4f66830a6f93ed3cc9d35",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0205-video-generation-runs-as-durable-jobs.md",
+      "sourcePath": "docs/content/docs/en/adr/0205-video-generation-runs-as-durable-jobs.md",
+      "sha256": "31be32f4e3788162104bc9be22d15a507b8b112fc86d9ce01155bab835864cbc",
+      "sourceSha256": "31be32f4e3788162104bc9be22d15a507b8b112fc86d9ce01155bab835864cbc",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0206-a-workspace-streams-its-changes-instead-of-being-polled.md",
+      "sourcePath": "docs/content/docs/en/adr/0206-a-workspace-streams-its-changes-instead-of-being-polled.md",
+      "sha256": "93bc35cc3d7ade1f17c8fef3692ae34a2eed4d3494427227bc8a345d43d446e2",
+      "sourceSha256": "93bc35cc3d7ade1f17c8fef3692ae34a2eed4d3494427227bc8a345d43d446e2",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0207-a-collaboration-event-reaches-people-who-are-not-in-the-room.md",
+      "sourcePath": "docs/content/docs/en/adr/0207-a-collaboration-event-reaches-people-who-are-not-in-the-room.md",
+      "sha256": "a09d7a72ac9078147c131231a496da7f29d67c7c0530354a64546eb12e5940b2",
+      "sourceSha256": "a09d7a72ac9078147c131231a496da7f29d67c7c0530354a64546eb12e5940b2",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0208-edits-to-different-fields-merge.md",
+      "sourcePath": "docs/content/docs/en/adr/0208-edits-to-different-fields-merge.md",
+      "sha256": "9ae97553f9d41d163a01ce6ff9b8f9294911bb71d930b8647b9bf74f502073c5",
+      "sourceSha256": "9ae97553f9d41d163a01ce6ff9b8f9294911bb71d930b8647b9bf74f502073c5",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0209-a-cogpack-pins-plugins-and-a-cogset-owns-what-runs.md",
+      "sourcePath": "docs/content/docs/en/adr/0209-a-cogpack-pins-plugins-and-a-cogset-owns-what-runs.md",
+      "sha256": "a258e6d95c39232a6dbd921f8271edaf3306ddc4a48b1f58d179708e4083f682",
+      "sourceSha256": "a258e6d95c39232a6dbd921f8271edaf3306ddc4a48b1f58d179708e4083f682",
+      "lastModified": "2026-10-30T14:31:33+08:00"
+    },
+    {
+      "path": "en/adr/0210-a-plugin-can-carry-a-pi-package.md",
+      "sourcePath": "docs/content/docs/en/adr/0210-a-plugin-can-carry-a-pi-package.md",
+      "sha256": "2de46d630e3e861105ba1fd17e96405e0bf3635f795bae25d838750638a4f235",
+      "sourceSha256": "2de46d630e3e861105ba1fd17e96405e0bf3635f795bae25d838750638a4f235",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0211-public-status-measures-the-relay-it-names.md",
+      "sourcePath": "docs/content/docs/en/adr/0211-public-status-measures-the-relay-it-names.md",
+      "sha256": "c7b70adac803f31a5fa89b45e6250ef03f22a073613dadc51484ebab24e25fe8",
+      "sourceSha256": "c7b70adac803f31a5fa89b45e6250ef03f22a073613dadc51484ebab24e25fe8",
+      "lastModified": "2026-10-24T14:34:49+08:00"
+    },
+    {
+      "path": "en/adr/0212-the-broker-credential-is-a-file-not-an-environment.md",
+      "sourcePath": "docs/content/docs/en/adr/0212-the-broker-credential-is-a-file-not-an-environment.md",
+      "sha256": "09614672d24134a209d50c1c7876be68e707a05395ca3527c1886cf06297f86b",
+      "sourceSha256": "09614672d24134a209d50c1c7876be68e707a05395ca3527c1886cf06297f86b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "en/adr/0213-conversation-history-has-a-manager-and-the-archive-freezes-place.md",
+      "sourcePath": "docs/content/docs/en/adr/0213-conversation-history-has-a-manager-and-the-archive-freezes-place.md",
+      "sha256": "894517879ef7098380c5d0e559a616fab1ee98e77d53d163f155598c86d3d2f5",
+      "sourceSha256": "894517879ef7098380c5d0e559a616fab1ee98e77d53d163f155598c86d3d2f5",
+      "lastModified": "2026-10-15T17:47:12+08:00"
+    },
+    {
+      "path": "en/adr/0214-the-chat-dock-is-a-tabbed-browser-that-remembers-each-task.md",
+      "sourcePath": "docs/content/docs/en/adr/0214-the-chat-dock-is-a-tabbed-browser-that-remembers-each-task.md",
+      "sha256": "0698a193bd7819a591a0889fad4282900cefe8f5e79a18aa692f9f4afadeb3f2",
+      "sourceSha256": "0698a193bd7819a591a0889fad4282900cefe8f5e79a18aa692f9f4afadeb3f2",
+      "lastModified": "2026-10-04T15:18:53+08:00"
+    },
+    {
+      "path": "en/adr/0215-one-person-one-encrypted-sync-space-many-writable-hosts.md",
+      "sourcePath": "docs/content/docs/en/adr/0215-one-person-one-encrypted-sync-space-many-writable-hosts.md",
+      "sha256": "f7689af7ceefb6f5eb14c1080462f9f328f35c762fca1f7e81a01c17f7e93ab6",
+      "sourceSha256": "f7689af7ceefb6f5eb14c1080462f9f328f35c762fca1f7e81a01c17f7e93ab6",
+      "lastModified": "2026-10-24T14:34:49+08:00"
+    },
+    {
+      "path": "en/adr/0216-each-agent-configuration-keeps-its-own-state.md",
+      "sourcePath": "docs/content/docs/en/adr/0216-each-agent-configuration-keeps-its-own-state.md",
+      "sha256": "cfe4f4cd4c75b9c5d07d0781b85533b043f07edf13627381dc6f8e49629e7623",
+      "sourceSha256": "cfe4f4cd4c75b9c5d07d0781b85533b043f07edf13627381dc6f8e49629e7623",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0217-agent-integrations-are-packages-behind-host-ports.md",
+      "sourcePath": "docs/content/docs/en/adr/0217-agent-integrations-are-packages-behind-host-ports.md",
+      "sha256": "ef38b72895a30a22e31fb5f8da07f9a54607cfa4c9845f5b25955ca42888a63a",
+      "sourceSha256": "ef38b72895a30a22e31fb5f8da07f9a54607cfa4c9845f5b25955ca42888a63a",
+      "lastModified": "2026-10-06T15:27:44+08:00"
+    },
+    {
+      "path": "en/adr/0218-chat-reading-surface-links-blocks-and-charts.md",
+      "sourcePath": "docs/content/docs/en/adr/0218-chat-reading-surface-links-blocks-and-charts.md",
+      "sha256": "af75af99c409f71f05774eae1cf0ef3bea36d594006d0a3c4da32315fa808bab",
+      "sourceSha256": "af75af99c409f71f05774eae1cf0ef3bea36d594006d0a3c4da32315fa808bab",
+      "lastModified": "2026-10-07T01:52:51+08:00"
+    },
+    {
+      "path": "en/adr/0219-pet-console-remote-care.md",
+      "sourcePath": "docs/content/docs/en/adr/0219-pet-console-remote-care.md",
+      "sha256": "62e2cc9ca1e4ec7fc82f53e91ee69f63482da0c157edda17227204f3160c18c3",
+      "sourceSha256": "62e2cc9ca1e4ec7fc82f53e91ee69f63482da0c157edda17227204f3160c18c3",
+      "lastModified": "2026-10-09T18:10:32+08:00"
+    },
+    {
+      "path": "en/adr/0220-agents-console-and-builder.md",
+      "sourcePath": "docs/content/docs/en/adr/0220-agents-console-and-builder.md",
+      "sha256": "5d9f59f4c57daa53b0c81d3ec362eb663665d0dfe85a6a1e0b4f1e130aa7b553",
+      "sourceSha256": "5d9f59f4c57daa53b0c81d3ec362eb663665d0dfe85a6a1e0b4f1e130aa7b553",
+      "lastModified": "2026-10-09T23:37:28+08:00"
+    },
+    {
+      "path": "en/adr/0221-a-remote-sandbox-is-a-provider-behind-the-same-seam.md",
+      "sourcePath": "docs/content/docs/en/adr/0221-a-remote-sandbox-is-a-provider-behind-the-same-seam.md",
+      "sha256": "925701ca33a99307f3238a73e2fbfaaf3d4cf82388f12fc54e5c8292ed4c9902",
+      "sourceSha256": "925701ca33a99307f3238a73e2fbfaaf3d4cf82388f12fc54e5c8292ed4c9902",
+      "lastModified": "2026-10-15T17:47:31+08:00"
+    },
+    {
+      "path": "en/adr/0222-a-conversations-files-are-a-view-and-sharing-them-is-a-grant.md",
+      "sourcePath": "docs/content/docs/en/adr/0222-a-conversations-files-are-a-view-and-sharing-them-is-a-grant.md",
+      "sha256": "a4d97e2561b1e2f141e0a987c90b28c7bec0d7769c85e3f684bfcd58233d08eb",
+      "sourceSha256": "a4d97e2561b1e2f141e0a987c90b28c7bec0d7769c85e3f684bfcd58233d08eb",
+      "lastModified": "2026-10-11T01:13:01+08:00"
+    },
+    {
+      "path": "en/adr/0223-files-is-a-space-you-manage.md",
+      "sourcePath": "docs/content/docs/en/adr/0223-files-is-a-space-you-manage.md",
+      "sha256": "5e2d5cbc09fb37c96ba6a2492cd61326caee4873d8f32c277fd39ca83dc55441",
+      "sourceSha256": "5e2d5cbc09fb37c96ba6a2492cd61326caee4873d8f32c277fd39ca83dc55441",
+      "lastModified": "2026-10-10T23:46:25+08:00"
+    },
+    {
+      "path": "en/adr/0224-an-always-on-host-is-a-peer-the-user-brings.md",
+      "sourcePath": "docs/content/docs/en/adr/0224-an-always-on-host-is-a-peer-the-user-brings.md",
+      "sha256": "3532a9c975e5833c443f9b8b4e31e9ba1935a8ce6105a01270e6c0b205cddc6b",
+      "sourceSha256": "3532a9c975e5833c443f9b8b4e31e9ba1935a8ce6105a01270e6c0b205cddc6b",
+      "lastModified": "2026-10-12T13:25:31+08:00"
+    },
+    {
+      "path": "en/adr/0225-the-tray-panel-is-a-glance-surface-assembled-from-modules.md",
+      "sourcePath": "docs/content/docs/en/adr/0225-the-tray-panel-is-a-glance-surface-assembled-from-modules.md",
+      "sha256": "f5a4ddb01629b9152421ff308097d1254bdb735ebddc50d36fa9d1512a3d9ad7",
+      "sourceSha256": "f5a4ddb01629b9152421ff308097d1254bdb735ebddc50d36fa9d1512a3d9ad7",
+      "lastModified": "2026-10-11T21:13:35+08:00"
+    },
+    {
+      "path": "en/adr/0226-library-plugins-declare-contracts-over-ipc.md",
+      "sourcePath": "docs/content/docs/en/adr/0226-library-plugins-declare-contracts-over-ipc.md",
+      "sha256": "441085c58c046bdeed7a8fbde2332852c76de380691e35fa73542982e79bff38",
+      "sourceSha256": "441085c58c046bdeed7a8fbde2332852c76de380691e35fa73542982e79bff38",
+      "lastModified": "2026-10-13T13:26:40+08:00"
+    },
+    {
+      "path": "en/adr/0227-agent-changes-integrate-through-one-host-queue.md",
+      "sourcePath": "docs/content/docs/en/adr/0227-agent-changes-integrate-through-one-host-queue.md",
+      "sha256": "7a6fef4a0855a45117c859fe96c0d566d8d99bb16aec3250f887ee8a4b1200d1",
+      "sourceSha256": "7a6fef4a0855a45117c859fe96c0d566d8d99bb16aec3250f887ee8a4b1200d1",
+      "lastModified": "2026-10-15T17:47:47+08:00"
+    },
+    {
+      "path": "en/adr/0228-the-browser-companion-captures-richly-and-can-be-driven.md",
+      "sourcePath": "docs/content/docs/en/adr/0228-the-browser-companion-captures-richly-and-can-be-driven.md",
+      "sha256": "9d04d916c718a73a392fa355443e4a17168b4b148651c75b8312af88e6bf9dd9",
+      "sourceSha256": "9d04d916c718a73a392fa355443e4a17168b4b148651c75b8312af88e6bf9dd9",
+      "lastModified": "2026-10-23T21:18:15+08:00"
+    },
+    {
+      "path": "en/adr/0229-per-workspace-port-leases.md",
+      "sourcePath": "docs/content/docs/en/adr/0229-per-workspace-port-leases.md",
+      "sha256": "a8416e363f23119ce37a345fbc1c5792ae71dd85d5d71af30ada5e319402dc39",
+      "sourceSha256": "a8416e363f23119ce37a345fbc1c5792ae71dd85d5d71af30ada5e319402dc39",
+      "lastModified": "2026-10-17T02:26:38+08:00"
+    },
+    {
+      "path": "en/adr/0230-best-of-n-attempts-share-a-frozen-base.md",
+      "sourcePath": "docs/content/docs/en/adr/0230-best-of-n-attempts-share-a-frozen-base.md",
+      "sha256": "850d861a6dc6b682046f61403f1f0755c6b572f125c4f7b87f0012365991a458",
+      "sourceSha256": "850d861a6dc6b682046f61403f1f0755c6b572f125c4f7b87f0012365991a458",
+      "lastModified": "2026-10-17T23:34:08+08:00"
+    },
+    {
+      "path": "en/adr/0231-sandbox-snapshots-join-rootfs-and-workspace.md",
+      "sourcePath": "docs/content/docs/en/adr/0231-sandbox-snapshots-join-rootfs-and-workspace.md",
+      "sha256": "84a25699cda8d63f00508c22093f1294967504e355e39bb2b423b12ba78f5943",
+      "sourceSha256": "84a25699cda8d63f00508c22093f1294967504e355e39bb2b423b12ba78f5943",
+      "lastModified": "2026-10-18T00:06:48+08:00"
+    },
+    {
+      "path": "en/adr/0232-a-long-run-shows-an-estimate-never-a-budget.md",
+      "sourcePath": "docs/content/docs/en/adr/0232-a-long-run-shows-an-estimate-never-a-budget.md",
+      "sha256": "b01179c685633ee7f20d3ce680b32abbc8ab95c4c0811ace6ced50530cc20c55",
+      "sourceSha256": "b01179c685633ee7f20d3ce680b32abbc8ab95c4c0811ace6ced50530cc20c55",
+      "lastModified": "2026-10-18T03:13:33+08:00"
+    },
+    {
+      "path": "en/adr/0233-a-managed-desktop-accepts-a-delivered-commit.md",
+      "sourcePath": "docs/content/docs/en/adr/0233-a-managed-desktop-accepts-a-delivered-commit.md",
+      "sha256": "90d01bf22b49e646517ce156d67c9f2e41f0b8e601d148e57f0d5daa52ba8a3e",
+      "sourceSha256": "90d01bf22b49e646517ce156d67c9f2e41f0b8e601d148e57f0d5daa52ba8a3e",
+      "lastModified": "2026-10-29T16:59:29+08:00"
+    },
+    {
+      "path": "en/adr/0234-a-remote-desktop-is-a-provider-binding-brokered-by-the-host.md",
+      "sourcePath": "docs/content/docs/en/adr/0234-a-remote-desktop-is-a-provider-binding-brokered-by-the-host.md",
+      "sha256": "55f007233a8beb5c4c291e77a1426885a6515c5ccf60ece03bda685d7f657760",
+      "sourceSha256": "55f007233a8beb5c4c291e77a1426885a6515c5ccf60ece03bda685d7f657760",
+      "lastModified": "2026-10-29T11:23:36+08:00"
+    },
+    {
+      "path": "en/adr/0235-a-vscode-tunnel-installs-a-host-and-is-one-more-route-to-it.md",
+      "sourcePath": "docs/content/docs/en/adr/0235-a-vscode-tunnel-installs-a-host-and-is-one-more-route-to-it.md",
+      "sha256": "ea028bb57be2112760a5dc2379711e6af84a2921ebb11b0c1aa9e10374ba89cd",
+      "sourceSha256": "ea028bb57be2112760a5dc2379711e6af84a2921ebb11b0c1aa9e10374ba89cd",
+      "lastModified": "2026-10-19T15:47:34+08:00"
+    },
+    {
+      "path": "en/adr/0236-built-in-prompts-are-owned-slots-behind-one-prompt-center.md",
+      "sourcePath": "docs/content/docs/en/adr/0236-built-in-prompts-are-owned-slots-behind-one-prompt-center.md",
+      "sha256": "40606fe499185b70fa37a9db5279bd598781ab7fde3dba010178bd95f62afafd",
+      "sourceSha256": "28237f6939bae6658f89ec0391717d88017a3fb2ed14b99997bd01969e231927",
+      "lastModified": "2026-10-21T16:59:08+08:00"
+    },
+    {
+      "path": "en/adr/0237-an-agents-harness-evolves-through-probed-approved-versions.md",
+      "sourcePath": "docs/content/docs/en/adr/0237-an-agents-harness-evolves-through-probed-approved-versions.md",
+      "sha256": "17a0c8eeba0a967bdb9c6e215b961eca68fee4aae01a57026e66ade97b2f740e",
+      "sourceSha256": "17a0c8eeba0a967bdb9c6e215b961eca68fee4aae01a57026e66ade97b2f740e",
+      "lastModified": "2026-10-20T06:23:30+08:00"
+    },
+    {
+      "path": "en/adr/0238-agent-configuration-is-governed-by-evidence.md",
+      "sourcePath": "docs/content/docs/en/adr/0238-agent-configuration-is-governed-by-evidence.md",
+      "sha256": "4fa4417cb6bf53da1b30f4bfcdd0257132a6ac9f59ee496da348b5950ce9abe8",
+      "sourceSha256": "4fa4417cb6bf53da1b30f4bfcdd0257132a6ac9f59ee496da348b5950ce9abe8",
+      "lastModified": "2026-10-21T16:53:32+08:00"
+    },
+    {
+      "path": "en/adr/0239-an-outbound-action-is-authorized-by-the-request.md",
+      "sourcePath": "docs/content/docs/en/adr/0239-an-outbound-action-is-authorized-by-the-request.md",
+      "sha256": "9feb2ac88cdc32fea1c88d2ac7b3b3302de70aa5534cafdcc159e73f3be56fe5",
+      "sourceSha256": "5efeb5f670556b69a4046869fec426be7b850ad0c755fd0c6c3095024c4fcaa7",
+      "lastModified": "2026-10-31T13:06:32+08:00"
+    },
+    {
+      "path": "en/adr/0240-a-generated-surface-streams-answers-and-computes.md",
+      "sourcePath": "docs/content/docs/en/adr/0240-a-generated-surface-streams-answers-and-computes.md",
+      "sha256": "c54c999efd816b3ab0ff5a75182101fcbe53700057ba29f56807919bf5cec6cc",
+      "sourceSha256": "c54c999efd816b3ab0ff5a75182101fcbe53700057ba29f56807919bf5cec6cc",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0241-a-shared-run-streams-to-its-members.md",
+      "sourcePath": "docs/content/docs/en/adr/0241-a-shared-run-streams-to-its-members.md",
+      "sha256": "d21bd66c131ff8fa342778dafcef59ff78680753e05f87ce372dd280edd4ea83",
+      "sourceSha256": "d21bd66c131ff8fa342778dafcef59ff78680753e05f87ce372dd280edd4ea83",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "en/adr/0242-the-browser-companion-names-the-capabilities-it-adds.md",
+      "sourcePath": "docs/content/docs/en/adr/0242-the-browser-companion-names-the-capabilities-it-adds.md",
+      "sha256": "58337984c2b99b0d9a103b92b11a5e715ff12db71d52815a6dfdb44d74e4b4f4",
+      "sourceSha256": "58337984c2b99b0d9a103b92b11a5e715ff12db71d52815a6dfdb44d74e4b4f4",
+      "lastModified": "2026-10-28T00:35:36+08:00"
+    },
+    {
+      "path": "en/adr/0243-a-run-acts-for-someone-and-says-who.md",
+      "sourcePath": "docs/content/docs/en/adr/0243-a-run-acts-for-someone-and-says-who.md",
+      "sha256": "247c68a41cd5fff43ebffc8a85a1546cb5b33b1dbad7b3d3cf4c6f65503ee927",
+      "sourceSha256": "247c68a41cd5fff43ebffc8a85a1546cb5b33b1dbad7b3d3cf4c6f65503ee927",
+      "lastModified": "2026-10-31T19:17:25+08:00"
+    },
+    {
+      "path": "en/adr/0244-a-remote-run-has-stopped-only-when-its-worker-says-so.md",
+      "sourcePath": "docs/content/docs/en/adr/0244-a-remote-run-has-stopped-only-when-its-worker-says-so.md",
+      "sha256": "db4687e1697183272e3f0d122807269d6b473175a10088d42e8b72ac9c89eb5f",
+      "sourceSha256": "db4687e1697183272e3f0d122807269d6b473175a10088d42e8b72ac9c89eb5f",
+      "lastModified": "2026-10-31T17:14:43+08:00"
+    },
+    {
+      "path": "en/adr/0245-a-paired-device-is-granted-workspaces-not-a-host.md",
+      "sourcePath": "docs/content/docs/en/adr/0245-a-paired-device-is-granted-workspaces-not-a-host.md",
+      "sha256": "ce3c88fc7006f713e3db22ba480f813e9d0a4d16540507b580725a5cda61bdc0",
+      "sourceSha256": "ce3c88fc7006f713e3db22ba480f813e9d0a4d16540507b580725a5cda61bdc0",
+      "lastModified": "2026-10-31T17:14:43+08:00"
+    },
+    {
+      "path": "en/adr/0246-a-business-plugin-reaches-a-service-through-a-granted-connection.md",
+      "sourcePath": "docs/content/docs/en/adr/0246-a-business-plugin-reaches-a-service-through-a-granted-connection.md",
+      "sha256": "d826a5fb062fba89d6e9489f8300aeab8525da61341b81cb2a92f1eb278e9473",
+      "sourceSha256": "d826a5fb062fba89d6e9489f8300aeab8525da61341b81cb2a92f1eb278e9473",
+      "lastModified": "2026-10-31T19:11:28+08:00"
+    },
+    {
+      "path": "en/adr/0251-macos-screen-off-virtual-display.md",
+      "sourcePath": "docs/content/docs/en/adr/0251-macos-screen-off-virtual-display.md",
+      "sha256": "be8c7bb7b1a8c637e83979a6b8abaee1d1f08b27f910032d4efd4d59120ac019",
+      "sourceSha256": "be8c7bb7b1a8c637e83979a6b8abaee1d1f08b27f910032d4efd4d59120ac019",
+      "lastModified": "2026-11-01T19:19:46+08:00"
+    },
+    {
+      "path": "en/adr/index.mdx",
+      "sourcePath": "docs/content/docs/en/adr/index.mdx",
+      "sha256": "1ee72c0255457d7fc4de3b94102fc530d4468a3f1bb4f02920d3397b4d20f80e",
+      "sourceSha256": "1ee72c0255457d7fc4de3b94102fc530d4468a3f1bb4f02920d3397b4d20f80e",
+      "lastModified": "2026-10-17T02:11:07+08:00"
+    },
+    {
+      "path": "en/adr/meta.json",
+      "sourcePath": "docs/content/docs/en/adr/meta.json",
+      "sha256": "1468b2002354f589136109a2a5af8d325c595f3a90549f26aab6cef8d734aa98",
+      "sourceSha256": "1468b2002354f589136109a2a5af8d325c595f3a90549f26aab6cef8d734aa98",
+      "lastModified": "2026-11-01T19:19:46+08:00"
+    },
+    {
+      "path": "plugin-dev/api-reference.generated.mdx",
+      "sourcePath": "docs/content/docs/plugin-dev/api-reference.generated.mdx",
+      "sha256": "be1b4343d5d6c9d2b0f0d6cf8371068cc9da0b8eef3338eccc20bdb057607440",
+      "sourceSha256": "be1b4343d5d6c9d2b0f0d6cf8371068cc9da0b8eef3338eccc20bdb057607440",
+      "lastModified": "2026-10-31T19:17:25+08:00"
+    },
+    {
+      "path": "zh/adr/0001-backup-schema-v3.md",
+      "sourcePath": "docs/content/docs/zh/adr/0001-backup-schema-v3.md",
+      "sha256": "f85ab30b4e01facd80219356fc5c147ff3d499e21bce1a4786bc714a944f1e8d",
+      "sourceSha256": "f85ab30b4e01facd80219356fc5c147ff3d499e21bce1a4786bc714a944f1e8d",
+      "lastModified": "2026-10-23T19:27:27+08:00"
+    },
+    {
+      "path": "zh/adr/0002-scheduler-full-agent-resolution.md",
+      "sourcePath": "docs/content/docs/zh/adr/0002-scheduler-full-agent-resolution.md",
+      "sha256": "21a9565ba26bd6aa50453a5c736f5c201ea30163d7d7f5e9f7cce49207a91056",
+      "sourceSha256": "21a9565ba26bd6aa50453a5c736f5c201ea30163d7d7f5e9f7cce49207a91056",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0003-employee-digital-twin.md",
+      "sourcePath": "docs/content/docs/zh/adr/0003-employee-digital-twin.md",
+      "sha256": "37b41feb4f2ca995feaa294526bfc05a19af9d5d98e6eadecc9169524abd089a",
+      "sourceSha256": "37b41feb4f2ca995feaa294526bfc05a19af9d5d98e6eadecc9169524abd089a",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0004-vector-native-backend.md",
+      "sourcePath": "docs/content/docs/zh/adr/0004-vector-native-backend.md",
+      "sha256": "941f8f6478ad622d6c673059fe731d103cf3c06697c3671059f04f1b01be9209",
+      "sourceSha256": "941f8f6478ad622d6c673059fe731d103cf3c06697c3671059f04f1b01be9209",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0005-remote-control.md",
+      "sourcePath": "docs/content/docs/zh/adr/0005-remote-control.md",
+      "sha256": "fda3586c9ee6d090c6e01c99d9838678aa4a99f6e68808d302a346a40e3eb4e0",
+      "sourceSha256": "fda3586c9ee6d090c6e01c99d9838678aa4a99f6e68808d302a346a40e3eb4e0",
+      "lastModified": "2026-10-04T17:02:09+08:00"
+    },
+    {
+      "path": "zh/adr/0006-plugin-system.md",
+      "sourcePath": "docs/content/docs/zh/adr/0006-plugin-system.md",
+      "sha256": "df0095bfaa972552b75a405f36104b712fabdf484a011c6142784607f6e84129",
+      "sourceSha256": "df0095bfaa972552b75a405f36104b712fabdf484a011c6142784607f6e84129",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0007-theme-and-background-fix.md",
+      "sourcePath": "docs/content/docs/zh/adr/0007-theme-and-background-fix.md",
+      "sha256": "3091110c1a25a7862b7d7fe38f88ecea002e345efaf0c61bbae837d2498a9354",
+      "sourceSha256": "3091110c1a25a7862b7d7fe38f88ecea002e345efaf0c61bbae837d2498a9354",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0008-external-bridge.md",
+      "sourcePath": "docs/content/docs/zh/adr/0008-external-bridge.md",
+      "sha256": "944ebdeba5e191104c8433590da0aef68241783e11ae0aa8a9d46df16b78d21a",
+      "sourceSha256": "944ebdeba5e191104c8433590da0aef68241783e11ae0aa8a9d46df16b78d21a",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0009-platform-connectors.md",
+      "sourcePath": "docs/content/docs/zh/adr/0009-platform-connectors.md",
+      "sha256": "294a876f32a89ea594a0c2b16ec817072a261b2847a5791c81cf887f98fc2241",
+      "sourceSha256": "294a876f32a89ea594a0c2b16ec817072a261b2847a5791c81cf887f98fc2241",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0010-claude-subscription-oauth.md",
+      "sourcePath": "docs/content/docs/zh/adr/0010-claude-subscription-oauth.md",
+      "sha256": "f70ad782ff917398497f2333b07ef12614ba8bf508a270e3c1b8eac7ffb974d4",
+      "sourceSha256": "f70ad782ff917398497f2333b07ef12614ba8bf508a270e3c1b8eac7ffb974d4",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0011-workflows-subsystem.md",
+      "sourcePath": "docs/content/docs/zh/adr/0011-workflows-subsystem.md",
+      "sha256": "de666aecff5ee961c91fdfd719f05d7700aee45481fe6334d1ceb2dac521864a",
+      "sourceSha256": "de666aecff5ee961c91fdfd719f05d7700aee45481fe6334d1ceb2dac521864a",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0012-transport-abstraction.md",
+      "sourcePath": "docs/content/docs/zh/adr/0012-transport-abstraction.md",
+      "sha256": "891d351f1b536c1d235924c325ca1f31c7fa34ce44119d53560734c4ec858b82",
+      "sourceSha256": "891d351f1b536c1d235924c325ca1f31c7fa34ce44119d53560734c4ec858b82",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0013-command-manifest.md",
+      "sourcePath": "docs/content/docs/zh/adr/0013-command-manifest.md",
+      "sha256": "f7a515072b3f68eef6a89d42a799d9d0e6a4d17db4adcf12be90263595205d0d",
+      "sourceSha256": "f7a515072b3f68eef6a89d42a799d9d0e6a4d17db4adcf12be90263595205d0d",
+      "lastModified": "2026-10-04T17:02:09+08:00"
+    },
+    {
+      "path": "zh/adr/0013-wasm-plugins.md",
+      "sourcePath": "docs/content/docs/zh/adr/0013-wasm-plugins.md",
+      "sha256": "3488eb537763d8970585866fb059406dd3e3acef475c0987ba3bb8ff4b3c85ca",
+      "sourceSha256": "3488eb537763d8970585866fb059406dd3e3acef475c0987ba3bb8ff4b3c85ca",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0014-capacitor-mobile-shell.md",
+      "sourcePath": "docs/content/docs/zh/adr/0014-capacitor-mobile-shell.md",
+      "sha256": "1c6d9fb0d1edca181ba237497553cfe85f53528945254ad1033367d2ecf3780f",
+      "sourceSha256": "1c6d9fb0d1edca181ba237497553cfe85f53528945254ad1033367d2ecf3780f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0015-mobile-v2-completion.md",
+      "sourcePath": "docs/content/docs/zh/adr/0015-mobile-v2-completion.md",
+      "sha256": "7c56273ed62cffff7ad92632266dc85b827b1edc169579b9205e6b8670ef75a1",
+      "sourceSha256": "7c56273ed62cffff7ad92632266dc85b827b1edc169579b9205e6b8670ef75a1",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0016-plugin-system-completion.md",
+      "sourcePath": "docs/content/docs/zh/adr/0016-plugin-system-completion.md",
+      "sha256": "f5c8cc412b0ddbee1f62682b8c503844091bce0c7ce1e6cb67c8fb4b0100fede",
+      "sourceSha256": "f5c8cc412b0ddbee1f62682b8c503844091bce0c7ce1e6cb67c8fb4b0100fede",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0017-workflow-plugin-extension-points.md",
+      "sourcePath": "docs/content/docs/zh/adr/0017-workflow-plugin-extension-points.md",
+      "sha256": "0d2089ff31f176d42c264678fb34d73a8ccc254141995e5f7ef00ef55afd3f7c",
+      "sourceSha256": "0d2089ff31f176d42c264678fb34d73a8ccc254141995e5f7ef00ef55afd3f7c",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0018-github-delivery.md",
+      "sourcePath": "docs/content/docs/zh/adr/0018-github-delivery.md",
+      "sha256": "77fb0164b827799a0fd5cbded427652b05ae98f05cec36164632508915d794d6",
+      "sourceSha256": "77fb0164b827799a0fd5cbded427652b05ae98f05cec36164632508915d794d6",
+      "lastModified": "2026-10-04T17:02:41+08:00"
+    },
+    {
+      "path": "zh/adr/0019-goal-command.md",
+      "sourcePath": "docs/content/docs/zh/adr/0019-goal-command.md",
+      "sha256": "fc731922a280a9a54b9d35b2260c60e99f2c0683d0532e4c8d57e401644d05d4",
+      "sourceSha256": "fc731922a280a9a54b9d35b2260c60e99f2c0683d0532e4c8d57e401644d05d4",
+      "lastModified": "2026-10-09T23:37:37+08:00"
+    },
+    {
+      "path": "zh/adr/0020-computer-use-completeness.md",
+      "sourcePath": "docs/content/docs/zh/adr/0020-computer-use-completeness.md",
+      "sha256": "ac080c1ae611e098766390c857a954cef6b7e792da682b683b0cdfc8ff0be523",
+      "sourceSha256": "ac080c1ae611e098766390c857a954cef6b7e792da682b683b0cdfc8ff0be523",
+      "lastModified": "2026-10-09T23:37:58+08:00"
+    },
+    {
+      "path": "zh/adr/0021-webrtc-datachannel-wan-transport.md",
+      "sourcePath": "docs/content/docs/zh/adr/0021-webrtc-datachannel-wan-transport.md",
+      "sha256": "22d7f8ef8cdf0eba794d8f58ebb16c425a11534b046d506f3ba15973225827f2",
+      "sourceSha256": "22d7f8ef8cdf0eba794d8f58ebb16c425a11534b046d506f3ba15973225827f2",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0022-agent-team-runtime-hardening.md",
+      "sourcePath": "docs/content/docs/zh/adr/0022-agent-team-runtime-hardening.md",
+      "sha256": "b10a81340bdec4e677491df3cc4e434aabb8cb6dc17800d98b6e6462663b7418",
+      "sourceSha256": "b10a81340bdec4e677491df3cc4e434aabb8cb6dc17800d98b6e6462663b7418",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0023-vector-cloud-backends-in-rust.md",
+      "sourcePath": "docs/content/docs/zh/adr/0023-vector-cloud-backends-in-rust.md",
+      "sha256": "5d0db3aa8a6c9321b0d792fe5bca8be8eda71afabc6253f84fc6c18719a3a942",
+      "sourceSha256": "5d0db3aa8a6c9321b0d792fe5bca8be8eda71afabc6253f84fc6c18719a3a942",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0024-ocr-subsystem.md",
+      "sourcePath": "docs/content/docs/zh/adr/0024-ocr-subsystem.md",
+      "sha256": "6e55225ad243a116f90352d1100710cb6bbcc2e137e1a0987a9766633df50cb0",
+      "sourceSha256": "6e55225ad243a116f90352d1100710cb6bbcc2e137e1a0987a9766633df50cb0",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0025-a2ui-im-bridge.md",
+      "sourcePath": "docs/content/docs/zh/adr/0025-a2ui-im-bridge.md",
+      "sha256": "7bac8327d4a821912555994f4cb635247099fc4ff8362f3aa719a329cda2700d",
+      "sourceSha256": "7bac8327d4a821912555994f4cb635247099fc4ff8362f3aa719a329cda2700d",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0025-unified-subscription-module.md",
+      "sourcePath": "docs/content/docs/zh/adr/0025-unified-subscription-module.md",
+      "sha256": "d38e30233f8fa5017e031197aba476fbab441b4233201f88198a9589ff982b65",
+      "sourceSha256": "d38e30233f8fa5017e031197aba476fbab441b4233201f88198a9589ff982b65",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0026-builtin-skills-and-lark-cli-bridge.md",
+      "sourcePath": "docs/content/docs/zh/adr/0026-builtin-skills-and-lark-cli-bridge.md",
+      "sha256": "997776e53688799ea6846dcf789d5b1a6388c0af831d556312db6818f01f9837",
+      "sourceSha256": "997776e53688799ea6846dcf789d5b1a6388c0af831d556312db6818f01f9837",
+      "lastModified": "2026-10-30T20:50:56+08:00"
+    },
+    {
+      "path": "zh/adr/0026-plugin-extension-point-expansion.md",
+      "sourcePath": "docs/content/docs/zh/adr/0026-plugin-extension-point-expansion.md",
+      "sha256": "f3ef7fbd3c34132dc2e318fc9d99f38ba0af04e378cef09c40af1a54ec6fd2bf",
+      "sourceSha256": "f3ef7fbd3c34132dc2e318fc9d99f38ba0af04e378cef09c40af1a54ec6fd2bf",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0027-mobile-offline-and-discovery.md",
+      "sourcePath": "docs/content/docs/zh/adr/0027-mobile-offline-and-discovery.md",
+      "sha256": "6cab2238bfbd410490f0c4c1061504e3274dfe4a1400ef84f0371f3102b90197",
+      "sourceSha256": "6cab2238bfbd410490f0c4c1061504e3274dfe4a1400ef84f0371f3102b90197",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0028-per-session-claude-isolation.md",
+      "sourcePath": "docs/content/docs/zh/adr/0028-per-session-claude-isolation.md",
+      "sha256": "9b56324406c50b019af9dff35397d27935093dad09dca8e801ba1a5719eb4ca7",
+      "sourceSha256": "9b56324406c50b019af9dff35397d27935093dad09dca8e801ba1a5719eb4ca7",
+      "lastModified": "2026-10-17T14:36:18+08:00"
+    },
+    {
+      "path": "zh/adr/0030-character-pack-overlay-capability.md",
+      "sourcePath": "docs/content/docs/zh/adr/0030-character-pack-overlay-capability.md",
+      "sha256": "e5cd9bf21cae780ef80ab0d9017551983bc5a7fa2fbff1d123e89e9cd2210d18",
+      "sourceSha256": "e5cd9bf21cae780ef80ab0d9017551983bc5a7fa2fbff1d123e89e9cd2210d18",
+      "lastModified": "2026-10-04T17:02:09+08:00"
+    },
+    {
+      "path": "zh/adr/0031-integrated-terminal.md",
+      "sourcePath": "docs/content/docs/zh/adr/0031-integrated-terminal.md",
+      "sha256": "e7cc9305144a4251bbbb3a7c8cf6660d33f9fe261f66e5b02bf8dc5a700357ac",
+      "sourceSha256": "e7cc9305144a4251bbbb3a7c8cf6660d33f9fe261f66e5b02bf8dc5a700357ac",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0032-agent-team-plugin-integration.md",
+      "sourcePath": "docs/content/docs/zh/adr/0032-agent-team-plugin-integration.md",
+      "sha256": "fe377fd00e7df147c6fa1c216d998eee024a0a4bdee3fd9d75abdc1088bfa06a",
+      "sourceSha256": "fe377fd00e7df147c6fa1c216d998eee024a0a4bdee3fd9d75abdc1088bfa06a",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0033-integrated-terminal-phase-3.md",
+      "sourcePath": "docs/content/docs/zh/adr/0033-integrated-terminal-phase-3.md",
+      "sha256": "2971cf1871cad342ffa49a21450b76fc930f83c2a23d8f5fe8815561dd7aaa87",
+      "sourceSha256": "2971cf1871cad342ffa49a21450b76fc930f83c2a23d8f5fe8815561dd7aaa87",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0034-workflow-editor-completeness-and-plugin-parity.md",
+      "sourcePath": "docs/content/docs/zh/adr/0034-workflow-editor-completeness-and-plugin-parity.md",
+      "sha256": "3a4b8e7261da65f7df43a6799fb60623bf9819304ad8ad490246f3279aa5c4c0",
+      "sourceSha256": "3a4b8e7261da65f7df43a6799fb60623bf9819304ad8ad490246f3279aa5c4c0",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0035-rust-performance-dashboard.md",
+      "sourcePath": "docs/content/docs/zh/adr/0035-rust-performance-dashboard.md",
+      "sha256": "919e28d634ebe18eb312011ead01633917a401046da4625ac3b58bc839fc21af",
+      "sourceSha256": "919e28d634ebe18eb312011ead01633917a401046da4625ac3b58bc839fc21af",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0036-wechat-wecom-connectors.md",
+      "sourcePath": "docs/content/docs/zh/adr/0036-wechat-wecom-connectors.md",
+      "sha256": "bdef9d19c0f20b3d9c12fc1100cbedb04a010ec0d0a12c3eb10518a34299fe89",
+      "sourceSha256": "bdef9d19c0f20b3d9c12fc1100cbedb04a010ec0d0a12c3eb10518a34299fe89",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0037-public-share-links.md",
+      "sourcePath": "docs/content/docs/zh/adr/0037-public-share-links.md",
+      "sha256": "f7032cfbfb2d5ff55ef9dc8427fbe435e16fdf8137216b7061a11f396d38a308",
+      "sourceSha256": "f7032cfbfb2d5ff55ef9dc8427fbe435e16fdf8137216b7061a11f396d38a308",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0038-source-control-panel.md",
+      "sourcePath": "docs/content/docs/zh/adr/0038-source-control-panel.md",
+      "sha256": "0eb799ffe0df8a011457587bdf313c9698dafa6c16d54c2185b4a084f16058e3",
+      "sourceSha256": "0eb799ffe0df8a011457587bdf313c9698dafa6c16d54c2185b4a084f16058e3",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0039-terminal-autocomplete-and-script-types.md",
+      "sourcePath": "docs/content/docs/zh/adr/0039-terminal-autocomplete-and-script-types.md",
+      "sha256": "609966c0e73367ff34818561f3e2a65287fea8499cc6b6038a0b88b9dd8cc0b7",
+      "sourceSha256": "609966c0e73367ff34818561f3e2a65287fea8499cc6b6038a0b88b9dd8cc0b7",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0040-hooks-mechanism-completion.md",
+      "sourcePath": "docs/content/docs/zh/adr/0040-hooks-mechanism-completion.md",
+      "sha256": "6f89dffc4c27c82bdbb298b3d307dd1f62fae5306ab66595f8ea19b13743a09e",
+      "sourceSha256": "6f89dffc4c27c82bdbb298b3d307dd1f62fae5306ab66595f8ea19b13743a09e",
+      "lastModified": "2026-10-04T17:02:09+08:00"
+    },
+    {
+      "path": "zh/adr/0041-agent-command-auto-mode.md",
+      "sourcePath": "docs/content/docs/zh/adr/0041-agent-command-auto-mode.md",
+      "sha256": "abbe810a5e60f48103942afd9c68d53d32fa2ae2a8e603442709c1ec689332ae",
+      "sourceSha256": "abbe810a5e60f48103942afd9c68d53d32fa2ae2a8e603442709c1ec689332ae",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0042-unified-notification-center.md",
+      "sourcePath": "docs/content/docs/zh/adr/0042-unified-notification-center.md",
+      "sha256": "18580a14357acdac34732683aebd2f836c1e212e38bb537322d37c9c927465e8",
+      "sourceSha256": "18580a14357acdac34732683aebd2f836c1e212e38bb537322d37c9c927465e8",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0043-llm-provider-execution.md",
+      "sourcePath": "docs/content/docs/zh/adr/0043-llm-provider-execution.md",
+      "sha256": "0c0ff9fb57d8e33dc02ab8b18983eed0c5c467d524abcea752838476e82ba248",
+      "sourceSha256": "0c0ff9fb57d8e33dc02ab8b18983eed0c5c467d524abcea752838476e82ba248",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0044-unified-lsp-configuration.md",
+      "sourcePath": "docs/content/docs/zh/adr/0044-unified-lsp-configuration.md",
+      "sha256": "056f836716e11f248b02cda0507ad873e28abda65da915a64664648d0e6b2fff",
+      "sourceSha256": "056f836716e11f248b02cda0507ad873e28abda65da915a64664648d0e6b2fff",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0045-unified-plan-execution-hub.md",
+      "sourcePath": "docs/content/docs/zh/adr/0045-unified-plan-execution-hub.md",
+      "sha256": "233c640a26df99c7be24f286e4b8a10f3678e5af20150cd29fa7af7de834fce1",
+      "sourceSha256": "233c640a26df99c7be24f286e4b8a10f3678e5af20150cd29fa7af7de834fce1",
+      "lastModified": "2026-10-29T12:44:25+08:00"
+    },
+    {
+      "path": "zh/adr/0046-lsp-maturity.md",
+      "sourcePath": "docs/content/docs/zh/adr/0046-lsp-maturity.md",
+      "sha256": "00cdacc4246bd7b04909c93ad85e9e130e438656e270e958c53b4dddb176f1b3",
+      "sourceSha256": "00cdacc4246bd7b04909c93ad85e9e130e438656e270e958c53b4dddb176f1b3",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0047-project-instruction-files.md",
+      "sourcePath": "docs/content/docs/zh/adr/0047-project-instruction-files.md",
+      "sha256": "8c41d2337ddeb88a21f2dd54413a197a479363a992da4af59ca2178c69be2bdd",
+      "sourceSha256": "8c41d2337ddeb88a21f2dd54413a197a479363a992da4af59ca2178c69be2bdd",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0048-codex-support-expansion.md",
+      "sourcePath": "docs/content/docs/zh/adr/0048-codex-support-expansion.md",
+      "sha256": "160cdd6780acf2309787a91334b12415bbc30d292011e072929d7d3ef36fd70b",
+      "sourceSha256": "160cdd6780acf2309787a91334b12415bbc30d292011e072929d7d3ef36fd70b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0049-external-agent-process-hardening.md",
+      "sourcePath": "docs/content/docs/zh/adr/0049-external-agent-process-hardening.md",
+      "sha256": "b65f8a2ca19732ff5e21e366f348864aa52f546271e1a93a1c1a796475969635",
+      "sourceSha256": "b65f8a2ca19732ff5e21e366f348864aa52f546271e1a93a1c1a796475969635",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0050-cli-tui-operation-experience.md",
+      "sourcePath": "docs/content/docs/zh/adr/0050-cli-tui-operation-experience.md",
+      "sha256": "39e6cad6ee9804fe7c3f4f2dea004d0286b5cf47b961d0a61c15a613b577bdb0",
+      "sourceSha256": "39e6cad6ee9804fe7c3f4f2dea004d0286b5cf47b961d0a61c15a613b577bdb0",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0051-external-agent-adapter-plugin-type.md",
+      "sourcePath": "docs/content/docs/zh/adr/0051-external-agent-adapter-plugin-type.md",
+      "sha256": "d0da70eea4aea0f0a0134932db389949c67a870841c6918230b9cf6f507facc7",
+      "sourceSha256": "d0da70eea4aea0f0a0134932db389949c67a870841c6918230b9cf6f507facc7",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0052-cli-tui-fixed-region-layout.md",
+      "sourcePath": "docs/content/docs/zh/adr/0052-cli-tui-fixed-region-layout.md",
+      "sha256": "acaa94624f5e86f2681eb2612ac99ab915cce9841785125e2b271a5e70989e76",
+      "sourceSha256": "acaa94624f5e86f2681eb2612ac99ab915cce9841785125e2b271a5e70989e76",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0053-cli-tui-rendering-and-tool-invocation.md",
+      "sourcePath": "docs/content/docs/zh/adr/0053-cli-tui-rendering-and-tool-invocation.md",
+      "sha256": "94914cdce9df4bfbe0a339e46e1201f3d3575c823014d218a516aaf11def2ac3",
+      "sourceSha256": "94914cdce9df4bfbe0a339e46e1201f3d3575c823014d218a516aaf11def2ac3",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0054-local-multi-account-isolation.md",
+      "sourcePath": "docs/content/docs/zh/adr/0054-local-multi-account-isolation.md",
+      "sha256": "c24392570b35a34c347d0695246a8db4a79ee0428f5c91481c0e60f77a5a5205",
+      "sourceSha256": "c24392570b35a34c347d0695246a8db4a79ee0428f5c91481c0e60f77a5a5205",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0055-agent-browser-loop.md",
+      "sourcePath": "docs/content/docs/zh/adr/0055-agent-browser-loop.md",
+      "sha256": "4361f82d30d6ce0fc04806432287794510e8a584e92b93fa2ab81bd9355d0d31",
+      "sourceSha256": "4361f82d30d6ce0fc04806432287794510e8a584e92b93fa2ab81bd9355d0d31",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0056-mobile-settings-parity.md",
+      "sourcePath": "docs/content/docs/zh/adr/0056-mobile-settings-parity.md",
+      "sha256": "4f11a31b48e80cb6c00894dd6aa87556d569c00c2520f55fd3d128800a3820e5",
+      "sourceSha256": "4f11a31b48e80cb6c00894dd6aa87556d569c00c2520f55fd3d128800a3820e5",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0057-chat-rendering-completeness.md",
+      "sourcePath": "docs/content/docs/zh/adr/0057-chat-rendering-completeness.md",
+      "sha256": "6682e7ecf6bf51287a47c4d6a31838b0d198308ac9eea77acc0f8a7f48def8a7",
+      "sourceSha256": "6682e7ecf6bf51287a47c4d6a31838b0d198308ac9eea77acc0f8a7f48def8a7",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0058-desktop-pet-subsystem.md",
+      "sourcePath": "docs/content/docs/zh/adr/0058-desktop-pet-subsystem.md",
+      "sha256": "7affc9f445cd9f79f02e0362cfda113eb8c725e358cd44b3df387a8859a68561",
+      "sourceSha256": "7affc9f445cd9f79f02e0362cfda113eb8c725e358cd44b3df387a8859a68561",
+      "lastModified": "2026-10-27T23:15:53+08:00"
+    },
+    {
+      "path": "zh/adr/0059-cloud-deployment-headless-brain.md",
+      "sourcePath": "docs/content/docs/zh/adr/0059-cloud-deployment-headless-brain.md",
+      "sha256": "72afc94a4b430f3114280db09460f75c1973528ebed774d1544c93940fa653e8",
+      "sourceSha256": "72afc94a4b430f3114280db09460f75c1973528ebed774d1544c93940fa653e8",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0060-personal-knowledge-capture-and-insights.md",
+      "sourcePath": "docs/content/docs/zh/adr/0060-personal-knowledge-capture-and-insights.md",
+      "sha256": "33abc0607fd9f3188cedd134da41719167af7157afc288b7e6894e09fedae99f",
+      "sourceSha256": "33abc0607fd9f3188cedd134da41719167af7157afc288b7e6894e09fedae99f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0061-cross-device-workflow-execution.md",
+      "sourcePath": "docs/content/docs/zh/adr/0061-cross-device-workflow-execution.md",
+      "sha256": "3adda4f5cd7f140afc1b360d503c4ff693fd680e6f1004cffea3a8a4f6c17759",
+      "sourceSha256": "3adda4f5cd7f140afc1b360d503c4ff693fd680e6f1004cffea3a8a4f6c17759",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0062-external-agent-session-import.md",
+      "sourcePath": "docs/content/docs/zh/adr/0062-external-agent-session-import.md",
+      "sha256": "02c20e899b14920182e6922cc65a67bb77acc2af2a61e2231a63743d007c4f13",
+      "sourceSha256": "02c20e899b14920182e6922cc65a67bb77acc2af2a61e2231a63743d007c4f13",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0063-optical-context-compaction.md",
+      "sourcePath": "docs/content/docs/zh/adr/0063-optical-context-compaction.md",
+      "sha256": "662cd5cccc6367ef1d23b8ad28150cd108aba96b1b0497a5111311e50d373f83",
+      "sourceSha256": "662cd5cccc6367ef1d23b8ad28150cd108aba96b1b0497a5111311e50d373f83",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0064-external-cli-backed-subagent-dispatch-completion.md",
+      "sourcePath": "docs/content/docs/zh/adr/0064-external-cli-backed-subagent-dispatch-completion.md",
+      "sha256": "69d780156ea0383aae28f8007abc7109f1194f498ee8cb458a57b4ba6f3cc4e3",
+      "sourceSha256": "69d780156ea0383aae28f8007abc7109f1194f498ee8cb458a57b4ba6f3cc4e3",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0065-agent-workspace-confinement-and-permission-unification.md",
+      "sourcePath": "docs/content/docs/zh/adr/0065-agent-workspace-confinement-and-permission-unification.md",
+      "sha256": "2da55b5d7507c23a36c590961c732ebe0a4fc8246ba7d05141eb1e2adac16bf4",
+      "sourceSha256": "2da55b5d7507c23a36c590961c732ebe0a4fc8246ba7d05141eb1e2adac16bf4",
+      "lastModified": "2026-10-11T01:13:01+08:00"
+    },
+    {
+      "path": "zh/adr/0066-agent-team-task-board.md",
+      "sourcePath": "docs/content/docs/zh/adr/0066-agent-team-task-board.md",
+      "sha256": "4c71a641241a2afce23a2c5bcfd574e01528f264bf085e9186fdfcb202f12d43",
+      "sourceSha256": "4c71a641241a2afce23a2c5bcfd574e01528f264bf085e9186fdfcb202f12d43",
+      "lastModified": "2026-10-06T20:52:17+08:00"
+    },
+    {
+      "path": "zh/adr/0067-src-tauri-crate-decomposition-and-build-speed.md",
+      "sourcePath": "docs/content/docs/zh/adr/0067-src-tauri-crate-decomposition-and-build-speed.md",
+      "sha256": "3d6d2a81819bff448c8ab3614a0c554c31170db8d974546639d887b41ac0636e",
+      "sourceSha256": "3d6d2a81819bff448c8ab3614a0c554c31170db8d974546639d887b41ac0636e",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0068-frontend-package-extraction-and-compile-speed.md",
+      "sourcePath": "docs/content/docs/zh/adr/0068-frontend-package-extraction-and-compile-speed.md",
+      "sha256": "e51235d19723ea8f95a90007a22da773c9d2b709297702061d95363fae295115",
+      "sourceSha256": "e51235d19723ea8f95a90007a22da773c9d2b709297702061d95363fae295115",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0069-long-term-memory-external-api-surfaces.md",
+      "sourcePath": "docs/content/docs/zh/adr/0069-long-term-memory-external-api-surfaces.md",
+      "sha256": "9c5e5d16cc6a1005dbe215a5e68034d1ff66f53c69ff689944007b46b3af4208",
+      "sourceSha256": "9c5e5d16cc6a1005dbe215a5e68034d1ff66f53c69ff689944007b46b3af4208",
+      "lastModified": "2026-10-11T23:57:17+08:00"
+    },
+    {
+      "path": "zh/adr/0070-risk-ceremony-policy-layer.md",
+      "sourcePath": "docs/content/docs/zh/adr/0070-risk-ceremony-policy-layer.md",
+      "sha256": "f0e3cbed2df0dd51715f6d49233cec84e869aa844cd459f4227968eda0ba0044",
+      "sourceSha256": "f0e3cbed2df0dd51715f6d49233cec84e869aa844cd459f4227968eda0ba0044",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0071-blocking-lead-task-review.md",
+      "sourcePath": "docs/content/docs/zh/adr/0071-blocking-lead-task-review.md",
+      "sha256": "9bba973840baa42f7d07f3761b07dd17aef497716755be602397f199eb5f3e5f",
+      "sourceSha256": "9bba973840baa42f7d07f3761b07dd17aef497716755be602397f199eb5f3e5f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0072-browser-action-recording.md",
+      "sourcePath": "docs/content/docs/zh/adr/0072-browser-action-recording.md",
+      "sha256": "adb469ec57378f333f0a9f03244bea8743e9546347a7898cc81543d984752098",
+      "sourceSha256": "adb469ec57378f333f0a9f03244bea8743e9546347a7898cc81543d984752098",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0073-chromium-cookie-import.md",
+      "sourcePath": "docs/content/docs/zh/adr/0073-chromium-cookie-import.md",
+      "sha256": "af32f7bf6d3de7e26905785c1ae165e361242bdfd841cd8c5ae76d13be70de37",
+      "sourceSha256": "af32f7bf6d3de7e26905785c1ae165e361242bdfd841cd8c5ae76d13be70de37",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0074-otel-native-telemetry.md",
+      "sourcePath": "docs/content/docs/zh/adr/0074-otel-native-telemetry.md",
+      "sha256": "6867c9bea99ebe0328d7c7344f063a5139fe948614ec783c303af97a1b7f7be7",
+      "sourceSha256": "6867c9bea99ebe0328d7c7344f063a5139fe948614ec783c303af97a1b7f7be7",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0075-voice-tts-subsystem.md",
+      "sourcePath": "docs/content/docs/zh/adr/0075-voice-tts-subsystem.md",
+      "sha256": "f2aed4f2ac1421ccf0f0472e20c0b3eedcbd60077d028a475df7a58cb9cbbf7c",
+      "sourceSha256": "f2aed4f2ac1421ccf0f0472e20c0b3eedcbd60077d028a475df7a58cb9cbbf7c",
+      "lastModified": "2026-10-04T17:02:09+08:00"
+    },
+    {
+      "path": "zh/adr/0076-local-provider-management-transport.md",
+      "sourcePath": "docs/content/docs/zh/adr/0076-local-provider-management-transport.md",
+      "sha256": "1bbe05112e99e11f8f713f45dfbca8e9555414ff6403591d893e20ac323d985c",
+      "sourceSha256": "1bbe05112e99e11f8f713f45dfbca8e9555414ff6403591d893e20ac323d985c",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0077-tui-external-agent-hosting.md",
+      "sourcePath": "docs/content/docs/zh/adr/0077-tui-external-agent-hosting.md",
+      "sha256": "e0045b99b98ee2368babbb5ca3ff936a17a0e7adbde47d0e4dbc9244eebb2ebf",
+      "sourceSha256": "e0045b99b98ee2368babbb5ca3ff936a17a0e7adbde47d0e4dbc9244eebb2ebf",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0078-cli-app-bridge.md",
+      "sourcePath": "docs/content/docs/zh/adr/0078-cli-app-bridge.md",
+      "sha256": "1847963bdcdcad6258c10f10aae6ecf1bf024beb4f2a76f46fdd80bf6aed3cc4",
+      "sourceSha256": "1847963bdcdcad6258c10f10aae6ecf1bf024beb4f2a76f46fdd80bf6aed3cc4",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0079-scheduler-extension-contract.md",
+      "sourcePath": "docs/content/docs/zh/adr/0079-scheduler-extension-contract.md",
+      "sha256": "e1ff4ab45bfe00f7d6888137927fbe6a6fc6299b3ebedb03d1255c5657eadc59",
+      "sourceSha256": "e1ff4ab45bfe00f7d6888137927fbe6a6fc6299b3ebedb03d1255c5657eadc59",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0081-workflow-callable-unit-and-chained-triggers.md",
+      "sourcePath": "docs/content/docs/zh/adr/0081-workflow-callable-unit-and-chained-triggers.md",
+      "sha256": "2531006230e60ef50752bce9ec94ecc42460c2f1054390e6809cb7f1da128804",
+      "sourceSha256": "2531006230e60ef50752bce9ec94ecc42460c2f1054390e6809cb7f1da128804",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0082-remote-development-remote-host.md",
+      "sourcePath": "docs/content/docs/zh/adr/0082-remote-development-remote-host.md",
+      "sha256": "68741e254268e781b1fabb202a4058862ca6c328f3966ac5c7f004d7dd2f5169",
+      "sourceSha256": "68741e254268e781b1fabb202a4058862ca6c328f3966ac5c7f004d7dd2f5169",
+      "lastModified": "2026-10-04T17:02:09+08:00"
+    },
+    {
+      "path": "zh/adr/0083-context-workbench.md",
+      "sourcePath": "docs/content/docs/zh/adr/0083-context-workbench.md",
+      "sha256": "0fe1286d0e65e8ba0dbe6e0dfd28031021de572ed213acbd72111c4c761a45ae",
+      "sourceSha256": "0fe1286d0e65e8ba0dbe6e0dfd28031021de572ed213acbd72111c4c761a45ae",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0084-cognia-sites.md",
+      "sourcePath": "docs/content/docs/zh/adr/0084-cognia-sites.md",
+      "sha256": "d2564cca3f4cf839df4122f890f28c44eb3f1ff23fc3d39a0ecf017ea704b441",
+      "sourceSha256": "d2564cca3f4cf839df4122f890f28c44eb3f1ff23fc3d39a0ecf017ea704b441",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0085-cloud-shared-browser.md",
+      "sourcePath": "docs/content/docs/zh/adr/0085-cloud-shared-browser.md",
+      "sha256": "852c77af4433f4fd4ef0ddd64f6ad364134497f86517831cdc86eabd06913e8e",
+      "sourceSha256": "852c77af4433f4fd4ef0ddd64f6ad364134497f86517831cdc86eabd06913e8e",
+      "lastModified": "2026-10-12T16:39:13+08:00"
+    },
+    {
+      "path": "zh/adr/0086-task-scoped-resource-workspaces.md",
+      "sourcePath": "docs/content/docs/zh/adr/0086-task-scoped-resource-workspaces.md",
+      "sha256": "d2dafa4eb7f2b9d7e512f7b4d19632a9ba7419edf590269d5707f8ae7793d974",
+      "sourceSha256": "d2dafa4eb7f2b9d7e512f7b4d19632a9ba7419edf590269d5707f8ae7793d974",
+      "lastModified": "2026-10-30T14:32:27+08:00"
+    },
+    {
+      "path": "zh/adr/0087-python-backed-plugin-contributions.md",
+      "sourcePath": "docs/content/docs/zh/adr/0087-python-backed-plugin-contributions.md",
+      "sha256": "c8e8c54884f744a1bf0ffdda00fbbbdbea2f102168a80c09b470fc25ec9e38af",
+      "sourceSha256": "c8e8c54884f744a1bf0ffdda00fbbbdbea2f102168a80c09b470fc25ec9e38af",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0088-pro-ide-code-server.md",
+      "sourcePath": "docs/content/docs/zh/adr/0088-pro-ide-code-server.md",
+      "sha256": "d0be29146d482d26f9d6331c3a19cc6102627c53bfe64a047d7da8b8db3e3e9c",
+      "sourceSha256": "d0be29146d482d26f9d6331c3a19cc6102627c53bfe64a047d7da8b8db3e3e9c",
+      "lastModified": "2026-10-18T01:25:48+08:00"
+    },
+    {
+      "path": "zh/adr/0089-topic-scoped-connector-runtime.md",
+      "sourcePath": "docs/content/docs/zh/adr/0089-topic-scoped-connector-runtime.md",
+      "sha256": "f815f6c88a23acecfce9252a604b476476ad2fbf3ec0c1cb825d12b2f5cd7b4b",
+      "sourceSha256": "f815f6c88a23acecfce9252a604b476476ad2fbf3ec0c1cb825d12b2f5cd7b4b",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0090-unified-agent-execution-and-gateway-compatibility.md",
+      "sourcePath": "docs/content/docs/zh/adr/0090-unified-agent-execution-and-gateway-compatibility.md",
+      "sha256": "e606ef5c1e82750d1e2dc32a28bc3db0335e4c7faccfc4cc6e27e77d19dcc481",
+      "sourceSha256": "e606ef5c1e82750d1e2dc32a28bc3db0335e4c7faccfc4cc6e27e77d19dcc481",
+      "lastModified": "2026-10-09T11:39:47+08:00"
+    },
+    {
+      "path": "zh/adr/0091-lark-unified-identity-dual-entry.md",
+      "sourcePath": "docs/content/docs/zh/adr/0091-lark-unified-identity-dual-entry.md",
+      "sha256": "c7252b65e719441527f2ef7f405a195f532a5992f173c5a8e9bf7f82b8a404b6",
+      "sourceSha256": "c7252b65e719441527f2ef7f405a195f532a5992f173c5a8e9bf7f82b8a404b6",
+      "lastModified": "2026-10-04T20:46:36+08:00"
+    },
+    {
+      "path": "zh/adr/0092-official-website-workspace.md",
+      "sourcePath": "docs/content/docs/zh/adr/0092-official-website-workspace.md",
+      "sha256": "2dc833ec97368b8e8c3482db9f4f4e2dee29d46bbf18708de648e1d3ad78ac6d",
+      "sourceSha256": "2dc833ec97368b8e8c3482db9f4f4e2dee29d46bbf18708de648e1d3ad78ac6d",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0093-selection-toolbar-content-hugging-window.md",
+      "sourcePath": "docs/content/docs/zh/adr/0093-selection-toolbar-content-hugging-window.md",
+      "sha256": "da56a8f1590b6f0efb0174d825d638cbed7e347370b072d74146dad188328caa",
+      "sourceSha256": "da56a8f1590b6f0efb0174d825d638cbed7e347370b072d74146dad188328caa",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0094-conversation-anchors-and-jump.md",
+      "sourcePath": "docs/content/docs/zh/adr/0094-conversation-anchors-and-jump.md",
+      "sha256": "b6a881738b4b6212e749b7b68d450eec8f4780bd9c3b6896c95e5ff677a8b5e2",
+      "sourceSha256": "b6a881738b4b6212e749b7b68d450eec8f4780bd9c3b6896c95e5ff677a8b5e2",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0095-desktop-selection-perception.md",
+      "sourcePath": "docs/content/docs/zh/adr/0095-desktop-selection-perception.md",
+      "sha256": "3d3286c29bb551e5b054c553771d9e9fc83c6fdb616e4b050b59291e044abb7a",
+      "sourceSha256": "3d3286c29bb551e5b054c553771d9e9fc83c6fdb616e4b050b59291e044abb7a",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0096-loading-state-motion-and-accessibility.md",
+      "sourcePath": "docs/content/docs/zh/adr/0096-loading-state-motion-and-accessibility.md",
+      "sha256": "c6f749a5c2f0110dd1aed81bf763dc8ad4ed65a47d839e26de6dc73ebd9b13d8",
+      "sourceSha256": "c6f749a5c2f0110dd1aed81bf763dc8ad4ed65a47d839e26de6dc73ebd9b13d8",
+      "lastModified": "2026-10-21T16:59:08+08:00"
+    },
+    {
+      "path": "zh/adr/0097-cross-device-settings-contract-and-companion-reach.md",
+      "sourcePath": "docs/content/docs/zh/adr/0097-cross-device-settings-contract-and-companion-reach.md",
+      "sha256": "d30560319be62701df81a3b3f55b576afa454e7f788973b04a7c133e26160500",
+      "sourceSha256": "d30560319be62701df81a3b3f55b576afa454e7f788973b04a7c133e26160500",
+      "lastModified": "2026-10-06T17:11:57+08:00"
+    },
+    {
+      "path": "zh/adr/0098-persistent-workbench-rail.md",
+      "sourcePath": "docs/content/docs/zh/adr/0098-persistent-workbench-rail.md",
+      "sha256": "1c6bff863e245dd7dbf0622175ee16546a0ef9482db2df0388cac8366d80819c",
+      "sourceSha256": "1c6bff863e245dd7dbf0622175ee16546a0ef9482db2df0388cac8366d80819c",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0100-unified-template-platform.md",
+      "sourcePath": "docs/content/docs/zh/adr/0100-unified-template-platform.md",
+      "sha256": "c0716c8305775e46861aae50f86d656b90f22d556746cbf4539947a2fec94306",
+      "sourceSha256": "c0716c8305775e46861aae50f86d656b90f22d556746cbf4539947a2fec94306",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0101-model-evaluation-lab.md",
+      "sourcePath": "docs/content/docs/zh/adr/0101-model-evaluation-lab.md",
+      "sha256": "d05f238467ecddcc2d283c5d1bc5b883f9d00800839f4b1569a447f5316f046e",
+      "sourceSha256": "d05f238467ecddcc2d283c5d1bc5b883f9d00800839f4b1569a447f5316f046e",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0102-unified-observability-crash-diagnostics.md",
+      "sourcePath": "docs/content/docs/zh/adr/0102-unified-observability-crash-diagnostics.md",
+      "sha256": "05ce430f2a401ef97650b67afa41168617348dc75e376ec03a26f98facb82097",
+      "sourceSha256": "98e1d93690a68935cc8a05f1b7800b291f48f25c2b5ada5a77930d8a26534cb7",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0103-cross-host-session-handoff.md",
+      "sourcePath": "docs/content/docs/zh/adr/0103-cross-host-session-handoff.md",
+      "sha256": "516f650ffc77f2dd87bdcb800da7d52f740950c06b1e57eb32feec6fbce2705d",
+      "sourceSha256": "516f650ffc77f2dd87bdcb800da7d52f740950c06b1e57eb32feec6fbce2705d",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0104-provider-diagnostics-control-plane.md",
+      "sourcePath": "docs/content/docs/zh/adr/0104-provider-diagnostics-control-plane.md",
+      "sha256": "fbd6ae3ed13376352230ecb89cdab34b329654f3ded55699498e9375a7292b5d",
+      "sourceSha256": "fbd6ae3ed13376352230ecb89cdab34b329654f3ded55699498e9375a7292b5d",
+      "lastModified": "2026-09-25T19:39:59+08:00"
+    },
+    {
+      "path": "zh/adr/0106-end-to-end-skill-recorder.md",
+      "sourcePath": "docs/content/docs/zh/adr/0106-end-to-end-skill-recorder.md",
+      "sha256": "4a79a9b703e7f88a3bb58bf5426ed32186966e7863a4668a10204795ee8c62be",
+      "sourceSha256": "4a79a9b703e7f88a3bb58bf5426ed32186966e7863a4668a10204795ee8c62be",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0107-coding-agent-migration.md",
+      "sourcePath": "docs/content/docs/zh/adr/0107-coding-agent-migration.md",
+      "sha256": "afbc44895bf7b6b7b4b4a18da1b73a20baf088a24be35c74f41d22c9757c31d3",
+      "sourceSha256": "afbc44895bf7b6b7b4b4a18da1b73a20baf088a24be35c74f41d22c9757c31d3",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0108-codex-inspired-desktop-workflows.md",
+      "sourcePath": "docs/content/docs/zh/adr/0108-codex-inspired-desktop-workflows.md",
+      "sha256": "c2a72aea0678a7adcdd5371ff7ba652da6d6dafc67c82f324824e9c83e051c1e",
+      "sourceSha256": "c2a72aea0678a7adcdd5371ff7ba652da6d6dafc67c82f324824e9c83e051c1e",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0109-plugin-interface-catalog-governance.md",
+      "sourcePath": "docs/content/docs/zh/adr/0109-plugin-interface-catalog-governance.md",
+      "sha256": "b2ed56ec01e4e251af23f1fcde84e25cfd35f4f04b13cc2175cc1456350dc0c7",
+      "sourceSha256": "b2ed56ec01e4e251af23f1fcde84e25cfd35f4f04b13cc2175cc1456350dc0c7",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0110-mcp-control-plane-governance.md",
+      "sourcePath": "docs/content/docs/zh/adr/0110-mcp-control-plane-governance.md",
+      "sha256": "8a451dac093e7edaeef12c01aba1dce302f04d76308c83d780633179d87c36b1",
+      "sourceSha256": "8a451dac093e7edaeef12c01aba1dce302f04d76308c83d780633179d87c36b1",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0111-managed-workspace-registry-and-bundle.md",
+      "sourcePath": "docs/content/docs/zh/adr/0111-managed-workspace-registry-and-bundle.md",
+      "sha256": "4df43002953447390232180697159551c4f33c6430571cc83fd51db4d4804a93",
+      "sourceSha256": "4df43002953447390232180697159551c4f33c6430571cc83fd51db4d4804a93",
+      "lastModified": "2026-10-15T17:47:47+08:00"
+    },
+    {
+      "path": "zh/adr/0112-unified-decision-provenance-conflict-ledger.md",
+      "sourcePath": "docs/content/docs/zh/adr/0112-unified-decision-provenance-conflict-ledger.md",
+      "sha256": "ee57e2c1251d520fa554a5d5bebe3ee849802fa62c67f71bde285f95abd78173",
+      "sourceSha256": "ee57e2c1251d520fa554a5d5bebe3ee849802fa62c67f71bde285f95abd78173",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0113-agent-team-multi-host-remote-dispatch.md",
+      "sourcePath": "docs/content/docs/zh/adr/0113-agent-team-multi-host-remote-dispatch.md",
+      "sha256": "7082451a13c5855b30c82685e0001820a734afc100c7a58cafef50ea7ab259c8",
+      "sourceSha256": "7082451a13c5855b30c82685e0001820a734afc100c7a58cafef50ea7ab259c8",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0114-chat-message-presentation.md",
+      "sourcePath": "docs/content/docs/zh/adr/0114-chat-message-presentation.md",
+      "sha256": "08bb90e705f9709433c6d46095ca73e06c405ce8affabb95ff39de7b1046efb3",
+      "sourceSha256": "08bb90e705f9709433c6d46095ca73e06c405ce8affabb95ff39de7b1046efb3",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0115-unified-memory-rag-infrastructure.md",
+      "sourcePath": "docs/content/docs/zh/adr/0115-unified-memory-rag-infrastructure.md",
+      "sha256": "fec6d2d59d928011a04561ca94943a227f1c6561b610b787e1baeabc5381878f",
+      "sourceSha256": "fec6d2d59d928011a04561ca94943a227f1c6561b610b787e1baeabc5381878f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0116-host-authoritative-session-state.md",
+      "sourcePath": "docs/content/docs/zh/adr/0116-host-authoritative-session-state.md",
+      "sha256": "0d2717dfcdff64bcc2b65791824f129adca7e1797a8f25d8966e9071cc255f4c",
+      "sourceSha256": "0d2717dfcdff64bcc2b65791824f129adca7e1797a8f25d8966e9071cc255f4c",
+      "lastModified": "2026-10-19T16:49:09+08:00"
+    },
+    {
+      "path": "zh/adr/0117-composed-agent-modes-and-creator.md",
+      "sourcePath": "docs/content/docs/zh/adr/0117-composed-agent-modes-and-creator.md",
+      "sha256": "656073ec1e3f61253d822ee14cbe364e9693d2cf38d2db90eabda7d4da9a4eef",
+      "sourceSha256": "656073ec1e3f61253d822ee14cbe364e9693d2cf38d2db90eabda7d4da9a4eef",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0118-keyless-model-request-replay.md",
+      "sourcePath": "docs/content/docs/zh/adr/0118-keyless-model-request-replay.md",
+      "sha256": "c737fc17bed0902697331dc6bd4e1c2f22da92419f3d781b9729efc00a1ea928",
+      "sourceSha256": "c737fc17bed0902697331dc6bd4e1c2f22da92419f3d781b9729efc00a1ea928",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0119-pi-native-rpc-integration.md",
+      "sourcePath": "docs/content/docs/zh/adr/0119-pi-native-rpc-integration.md",
+      "sha256": "e816aeb86130e2d8044541da81b1524c1dff8898d44df0820c9e37f5a4af59e5",
+      "sourceSha256": "e816aeb86130e2d8044541da81b1524c1dff8898d44df0820c9e37f5a4af59e5",
+      "lastModified": "2026-10-06T18:16:53+08:00"
+    },
+    {
+      "path": "zh/adr/0120-deepseek-harness-managed-runtime.md",
+      "sourcePath": "docs/content/docs/zh/adr/0120-deepseek-harness-managed-runtime.md",
+      "sha256": "2064a67e8e472a86549461ce8c03b564e7f63ff89ccbb383d3012ada81ed5ed9",
+      "sourceSha256": "2064a67e8e472a86549461ce8c03b564e7f63ff89ccbb383d3012ada81ed5ed9",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0121-workbench-mobile-drawer-and-panel-customization.md",
+      "sourcePath": "docs/content/docs/zh/adr/0121-workbench-mobile-drawer-and-panel-customization.md",
+      "sha256": "0daa4d5db84afd8231118410b393e11f2d18c0274562494979a10b97a7f62df4",
+      "sourceSha256": "0daa4d5db84afd8231118410b393e11f2d18c0274562494979a10b97a7f62df4",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0122-first-run-onboarding.md",
+      "sourcePath": "docs/content/docs/zh/adr/0122-first-run-onboarding.md",
+      "sha256": "6ce9b4887e05166af69584fca53ecf4d166f3d54120e084822f2c1618dff49a1",
+      "sourceSha256": "6ce9b4887e05166af69584fca53ecf4d166f3d54120e084822f2c1618dff49a1",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0123-context-workbench-vertical-split.md",
+      "sourcePath": "docs/content/docs/zh/adr/0123-context-workbench-vertical-split.md",
+      "sha256": "cf732deacf8a86b7f4bf1989c7ae1a0b6c00c862aafad357277b8ea28e57fff9",
+      "sourceSha256": "cf732deacf8a86b7f4bf1989c7ae1a0b6c00c862aafad357277b8ea28e57fff9",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0124-filesystem-viewer-registry.md",
+      "sourcePath": "docs/content/docs/zh/adr/0124-filesystem-viewer-registry.md",
+      "sha256": "a763e3981c693aca38ab41d8764f620f5f9f6fc2147c87fdb2ce5c1b25c84e03",
+      "sourceSha256": "a763e3981c693aca38ab41d8764f620f5f9f6fc2147c87fdb2ce5c1b25c84e03",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0125-durable-work-submission.md",
+      "sourcePath": "docs/content/docs/zh/adr/0125-durable-work-submission.md",
+      "sha256": "e984c9658daba818eab9887566208424be61941b0de57066f3bf219b98eb99aa",
+      "sourceSha256": "e984c9658daba818eab9887566208424be61941b0de57066f3bf219b98eb99aa",
+      "lastModified": "2026-10-04T17:02:41+08:00"
+    },
+    {
+      "path": "zh/adr/0126-plugin-subsystem-governance.md",
+      "sourcePath": "docs/content/docs/zh/adr/0126-plugin-subsystem-governance.md",
+      "sha256": "ed096d14bc73d717db036045990bc989b37e1d31a3be0c69c87c53ac175424f6",
+      "sourceSha256": "ed096d14bc73d717db036045990bc989b37e1d31a3be0c69c87c53ac175424f6",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0127-chat-render-transport-efficiency.md",
+      "sourcePath": "docs/content/docs/zh/adr/0127-chat-render-transport-efficiency.md",
+      "sha256": "7e8f9290cd9d06235a91ec8caf943786f1721da0334bf35c366696cd413fc8b1",
+      "sourceSha256": "7e8f9290cd9d06235a91ec8caf943786f1721da0334bf35c366696cd413fc8b1",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0128-scheduler-host-neutral.md",
+      "sourcePath": "docs/content/docs/zh/adr/0128-scheduler-host-neutral.md",
+      "sha256": "46c23616a8ae26aa0574ffaf2f60565cbb23a616c175ccc7d1278e7badd8d161",
+      "sourceSha256": "46c23616a8ae26aa0574ffaf2f60565cbb23a616c175ccc7d1278e7badd8d161",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0129-unified-global-search.md",
+      "sourcePath": "docs/content/docs/zh/adr/0129-unified-global-search.md",
+      "sha256": "d37a0512e01e3f87c37756d602c2c1b13d9fbfc9c5fc43c76910aa4c9ba6efbb",
+      "sourceSha256": "d37a0512e01e3f87c37756d602c2c1b13d9fbfc9c5fc43c76910aa4c9ba6efbb",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0131-cross-shell-inbox-relay.md",
+      "sourcePath": "docs/content/docs/zh/adr/0131-cross-shell-inbox-relay.md",
+      "sha256": "6727fa09c76726804d8b5186be358df61c2ee96dfc7942c82780d66ad25a4906",
+      "sourceSha256": "6727fa09c76726804d8b5186be358df61c2ee96dfc7942c82780d66ad25a4906",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0132-issue-tracker.md",
+      "sourcePath": "docs/content/docs/zh/adr/0132-issue-tracker.md",
+      "sha256": "95011a0677332bf77f5f9b4d829e268af7ca47b5b6709acab4ed8bf952d08ea5",
+      "sourceSha256": "95011a0677332bf77f5f9b4d829e268af7ca47b5b6709acab4ed8bf952d08ea5",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0133-terminal-session-sharing.md",
+      "sourcePath": "docs/content/docs/zh/adr/0133-terminal-session-sharing.md",
+      "sha256": "0d08ca8773fb212954e6a290a214e1bf511fc09c706d44a5feb1c4214cb5876e",
+      "sourceSha256": "0d08ca8773fb212954e6a290a214e1bf511fc09c706d44a5feb1c4214cb5876e",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0134-remote-document-providers.md",
+      "sourcePath": "docs/content/docs/zh/adr/0134-remote-document-providers.md",
+      "sha256": "80420da75430f801678ecc90aedb2d631090ea61b0cbf43d2072caecd30ff38d",
+      "sourceSha256": "80420da75430f801678ecc90aedb2d631090ea61b0cbf43d2072caecd30ff38d",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0135-diagnostic-service-completion.md",
+      "sourcePath": "docs/content/docs/zh/adr/0135-diagnostic-service-completion.md",
+      "sha256": "d8001019bbb159f46be2110608d6f6e108e972c92ac6bbe691b6336dd702a9dc",
+      "sourceSha256": "d8001019bbb159f46be2110608d6f6e108e972c92ac6bbe691b6336dd702a9dc",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0136-cross-device-placement.md",
+      "sourcePath": "docs/content/docs/zh/adr/0136-cross-device-placement.md",
+      "sha256": "f113edc72153b6f154f15eab053779f033089687085a00c9a55ac8590bf6fbf5",
+      "sourceSha256": "f113edc72153b6f154f15eab053779f033089687085a00c9a55ac8590bf6fbf5",
+      "lastModified": "2026-10-12T00:21:12+08:00"
+    },
+    {
+      "path": "zh/adr/0137-delegation-runtime.md",
+      "sourcePath": "docs/content/docs/zh/adr/0137-delegation-runtime.md",
+      "sha256": "8f6c7f0ea45be1a6fe8b82294e7290c7a87dc72ab09ef4a3b7d74e16d0feed1c",
+      "sourceSha256": "8f6c7f0ea45be1a6fe8b82294e7290c7a87dc72ab09ef4a3b7d74e16d0feed1c",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0138-reading-area-layout-stability.md",
+      "sourcePath": "docs/content/docs/zh/adr/0138-reading-area-layout-stability.md",
+      "sha256": "983200ad21e6b31d12bad7c1615dc43c620768606b4cd7f9fb4b11147f504180",
+      "sourceSha256": "983200ad21e6b31d12bad7c1615dc43c620768606b4cd7f9fb4b11147f504180",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0139-visual-output-routing.md",
+      "sourcePath": "docs/content/docs/zh/adr/0139-visual-output-routing.md",
+      "sha256": "72f2dfacc98c4d49c4a20ac87f7aa91c9180b91723ade7c1e43e3f71686052ed",
+      "sourceSha256": "72f2dfacc98c4d49c4a20ac87f7aa91c9180b91723ade7c1e43e3f71686052ed",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0140-squad-as-an-executor.md",
+      "sourcePath": "docs/content/docs/zh/adr/0140-squad-as-an-executor.md",
+      "sha256": "2317381e7e7a0a668a856e69a9cc372072a591ccb321e8c7719045e88aa0f1b0",
+      "sourceSha256": "2317381e7e7a0a668a856e69a9cc372072a591ccb321e8c7719045e88aa0f1b0",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0141-onboarding-two-paths.md",
+      "sourcePath": "docs/content/docs/zh/adr/0141-onboarding-two-paths.md",
+      "sha256": "b4d97cefde553852c32383982348d52efd915374208c839b974fcb9aba481f7e",
+      "sourceSha256": "b4d97cefde553852c32383982348d52efd915374208c839b974fcb9aba481f7e",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0142-agent-sdk-two-layer-product.md",
+      "sourcePath": "docs/content/docs/zh/adr/0142-agent-sdk-two-layer-product.md",
+      "sha256": "eadf475e04df0ab189f8dd91c51a50dbaae143bdf1762bf45ef95a920b3c0a4f",
+      "sourceSha256": "eadf475e04df0ab189f8dd91c51a50dbaae143bdf1762bf45ef95a920b3c0a4f",
+      "lastModified": "2026-10-04T17:02:41+08:00"
+    },
+    {
+      "path": "zh/adr/0143-device-console.md",
+      "sourcePath": "docs/content/docs/zh/adr/0143-device-console.md",
+      "sha256": "353919396c2a7c6de5f6328dc846d5560dea5106f858379e709d82f2328167bc",
+      "sourceSha256": "353919396c2a7c6de5f6328dc846d5560dea5106f858379e709d82f2328167bc",
+      "lastModified": "2026-10-16T19:27:39+08:00"
+    },
+    {
+      "path": "zh/adr/0144-workspace-as-the-unit-of-work.md",
+      "sourcePath": "docs/content/docs/zh/adr/0144-workspace-as-the-unit-of-work.md",
+      "sha256": "8e81e1094f82ac8dd0a291a877b8ec8868b7b6d078ff27d1f9bf7ecd3ea304b7",
+      "sourceSha256": "8e81e1094f82ac8dd0a291a877b8ec8868b7b6d078ff27d1f9bf7ecd3ea304b7",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0145-python-plugin-runtime-alignment.md",
+      "sourcePath": "docs/content/docs/zh/adr/0145-python-plugin-runtime-alignment.md",
+      "sha256": "a3b792e4b2b5749429c54eb0dce6b073e936fe76542e1a55a3feb44d3896c5be",
+      "sourceSha256": "a3b792e4b2b5749429c54eb0dce6b073e936fe76542e1a55a3feb44d3896c5be",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0146-repowiki-plugin.md",
+      "sourcePath": "docs/content/docs/zh/adr/0146-repowiki-plugin.md",
+      "sha256": "ec77009fe437c5e2eba8282a390cfa8f3a83c5febd38787c616ca8833b917155",
+      "sourceSha256": "ec77009fe437c5e2eba8282a390cfa8f3a83c5febd38787c616ca8833b917155",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0147-repository-declared-workspace.md",
+      "sourcePath": "docs/content/docs/zh/adr/0147-repository-declared-workspace.md",
+      "sha256": "9af39bf7d700775079c7944190db86a6e5a5a41bc4be4b687bdfa0532c84618b",
+      "sourceSha256": "9af39bf7d700775079c7944190db86a6e5a5a41bc4be4b687bdfa0532c84618b",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0148-style-packs-and-surface-tiers.md",
+      "sourcePath": "docs/content/docs/zh/adr/0148-style-packs-and-surface-tiers.md",
+      "sha256": "8ff1e0fadc1e80a6b8e1848df340011264a21b68d81dfb32c26eebc4438011ec",
+      "sourceSha256": "8ff1e0fadc1e80a6b8e1848df340011264a21b68d81dfb32c26eebc4438011ec",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0149-a-person-is-not-a-device.md",
+      "sourcePath": "docs/content/docs/zh/adr/0149-a-person-is-not-a-device.md",
+      "sha256": "8ab2c65662d3cd6e0d93139f9098d4dd996e74acbbbd4c657fa175046284eb9e",
+      "sourceSha256": "8ab2c65662d3cd6e0d93139f9098d4dd996e74acbbbd4c657fa175046284eb9e",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0150-repository-supply-and-object-cache.md",
+      "sourcePath": "docs/content/docs/zh/adr/0150-repository-supply-and-object-cache.md",
+      "sha256": "8aea52f3ed442705e85676dbc1400783d7770f212aa32bfbb8b467fdb4600b8d",
+      "sourceSha256": "8aea52f3ed442705e85676dbc1400783d7770f212aa32bfbb8b467fdb4600b8d",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0151-stacks-as-first-class.md",
+      "sourcePath": "docs/content/docs/zh/adr/0151-stacks-as-first-class.md",
+      "sha256": "81b94f31d979b8878f7b2bb62a4cb20c530a70bbb191f7438bfb25d0c528365f",
+      "sourceSha256": "81b94f31d979b8878f7b2bb62a4cb20c530a70bbb191f7438bfb25d0c528365f",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0152-connector-controls-name-their-host.md",
+      "sourcePath": "docs/content/docs/zh/adr/0152-connector-controls-name-their-host.md",
+      "sha256": "df02ffff5bdf6512ab7d49c7612edc0a920517e422a5e8ab0e7c50b4faa85053",
+      "sourceSha256": "df02ffff5bdf6512ab7d49c7612edc0a920517e422a5e8ab0e7c50b4faa85053",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0153-the-host-obtains-the-confirmation.md",
+      "sourcePath": "docs/content/docs/zh/adr/0153-the-host-obtains-the-confirmation.md",
+      "sha256": "f8d231a467f3d0b5cbfe146a6d4547e7105eac58d6336899ee8e86a2f4d0351e",
+      "sourceSha256": "f8d231a467f3d0b5cbfe146a6d4547e7105eac58d6336899ee8e86a2f4d0351e",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0154-browser-companion.md",
+      "sourcePath": "docs/content/docs/zh/adr/0154-browser-companion.md",
+      "sha256": "043926db83f5b4ee2a8ea85c5ccdb0a25f28022d37e05bda47ff4fdf88d2302d",
+      "sourceSha256": "043926db83f5b4ee2a8ea85c5ccdb0a25f28022d37e05bda47ff4fdf88d2302d",
+      "lastModified": "2026-10-16T13:23:16+08:00"
+    },
+    {
+      "path": "zh/adr/0155-plugins-reach-the-host-through-one-door.md",
+      "sourcePath": "docs/content/docs/zh/adr/0155-plugins-reach-the-host-through-one-door.md",
+      "sha256": "e9c45e15bdf836065cd8e7c6f7337f7b9a84ec54702a862e74e7af6f91b9edb8",
+      "sourceSha256": "e9c45e15bdf836065cd8e7c6f7337f7b9a84ec54702a862e74e7af6f91b9edb8",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0156-every-in-tree-plugin-is-a-third-party-plugin.md",
+      "sourcePath": "docs/content/docs/zh/adr/0156-every-in-tree-plugin-is-a-third-party-plugin.md",
+      "sha256": "2ca3346426e7bd439e1dce5b0700f03677b843609ed6f34efb3ba8d51f7cb9fa",
+      "sourceSha256": "2ca3346426e7bd439e1dce5b0700f03677b843609ed6f34efb3ba8d51f7cb9fa",
+      "lastModified": "2026-10-12T20:06:47+08:00"
+    },
+    {
+      "path": "zh/adr/0157-references-and-result-reuse.md",
+      "sourcePath": "docs/content/docs/zh/adr/0157-references-and-result-reuse.md",
+      "sha256": "c84e35f67fc37251c95f294385ce8274baa424d481edd74ee7d03fd7fc147cfd",
+      "sourceSha256": "c84e35f67fc37251c95f294385ce8274baa424d481edd74ee7d03fd7fc147cfd",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0158-artifacts-and-canvas.md",
+      "sourcePath": "docs/content/docs/zh/adr/0158-artifacts-and-canvas.md",
+      "sha256": "4de10e4b829dfb9e29da2f1242dc43dbda89629431197b2d2e7f1eaaf3069a12",
+      "sourceSha256": "4de10e4b829dfb9e29da2f1242dc43dbda89629431197b2d2e7f1eaaf3069a12",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0159-selection-action-platform.md",
+      "sourcePath": "docs/content/docs/zh/adr/0159-selection-action-platform.md",
+      "sha256": "a75f93365bd7d800870e9f34eaaa1b3a9f2eab130b1bf1cd296010db4badf269",
+      "sourceSha256": "a75f93365bd7d800870e9f34eaaa1b3a9f2eab130b1bf1cd296010db4badf269",
+      "lastModified": "2026-08-31T13:45:24+08:00"
+    },
+    {
+      "path": "zh/adr/0160-docker-machines-are-real-machines.md",
+      "sourcePath": "docs/content/docs/zh/adr/0160-docker-machines-are-real-machines.md",
+      "sha256": "e06b617ec71db20374c8a818a34eefc03764929da6d3c9ae6b4a3a534c670f18",
+      "sourceSha256": "e06b617ec71db20374c8a818a34eefc03764929da6d3c9ae6b4a3a534c670f18",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0161-agent-identity-runtime-and-host.md",
+      "sourcePath": "docs/content/docs/zh/adr/0161-agent-identity-runtime-and-host.md",
+      "sha256": "27610b1d3987246cd43d9dbf752b7d3e2401264630f98398813d73cc5dbb1bc9",
+      "sourceSha256": "27610b1d3987246cd43d9dbf752b7d3e2401264630f98398813d73cc5dbb1bc9",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0162-sftp-is-shell-equivalent.md",
+      "sourcePath": "docs/content/docs/zh/adr/0162-sftp-is-shell-equivalent.md",
+      "sha256": "b9e3d5c721ab2c654b1d4b2283957d15cf3a175d5ed1e1f7846888699ff87cbd",
+      "sourceSha256": "b9e3d5c721ab2c654b1d4b2283957d15cf3a175d5ed1e1f7846888699ff87cbd",
+      "lastModified": "2026-10-10T17:54:03+08:00"
+    },
+    {
+      "path": "zh/adr/0163-provider-operation-contract.md",
+      "sourcePath": "docs/content/docs/zh/adr/0163-provider-operation-contract.md",
+      "sha256": "553c2704c93bc74d74afaba1710e0917744d6e0323e71794712e11581f0647be",
+      "sourceSha256": "553c2704c93bc74d74afaba1710e0917744d6e0323e71794712e11581f0647be",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0164-templates-squads-and-commands-are-portable-and-iterable.md",
+      "sourcePath": "docs/content/docs/zh/adr/0164-templates-squads-and-commands-are-portable-and-iterable.md",
+      "sha256": "97069f846bff9fadb17deb9d41c6b1b6ef6f2228398c272cd361e585d08ce518",
+      "sourceSha256": "97069f846bff9fadb17deb9d41c6b1b6ef6f2228398c272cd361e585d08ce518",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0165-ambient-cost-visibility-and-the-optimization-loop.md",
+      "sourcePath": "docs/content/docs/zh/adr/0165-ambient-cost-visibility-and-the-optimization-loop.md",
+      "sha256": "2bba0420fbcb8f522ee9e0e0d777795027ee052d68f2d1831f5eb7992b044c20",
+      "sourceSha256": "2bba0420fbcb8f522ee9e0e0d777795027ee052d68f2d1831f5eb7992b044c20",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0166-a-branch-knows-where-it-lives.md",
+      "sourcePath": "docs/content/docs/zh/adr/0166-a-branch-knows-where-it-lives.md",
+      "sha256": "032c7e2569e9ee57f4474e9e2e676969ff1139a32bc0b61782e53b8617e461e0",
+      "sourceSha256": "032c7e2569e9ee57f4474e9e2e676969ff1139a32bc0b61782e53b8617e461e0",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0167-the-schedule-belongs-to-the-account.md",
+      "sourcePath": "docs/content/docs/zh/adr/0167-the-schedule-belongs-to-the-account.md",
+      "sha256": "177a9f2ff0d78178826cf5b423990171d6165100e83eec7bbecbfd40c77498fb",
+      "sourceSha256": "177a9f2ff0d78178826cf5b423990171d6165100e83eec7bbecbfd40c77498fb",
+      "lastModified": "2026-10-04T17:02:09+08:00"
+    },
+    {
+      "path": "zh/adr/0168-an-edit-is-a-new-version-of-the-same-message.md",
+      "sourcePath": "docs/content/docs/zh/adr/0168-an-edit-is-a-new-version-of-the-same-message.md",
+      "sha256": "c4f9ab54499d482e3c15e02d7647859c5a22e4480211c02ad371c166d7e129ca",
+      "sourceSha256": "c4f9ab54499d482e3c15e02d7647859c5a22e4480211c02ad371c166d7e129ca",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0169-one-runtime-one-review-one-control-machine.md",
+      "sourcePath": "docs/content/docs/zh/adr/0169-one-runtime-one-review-one-control-machine.md",
+      "sha256": "1718f00f19a1c40c38774959e7a0eae6153c894fd2da23d49cd43c1420a3f4f3",
+      "sourceSha256": "1718f00f19a1c40c38774959e7a0eae6153c894fd2da23d49cd43c1420a3f4f3",
+      "lastModified": "2026-10-06T20:52:17+08:00"
+    },
+    {
+      "path": "zh/adr/0170-cognia-relay-and-connectivity-center.md",
+      "sourcePath": "docs/content/docs/zh/adr/0170-cognia-relay-and-connectivity-center.md",
+      "sha256": "94230980fafa9883dd333b34a7916feaafd87b72943250668fb0c7e3f1ec2955",
+      "sourceSha256": "94230980fafa9883dd333b34a7916feaafd87b72943250668fb0c7e3f1ec2955",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0171-the-cli-speaks-the-protocol-not-a-copy-of-it.md",
+      "sourcePath": "docs/content/docs/zh/adr/0171-the-cli-speaks-the-protocol-not-a-copy-of-it.md",
+      "sha256": "15921de90072e474799501b2428b9f658b056183e60610523d6acde1dbe230dc",
+      "sourceSha256": "15921de90072e474799501b2428b9f658b056183e60610523d6acde1dbe230dc",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0172-remote-access-is-verified-not-assumed.md",
+      "sourcePath": "docs/content/docs/zh/adr/0172-remote-access-is-verified-not-assumed.md",
+      "sha256": "03c361be00660012c821f7383bae1d8810f8f0d14d8947541ae350f0f99af5bf",
+      "sourceSha256": "03c361be00660012c821f7383bae1d8810f8f0d14d8947541ae350f0f99af5bf",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0173-the-tracker-has-one-programmatic-face.md",
+      "sourcePath": "docs/content/docs/zh/adr/0173-the-tracker-has-one-programmatic-face.md",
+      "sha256": "659a79a294c312cb87e5bb18e0a932c7b28f60ce1875be490024ccf35673553b",
+      "sourceSha256": "659a79a294c312cb87e5bb18e0a932c7b28f60ce1875be490024ccf35673553b",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0174-the-bot-control-plane.md",
+      "sourcePath": "docs/content/docs/zh/adr/0174-the-bot-control-plane.md",
+      "sha256": "bbe7ac2e6af971e5cc187817878bdac6526bff0413e33cb3cabb9600869055b9",
+      "sourceSha256": "bbe7ac2e6af971e5cc187817878bdac6526bff0413e33cb3cabb9600869055b9",
+      "lastModified": "2026-10-30T14:31:02+08:00"
+    },
+    {
+      "path": "zh/adr/0175-the-rpc-face-has-one-grammar-one-error-and-one-version.md",
+      "sourcePath": "docs/content/docs/zh/adr/0175-the-rpc-face-has-one-grammar-one-error-and-one-version.md",
+      "sha256": "db25ed29ab6973f4672ea06d57e352258382145940a1318f894775b03bc86613",
+      "sourceSha256": "db25ed29ab6973f4672ea06d57e352258382145940a1318f894775b03bc86613",
+      "lastModified": "2026-10-16T23:17:35+08:00"
+    },
+    {
+      "path": "zh/adr/0176-every-clone-shares-one-object-cache.md",
+      "sourcePath": "docs/content/docs/zh/adr/0176-every-clone-shares-one-object-cache.md",
+      "sha256": "3cae9fafb6f3aac56221b0e21ce97f54a107defa43f0e8fcf0d274a04b6c36b8",
+      "sourceSha256": "3cae9fafb6f3aac56221b0e21ce97f54a107defa43f0e8fcf0d274a04b6c36b8",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0177-a-room-is-one-conversation-shape.md",
+      "sourcePath": "docs/content/docs/zh/adr/0177-a-room-is-one-conversation-shape.md",
+      "sha256": "fddc507354fb62bb9602a9687050fc296123ec325c09e6e1cc1f2e3649aea028",
+      "sourceSha256": "fddc507354fb62bb9602a9687050fc296123ec325c09e6e1cc1f2e3649aea028",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0178-pointing-at-a-rendered-element.md",
+      "sourcePath": "docs/content/docs/zh/adr/0178-pointing-at-a-rendered-element.md",
+      "sha256": "9f301fe42bdb25b86a2e760cf082b4067eb68d7989a5e46d259c550d7000e957",
+      "sourceSha256": "9f301fe42bdb25b86a2e760cf082b4067eb68d7989a5e46d259c550d7000e957",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0179-the-schedule-answers-one-question.md",
+      "sourcePath": "docs/content/docs/zh/adr/0179-the-schedule-answers-one-question.md",
+      "sha256": "04c5405b71e0506f88bdb12bfb5dc933eb7494ca648ac3c5d06f931dba860bfe",
+      "sourceSha256": "04c5405b71e0506f88bdb12bfb5dc933eb7494ca648ac3c5d06f931dba860bfe",
+      "lastModified": "2026-10-04T17:02:09+08:00"
+    },
+    {
+      "path": "zh/adr/0180-a-video-reaches-the-model-as-what-it-can-read.md",
+      "sourcePath": "docs/content/docs/zh/adr/0180-a-video-reaches-the-model-as-what-it-can-read.md",
+      "sha256": "dd24961eeb9a51e9a291d0c1945838a58ed93165146912724cc43e64475c8917",
+      "sourceSha256": "dd24961eeb9a51e9a291d0c1945838a58ed93165146912724cc43e64475c8917",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0181-what-the-user-staged-is-what-the-model-reads.md",
+      "sourcePath": "docs/content/docs/zh/adr/0181-what-the-user-staged-is-what-the-model-reads.md",
+      "sha256": "3c576595705385aa57e6429714d5530e77d28971d7ab75fa4b23dd79483214b4",
+      "sourceSha256": "3c576595705385aa57e6429714d5530e77d28971d7ab75fa4b23dd79483214b4",
+      "lastModified": "2026-10-04T17:02:34+08:00"
+    },
+    {
+      "path": "zh/adr/0182-a-project-names-the-image-it-runs-in.md",
+      "sourcePath": "docs/content/docs/zh/adr/0182-a-project-names-the-image-it-runs-in.md",
+      "sha256": "05eb7f23949e31cf24a00d983126cfca08ac831989a0361a82a3769766ad574f",
+      "sourceSha256": "05eb7f23949e31cf24a00d983126cfca08ac831989a0361a82a3769766ad574f",
+      "lastModified": "2026-10-17T14:22:23+08:00"
+    },
+    {
+      "path": "zh/adr/0183-the-agent-is-brought-to-the-image.md",
+      "sourcePath": "docs/content/docs/zh/adr/0183-the-agent-is-brought-to-the-image.md",
+      "sha256": "5ed7016afcea5d0c5f067928ba3db522df55e27bdc6608cd70464ce3a6c0ad7b",
+      "sourceSha256": "5ed7016afcea5d0c5f067928ba3db522df55e27bdc6608cd70464ce3a6c0ad7b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0188-a-routed-turn-spends-only-what-its-ledger-reserved.md",
+      "sourcePath": "docs/content/docs/zh/adr/0188-a-routed-turn-spends-only-what-its-ledger-reserved.md",
+      "sha256": "be8f560219a03dec5bb75119304ffb8ede9e295ebb550a98eab74043f7ad1822",
+      "sourceSha256": "be8f560219a03dec5bb75119304ffb8ede9e295ebb550a98eab74043f7ad1822",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0189-a-plugin-says-which-of-four-things-it-is-doing.md",
+      "sourcePath": "docs/content/docs/zh/adr/0189-a-plugin-says-which-of-four-things-it-is-doing.md",
+      "sha256": "e5e481450af47aaa6197f90f3063a0b4ba6f16cfb80aeb5b3e1a74598d0d65a5",
+      "sourceSha256": "e5e481450af47aaa6197f90f3063a0b4ba6f16cfb80aeb5b3e1a74598d0d65a5",
+      "lastModified": "2026-10-30T14:31:33+08:00"
+    },
+    {
+      "path": "zh/adr/0190-notifications-leave-the-app-as-durable-work.md",
+      "sourcePath": "docs/content/docs/zh/adr/0190-notifications-leave-the-app-as-durable-work.md",
+      "sha256": "6ec089f5bd68a03ce9d9dabb112f21cf007d26575b0082c418a4a465bcd51967",
+      "sourceSha256": "6ec089f5bd68a03ce9d9dabb112f21cf007d26575b0082c418a4a465bcd51967",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0191-the-web-shell-lets-each-column-draw-its-own-header.md",
+      "sourcePath": "docs/content/docs/zh/adr/0191-the-web-shell-lets-each-column-draw-its-own-header.md",
+      "sha256": "4494df1e13add0c4c24c3ed84b28ba85ca79a1a16ab179ad311dde4391dc61cf",
+      "sourceSha256": "4494df1e13add0c4c24c3ed84b28ba85ca79a1a16ab179ad311dde4391dc61cf",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0192-a-bot-turn-borrows-the-runs-stage.md",
+      "sourcePath": "docs/content/docs/zh/adr/0192-a-bot-turn-borrows-the-runs-stage.md",
+      "sha256": "a9f62ff1e03bedab771cdc9bbedcea7b085e3b8a2476ab7a0e9465dbd57fbb0c",
+      "sourceSha256": "a9f62ff1e03bedab771cdc9bbedcea7b085e3b8a2476ab7a0e9465dbd57fbb0c",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0193-one-guide-kit.md",
+      "sourcePath": "docs/content/docs/zh/adr/0193-one-guide-kit.md",
+      "sha256": "c100fcdeb3ac3198be0abd706a80809dac98a8a0b5e5cd4632bdca4e705c254e",
+      "sourceSha256": "c100fcdeb3ac3198be0abd706a80809dac98a8a0b5e5cd4632bdca4e705c254e",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0194-a-judgment-is-a-provider-not-a-prompt.md",
+      "sourcePath": "docs/content/docs/zh/adr/0194-a-judgment-is-a-provider-not-a-prompt.md",
+      "sha256": "dcfa4ed89bcaa327903660e26c267ae3512ec12360feb04eb790584382bba734",
+      "sourceSha256": "dcfa4ed89bcaa327903660e26c267ae3512ec12360feb04eb790584382bba734",
+      "lastModified": "2026-10-06T18:14:22+08:00"
+    },
+    {
+      "path": "zh/adr/0195-a-plugin-writes-to-the-contract-not-around-it.md",
+      "sourcePath": "docs/content/docs/zh/adr/0195-a-plugin-writes-to-the-contract-not-around-it.md",
+      "sha256": "c35790c77423103e7502fc3956c23f070b17adb68b98ce858777c60432c133a9",
+      "sourceSha256": "c35790c77423103e7502fc3956c23f070b17adb68b98ce858777c60432c133a9",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0196-a-library-crate-links-tauri-only-when-asked.md",
+      "sourcePath": "docs/content/docs/zh/adr/0196-a-library-crate-links-tauri-only-when-asked.md",
+      "sha256": "2478e77379e461a735390c14f73a981ac849b2871312449b00400b6bc1a4fdc9",
+      "sourceSha256": "2478e77379e461a735390c14f73a981ac849b2871312449b00400b6bc1a4fdc9",
+      "lastModified": "2026-10-19T14:54:15+08:00"
+    },
+    {
+      "path": "zh/adr/0197-the-sidecar-runs-its-typescript-unbuilt.md",
+      "sourcePath": "docs/content/docs/zh/adr/0197-the-sidecar-runs-its-typescript-unbuilt.md",
+      "sha256": "923c917738de38ebbc5077f31ebb6461f5a6f7d39e0d666f59e60c12d716eb10",
+      "sourceSha256": "923c917738de38ebbc5077f31ebb6461f5a6f7d39e0d666f59e60c12d716eb10",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0198-a-runs-capabilities-are-granted-not-patched.md",
+      "sourcePath": "docs/content/docs/zh/adr/0198-a-runs-capabilities-are-granted-not-patched.md",
+      "sha256": "a2be6c8f711a7fcfb8c1897e1ce7ad01bbf8a91bfad742af2be071e9c81f1471",
+      "sourceSha256": "a2be6c8f711a7fcfb8c1897e1ce7ad01bbf8a91bfad742af2be071e9c81f1471",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0199-an-agent-variant-follows-its-base.md",
+      "sourcePath": "docs/content/docs/zh/adr/0199-an-agent-variant-follows-its-base.md",
+      "sha256": "fb33f6f6fe80c8bdbfd35d80264d7f3b55d33e21acbfe8f8a3e6e8cf3328dc30",
+      "sourceSha256": "fb33f6f6fe80c8bdbfd35d80264d7f3b55d33e21acbfe8f8a3e6e8cf3328dc30",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0200-files-is-a-view-that-keeps-what-you-keep.md",
+      "sourcePath": "docs/content/docs/zh/adr/0200-files-is-a-view-that-keeps-what-you-keep.md",
+      "sha256": "7ec6d1caf5cdfcb52407e17b2a5df143f13140acf2c0de7839926c4558f51299",
+      "sourceSha256": "7ec6d1caf5cdfcb52407e17b2a5df143f13140acf2c0de7839926c4558f51299",
+      "lastModified": "2026-10-10T16:10:20+08:00"
+    },
+    {
+      "path": "zh/adr/0201-the-desktop-browser-runs-chromium-locally.md",
+      "sourcePath": "docs/content/docs/zh/adr/0201-the-desktop-browser-runs-chromium-locally.md",
+      "sha256": "17ed7da9ae98e4078fe8a02af2bad986809fdaba8e86f56455ecf49daa7e9b9b",
+      "sourceSha256": "17ed7da9ae98e4078fe8a02af2bad986809fdaba8e86f56455ecf49daa7e9b9b",
+      "lastModified": "2026-10-04T17:02:41+08:00"
+    },
+    {
+      "path": "zh/adr/0202-memory-ages-and-every-change-can-be-undone.md",
+      "sourcePath": "docs/content/docs/zh/adr/0202-memory-ages-and-every-change-can-be-undone.md",
+      "sha256": "f73ced3375d77ad3ca534b88359953226d04d4c01dbbbe2b1166d0ec288291be",
+      "sourceSha256": "f73ced3375d77ad3ca534b88359953226d04d4c01dbbbe2b1166d0ec288291be",
+      "lastModified": "2026-10-04T16:57:13+08:00"
+    },
+    {
+      "path": "zh/adr/0203-external-bridge-workspace-tools.md",
+      "sourcePath": "docs/content/docs/zh/adr/0203-external-bridge-workspace-tools.md",
+      "sha256": "d9fd66f09504dbc24fd355c867609face6a4c192d59e9cbd125052e22c64872b",
+      "sourceSha256": "d9fd66f09504dbc24fd355c867609face6a4c192d59e9cbd125052e22c64872b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0204-a-project-coordinator-runs-threads-in-the-background.md",
+      "sourcePath": "docs/content/docs/zh/adr/0204-a-project-coordinator-runs-threads-in-the-background.md",
+      "sha256": "b2b7badde72a3d990bc56522e5171743bc4a00f030c5f5284349e24173bfe5c1",
+      "sourceSha256": "b2b7badde72a3d990bc56522e5171743bc4a00f030c5f5284349e24173bfe5c1",
+      "lastModified": "2026-10-04T17:00:43+08:00"
+    },
+    {
+      "path": "zh/adr/0205-video-generation-runs-as-durable-jobs.md",
+      "sourcePath": "docs/content/docs/zh/adr/0205-video-generation-runs-as-durable-jobs.md",
+      "sha256": "a939d2bdd2d8f9833b619c51054a57b5a1cb47e977da9321a084c79c0f419437",
+      "sourceSha256": "a939d2bdd2d8f9833b619c51054a57b5a1cb47e977da9321a084c79c0f419437",
+      "lastModified": "2026-10-04T16:58:22+08:00"
+    },
+    {
+      "path": "zh/adr/0206-a-workspace-streams-its-changes-instead-of-being-polled.md",
+      "sourcePath": "docs/content/docs/zh/adr/0206-a-workspace-streams-its-changes-instead-of-being-polled.md",
+      "sha256": "8ecfbb62fb326e2f35648dedbab1bc8d92dd7159aababeaac88fdd26b9dab6fe",
+      "sourceSha256": "8ecfbb62fb326e2f35648dedbab1bc8d92dd7159aababeaac88fdd26b9dab6fe",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0207-a-collaboration-event-reaches-people-who-are-not-in-the-room.md",
+      "sourcePath": "docs/content/docs/zh/adr/0207-a-collaboration-event-reaches-people-who-are-not-in-the-room.md",
+      "sha256": "13ff7879d9e21fb32ea0e8c79e89907c9a2bf070c8506f5a3c0b7b3e1a124db1",
+      "sourceSha256": "13ff7879d9e21fb32ea0e8c79e89907c9a2bf070c8506f5a3c0b7b3e1a124db1",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0208-edits-to-different-fields-merge.md",
+      "sourcePath": "docs/content/docs/zh/adr/0208-edits-to-different-fields-merge.md",
+      "sha256": "451d71b66dabd95c0be9cd6c138dba0b2259deb5c51e242f1bc017a904895897",
+      "sourceSha256": "451d71b66dabd95c0be9cd6c138dba0b2259deb5c51e242f1bc017a904895897",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0209-a-cogpack-pins-plugins-and-a-cogset-owns-what-runs.md",
+      "sourcePath": "docs/content/docs/zh/adr/0209-a-cogpack-pins-plugins-and-a-cogset-owns-what-runs.md",
+      "sha256": "2afaf3b7e2df255513f065683070a60016121d91edd4ef67e16c7112f35c7d1a",
+      "sourceSha256": "2afaf3b7e2df255513f065683070a60016121d91edd4ef67e16c7112f35c7d1a",
+      "lastModified": "2026-10-30T14:31:33+08:00"
+    },
+    {
+      "path": "zh/adr/0210-a-plugin-can-carry-a-pi-package.md",
+      "sourcePath": "docs/content/docs/zh/adr/0210-a-plugin-can-carry-a-pi-package.md",
+      "sha256": "b7623c1c4536198c01e790a18b8f693b33f788b0380063386c09f3ecb879815a",
+      "sourceSha256": "b7623c1c4536198c01e790a18b8f693b33f788b0380063386c09f3ecb879815a",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0211-public-status-measures-the-relay-it-names.md",
+      "sourcePath": "docs/content/docs/zh/adr/0211-public-status-measures-the-relay-it-names.md",
+      "sha256": "46e2b8438fa43e684c1335a769e5d2d6589fa3bf3a750d4f9cd8aa3b4b1f5c1d",
+      "sourceSha256": "46e2b8438fa43e684c1335a769e5d2d6589fa3bf3a750d4f9cd8aa3b4b1f5c1d",
+      "lastModified": "2026-10-24T14:34:49+08:00"
+    },
+    {
+      "path": "zh/adr/0212-the-broker-credential-is-a-file-not-an-environment.md",
+      "sourcePath": "docs/content/docs/zh/adr/0212-the-broker-credential-is-a-file-not-an-environment.md",
+      "sha256": "58eb13b78d1fc78e3849ae315089f191e205cae71912567b2983d2af357c8d1b",
+      "sourceSha256": "58eb13b78d1fc78e3849ae315089f191e205cae71912567b2983d2af357c8d1b",
+      "lastModified": "2026-10-04T17:03:06+08:00"
+    },
+    {
+      "path": "zh/adr/0213-conversation-history-has-a-manager-and-the-archive-freezes-place.md",
+      "sourcePath": "docs/content/docs/zh/adr/0213-conversation-history-has-a-manager-and-the-archive-freezes-place.md",
+      "sha256": "937fdb0a1232d276ec93203bb7f9756e6ceea369fd402df8421554bf65986a50",
+      "sourceSha256": "937fdb0a1232d276ec93203bb7f9756e6ceea369fd402df8421554bf65986a50",
+      "lastModified": "2026-10-15T17:47:12+08:00"
+    },
+    {
+      "path": "zh/adr/0214-the-chat-dock-is-a-tabbed-browser-that-remembers-each-task.md",
+      "sourcePath": "docs/content/docs/zh/adr/0214-the-chat-dock-is-a-tabbed-browser-that-remembers-each-task.md",
+      "sha256": "040807a8473b9308e167a3da44e624342315badc5f01ac796aaa9fa843cd24b6",
+      "sourceSha256": "040807a8473b9308e167a3da44e624342315badc5f01ac796aaa9fa843cd24b6",
+      "lastModified": "2026-10-04T15:18:53+08:00"
+    },
+    {
+      "path": "zh/adr/0215-one-person-one-encrypted-sync-space-many-writable-hosts.md",
+      "sourcePath": "docs/content/docs/zh/adr/0215-one-person-one-encrypted-sync-space-many-writable-hosts.md",
+      "sha256": "35075c2832cd98d335584bc407f7b2af845918560af12b3a9bc8815bdb9e9595",
+      "sourceSha256": "35075c2832cd98d335584bc407f7b2af845918560af12b3a9bc8815bdb9e9595",
+      "lastModified": "2026-10-24T14:34:49+08:00"
+    },
+    {
+      "path": "zh/adr/0216-each-agent-configuration-keeps-its-own-state.md",
+      "sourcePath": "docs/content/docs/zh/adr/0216-each-agent-configuration-keeps-its-own-state.md",
+      "sha256": "d57238246dca2794d4f73cbff2734f34ba5ca98b9f946433ee79960933e1cf65",
+      "sourceSha256": "d57238246dca2794d4f73cbff2734f34ba5ca98b9f946433ee79960933e1cf65",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0217-agent-integrations-are-packages-behind-host-ports.md",
+      "sourcePath": "docs/content/docs/zh/adr/0217-agent-integrations-are-packages-behind-host-ports.md",
+      "sha256": "c7776ad80af64c38aa0bd80608bf7312db55d193a854899819956566bb8af8ab",
+      "sourceSha256": "c7776ad80af64c38aa0bd80608bf7312db55d193a854899819956566bb8af8ab",
+      "lastModified": "2026-10-06T15:27:44+08:00"
+    },
+    {
+      "path": "zh/adr/0218-chat-reading-surface-links-blocks-and-charts.md",
+      "sourcePath": "docs/content/docs/zh/adr/0218-chat-reading-surface-links-blocks-and-charts.md",
+      "sha256": "b75b803f5ba8b2e86e35362015ca92780684fec0f3e23d345d7c3bbc9ca1a61a",
+      "sourceSha256": "b75b803f5ba8b2e86e35362015ca92780684fec0f3e23d345d7c3bbc9ca1a61a",
+      "lastModified": "2026-10-07T01:52:51+08:00"
+    },
+    {
+      "path": "zh/adr/0219-pet-console-remote-care.md",
+      "sourcePath": "docs/content/docs/zh/adr/0219-pet-console-remote-care.md",
+      "sha256": "3b64f16201d5e9a25e335dffa8d350a261ceac847729c913b51c63611f5eea82",
+      "sourceSha256": "3b64f16201d5e9a25e335dffa8d350a261ceac847729c913b51c63611f5eea82",
+      "lastModified": "2026-10-09T18:10:32+08:00"
+    },
+    {
+      "path": "zh/adr/0220-agents-console-and-builder.md",
+      "sourcePath": "docs/content/docs/zh/adr/0220-agents-console-and-builder.md",
+      "sha256": "4ff8d5c3e5a44f09cb224f3f9daa5c62558689b194e5678fbbf723295fe634be",
+      "sourceSha256": "4ff8d5c3e5a44f09cb224f3f9daa5c62558689b194e5678fbbf723295fe634be",
+      "lastModified": "2026-10-09T23:37:28+08:00"
+    },
+    {
+      "path": "zh/adr/0221-a-remote-sandbox-is-a-provider-behind-the-same-seam.md",
+      "sourcePath": "docs/content/docs/zh/adr/0221-a-remote-sandbox-is-a-provider-behind-the-same-seam.md",
+      "sha256": "114b05a41f2e9119e136df2e8120b8024f7382b86c980f4b8f69de51dc915523",
+      "sourceSha256": "114b05a41f2e9119e136df2e8120b8024f7382b86c980f4b8f69de51dc915523",
+      "lastModified": "2026-10-15T17:47:31+08:00"
+    },
+    {
+      "path": "zh/adr/0222-a-conversations-files-are-a-view-and-sharing-them-is-a-grant.md",
+      "sourcePath": "docs/content/docs/zh/adr/0222-a-conversations-files-are-a-view-and-sharing-them-is-a-grant.md",
+      "sha256": "dbb0cdd718ec37f338aed7c132cd2d674ef1275408e3e4c1d5a37a2ccd884ba2",
+      "sourceSha256": "dbb0cdd718ec37f338aed7c132cd2d674ef1275408e3e4c1d5a37a2ccd884ba2",
+      "lastModified": "2026-10-11T01:13:01+08:00"
+    },
+    {
+      "path": "zh/adr/0223-files-is-a-space-you-manage.md",
+      "sourcePath": "docs/content/docs/zh/adr/0223-files-is-a-space-you-manage.md",
+      "sha256": "17378054ad948527cc5bc84218adb5a2c2f4729e2a83dfdef9a739943fc59382",
+      "sourceSha256": "17378054ad948527cc5bc84218adb5a2c2f4729e2a83dfdef9a739943fc59382",
+      "lastModified": "2026-10-10T23:46:25+08:00"
+    },
+    {
+      "path": "zh/adr/0224-an-always-on-host-is-a-peer-the-user-brings.md",
+      "sourcePath": "docs/content/docs/zh/adr/0224-an-always-on-host-is-a-peer-the-user-brings.md",
+      "sha256": "de001a1695faa41d2292dd9ce000affc4f61bfa6af569de82c2a66f8590c0e48",
+      "sourceSha256": "de001a1695faa41d2292dd9ce000affc4f61bfa6af569de82c2a66f8590c0e48",
+      "lastModified": "2026-10-12T13:25:31+08:00"
+    },
+    {
+      "path": "zh/adr/0225-the-tray-panel-is-a-glance-surface-assembled-from-modules.md",
+      "sourcePath": "docs/content/docs/zh/adr/0225-the-tray-panel-is-a-glance-surface-assembled-from-modules.md",
+      "sha256": "8a85e40815483de02be253d33431bbad97a12baf4aaedf91de6def1856de7d7b",
+      "sourceSha256": "8a85e40815483de02be253d33431bbad97a12baf4aaedf91de6def1856de7d7b",
+      "lastModified": "2026-10-11T21:13:35+08:00"
+    },
+    {
+      "path": "zh/adr/0226-library-plugins-declare-contracts-over-ipc.md",
+      "sourcePath": "docs/content/docs/zh/adr/0226-library-plugins-declare-contracts-over-ipc.md",
+      "sha256": "6a1b9139face11794803a6c283c5a8133f8e08ff694a46f6ae2faf0424a9fd77",
+      "sourceSha256": "6a1b9139face11794803a6c283c5a8133f8e08ff694a46f6ae2faf0424a9fd77",
+      "lastModified": "2026-10-13T13:26:40+08:00"
+    },
+    {
+      "path": "zh/adr/0227-agent-changes-integrate-through-one-host-queue.md",
+      "sourcePath": "docs/content/docs/zh/adr/0227-agent-changes-integrate-through-one-host-queue.md",
+      "sha256": "730d0b91ee2411c97ae51725efd66d92f78339aeae459a89156d637ac350cbf2",
+      "sourceSha256": "730d0b91ee2411c97ae51725efd66d92f78339aeae459a89156d637ac350cbf2",
+      "lastModified": "2026-10-15T17:47:47+08:00"
+    },
+    {
+      "path": "zh/adr/0228-the-browser-companion-captures-richly-and-can-be-driven.md",
+      "sourcePath": "docs/content/docs/zh/adr/0228-the-browser-companion-captures-richly-and-can-be-driven.md",
+      "sha256": "4fe2f510a6a4611d3a91273cbb4407eda305dd4269c9dc88978114174b90bbfe",
+      "sourceSha256": "4fe2f510a6a4611d3a91273cbb4407eda305dd4269c9dc88978114174b90bbfe",
+      "lastModified": "2026-10-23T21:18:15+08:00"
+    },
+    {
+      "path": "zh/adr/0229-per-workspace-port-leases.md",
+      "sourcePath": "docs/content/docs/zh/adr/0229-per-workspace-port-leases.md",
+      "sha256": "f6b9b122e095d1c40cb4f79688085b7924780a44138b1d8dd36052f4b1b9f333",
+      "sourceSha256": "f6b9b122e095d1c40cb4f79688085b7924780a44138b1d8dd36052f4b1b9f333",
+      "lastModified": "2026-10-17T02:26:38+08:00"
+    },
+    {
+      "path": "zh/adr/0230-best-of-n-attempts-share-a-frozen-base.md",
+      "sourcePath": "docs/content/docs/zh/adr/0230-best-of-n-attempts-share-a-frozen-base.md",
+      "sha256": "309c15c1d093fe542f837d5e40a56cf96ea0a965470a2a090c3ff1f5f2df9222",
+      "sourceSha256": "309c15c1d093fe542f837d5e40a56cf96ea0a965470a2a090c3ff1f5f2df9222",
+      "lastModified": "2026-10-17T23:34:08+08:00"
+    },
+    {
+      "path": "zh/adr/0231-sandbox-snapshots-join-rootfs-and-workspace.md",
+      "sourcePath": "docs/content/docs/zh/adr/0231-sandbox-snapshots-join-rootfs-and-workspace.md",
+      "sha256": "cf46c7820571e9796aafbb18175a8f1e84795c7b3a7ded90db83a158d9d0bb13",
+      "sourceSha256": "cf46c7820571e9796aafbb18175a8f1e84795c7b3a7ded90db83a158d9d0bb13",
+      "lastModified": "2026-10-18T00:06:48+08:00"
+    },
+    {
+      "path": "zh/adr/0232-a-long-run-shows-an-estimate-never-a-budget.md",
+      "sourcePath": "docs/content/docs/zh/adr/0232-a-long-run-shows-an-estimate-never-a-budget.md",
+      "sha256": "82a6157d0c9ba88b5ac35995bf2d232ea0360413b26a423e239255ba7bce5db0",
+      "sourceSha256": "82a6157d0c9ba88b5ac35995bf2d232ea0360413b26a423e239255ba7bce5db0",
+      "lastModified": "2026-10-18T03:13:33+08:00"
+    },
+    {
+      "path": "zh/adr/0233-a-managed-desktop-accepts-a-delivered-commit.md",
+      "sourcePath": "docs/content/docs/zh/adr/0233-a-managed-desktop-accepts-a-delivered-commit.md",
+      "sha256": "b6d011b15522aaf49fc8c66020bfb259071c17aa70ef7666675c4da450d35dae",
+      "sourceSha256": "b6d011b15522aaf49fc8c66020bfb259071c17aa70ef7666675c4da450d35dae",
+      "lastModified": "2026-10-29T16:59:29+08:00"
+    },
+    {
+      "path": "zh/adr/0234-a-remote-desktop-is-a-provider-binding-brokered-by-the-host.md",
+      "sourcePath": "docs/content/docs/zh/adr/0234-a-remote-desktop-is-a-provider-binding-brokered-by-the-host.md",
+      "sha256": "71abab4c74e7cf82e4db9aa041079c8f5e72ac43d5bb8332e501fcd3e429546f",
+      "sourceSha256": "71abab4c74e7cf82e4db9aa041079c8f5e72ac43d5bb8332e501fcd3e429546f",
+      "lastModified": "2026-10-29T11:23:36+08:00"
+    },
+    {
+      "path": "zh/adr/0235-a-vscode-tunnel-installs-a-host-and-is-one-more-route-to-it.md",
+      "sourcePath": "docs/content/docs/zh/adr/0235-a-vscode-tunnel-installs-a-host-and-is-one-more-route-to-it.md",
+      "sha256": "e3a4690965fb867a7dc958568e51798aaf32135cf33523a85f32d29d46a2157e",
+      "sourceSha256": "e3a4690965fb867a7dc958568e51798aaf32135cf33523a85f32d29d46a2157e",
+      "lastModified": "2026-10-19T15:47:34+08:00"
+    },
+    {
+      "path": "zh/adr/0236-built-in-prompts-are-owned-slots-behind-one-prompt-center.md",
+      "sourcePath": "docs/content/docs/zh/adr/0236-built-in-prompts-are-owned-slots-behind-one-prompt-center.md",
+      "sha256": "ca6f692f5f6227017339b9ce5eae470f0e18c7a162b25a5e685ceab6ecfc1b93",
+      "sourceSha256": "ef89f64b91c42426af9a3baf333ca7f5bb1f05b0a83087241ae35c4798061ff5",
+      "lastModified": "2026-10-21T16:59:08+08:00"
+    },
+    {
+      "path": "zh/adr/0237-an-agents-harness-evolves-through-probed-approved-versions.md",
+      "sourcePath": "docs/content/docs/zh/adr/0237-an-agents-harness-evolves-through-probed-approved-versions.md",
+      "sha256": "3ba2f15e1b5246b5e95ff6a40e434809307878235b9d1b26a4a78ac29c446e2d",
+      "sourceSha256": "3ba2f15e1b5246b5e95ff6a40e434809307878235b9d1b26a4a78ac29c446e2d",
+      "lastModified": "2026-10-20T06:23:30+08:00"
+    },
+    {
+      "path": "zh/adr/0238-agent-configuration-is-governed-by-evidence.md",
+      "sourcePath": "docs/content/docs/zh/adr/0238-agent-configuration-is-governed-by-evidence.md",
+      "sha256": "da973f6db2fdf64087f51bee724616061719c50a2d439a32459a3d723efc1a97",
+      "sourceSha256": "da973f6db2fdf64087f51bee724616061719c50a2d439a32459a3d723efc1a97",
+      "lastModified": "2026-10-21T16:53:32+08:00"
+    },
+    {
+      "path": "zh/adr/0239-an-outbound-action-is-authorized-by-the-request.md",
+      "sourcePath": "docs/content/docs/zh/adr/0239-an-outbound-action-is-authorized-by-the-request.md",
+      "sha256": "ede8ef9a0a79b878879f25d2766dc3baee021d45eb60f7279a33ae48d9d7bf14",
+      "sourceSha256": "792b4affb8fad645e54b4061a161db6a13e5bf650af2ea202e019e176be8ece0",
+      "lastModified": "2026-10-31T13:06:32+08:00"
+    },
+    {
+      "path": "zh/adr/0240-a-generated-surface-streams-answers-and-computes.md",
+      "sourcePath": "docs/content/docs/zh/adr/0240-a-generated-surface-streams-answers-and-computes.md",
+      "sha256": "4c1bd050a88e7846b78184d6418b2ba85ff6e522ff0db5a380750303696af109",
+      "sourceSha256": "4c1bd050a88e7846b78184d6418b2ba85ff6e522ff0db5a380750303696af109",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0241-a-shared-run-streams-to-its-members.md",
+      "sourcePath": "docs/content/docs/zh/adr/0241-a-shared-run-streams-to-its-members.md",
+      "sha256": "53a1fedda24a96bb42bd4c357ccd2311588741b3cc794262da4fe52b582c9b61",
+      "sourceSha256": "53a1fedda24a96bb42bd4c357ccd2311588741b3cc794262da4fe52b582c9b61",
+      "lastModified": "2026-10-27T19:29:03+08:00"
+    },
+    {
+      "path": "zh/adr/0242-the-browser-companion-names-the-capabilities-it-adds.md",
+      "sourcePath": "docs/content/docs/zh/adr/0242-the-browser-companion-names-the-capabilities-it-adds.md",
+      "sha256": "f10f9e5a3881ecb199ff926a8f202aa99ac82763387c85f70639757426cccc17",
+      "sourceSha256": "f10f9e5a3881ecb199ff926a8f202aa99ac82763387c85f70639757426cccc17",
+      "lastModified": "2026-10-28T00:35:36+08:00"
+    },
+    {
+      "path": "zh/adr/0243-a-run-acts-for-someone-and-says-who.md",
+      "sourcePath": "docs/content/docs/zh/adr/0243-a-run-acts-for-someone-and-says-who.md",
+      "sha256": "7d8be3712bd63a4bef2af6b85e2080a49a11a853bcc3f6303f35888d250d840e",
+      "sourceSha256": "7d8be3712bd63a4bef2af6b85e2080a49a11a853bcc3f6303f35888d250d840e",
+      "lastModified": "2026-10-31T19:17:25+08:00"
+    },
+    {
+      "path": "zh/adr/0244-a-remote-run-has-stopped-only-when-its-worker-says-so.md",
+      "sourcePath": "docs/content/docs/zh/adr/0244-a-remote-run-has-stopped-only-when-its-worker-says-so.md",
+      "sha256": "4ee4cb6de857cd12bc51d35c1c73e6a2f57242df80d2611c13641cb9a8326eed",
+      "sourceSha256": "4ee4cb6de857cd12bc51d35c1c73e6a2f57242df80d2611c13641cb9a8326eed",
+      "lastModified": "2026-10-31T17:14:43+08:00"
+    },
+    {
+      "path": "zh/adr/0245-a-paired-device-is-granted-workspaces-not-a-host.md",
+      "sourcePath": "docs/content/docs/zh/adr/0245-a-paired-device-is-granted-workspaces-not-a-host.md",
+      "sha256": "f19c5e62478994326e3bd1ef82e8c7691f90942c65cb5524bf9143ce347f6a58",
+      "sourceSha256": "f19c5e62478994326e3bd1ef82e8c7691f90942c65cb5524bf9143ce347f6a58",
+      "lastModified": "2026-10-31T17:14:43+08:00"
+    },
+    {
+      "path": "zh/adr/0246-a-business-plugin-reaches-a-service-through-a-granted-connection.md",
+      "sourcePath": "docs/content/docs/zh/adr/0246-a-business-plugin-reaches-a-service-through-a-granted-connection.md",
+      "sha256": "bf5884acca6dbae03992b756e77cdb2b68bde0ba8c938b765ae17c1612c2faeb",
+      "sourceSha256": "bf5884acca6dbae03992b756e77cdb2b68bde0ba8c938b765ae17c1612c2faeb",
+      "lastModified": "2026-10-31T19:11:28+08:00"
+    },
+    {
+      "path": "zh/adr/0251-macos-screen-off-virtual-display.md",
+      "sourcePath": "docs/content/docs/zh/adr/0251-macos-screen-off-virtual-display.md",
+      "sha256": "38887fb2672e28c62dc641cdee92f9596faceb12c4a9cf2683d30bec67b0975c",
+      "sourceSha256": "38887fb2672e28c62dc641cdee92f9596faceb12c4a9cf2683d30bec67b0975c",
+      "lastModified": "2026-11-01T19:19:46+08:00"
+    },
+    {
+      "path": "zh/adr/index.mdx",
+      "sourcePath": "docs/content/docs/zh/adr/index.mdx",
+      "sha256": "c69f1604333f08c226efc3b025b075f37d8e3dd92c42237df904c19d7edd6db7",
+      "sourceSha256": "c69f1604333f08c226efc3b025b075f37d8e3dd92c42237df904c19d7edd6db7",
+      "lastModified": "2026-10-17T02:11:07+08:00"
+    },
+    {
+      "path": "zh/adr/meta.json",
+      "sourcePath": "docs/content/docs/zh/adr/meta.json",
+      "sha256": "891b4662e552f3623a14116848ecf15326d37bc069d830e28179f3d7d6066133",
+      "sourceSha256": "891b4662e552f3623a14116848ecf15326d37bc069d830e28179f3d7d6066133",
+      "lastModified": "2026-11-01T19:19:46+08:00"
+    }
+  ]
+}

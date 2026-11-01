@@ -1,0 +1,6 @@
+* text=auto eol=lf
+
+# Imported publication bytes retain the original Markdown hard breaks and EOF.
+content/docs/en/adr/** whitespace=-blank-at-eol,-blank-at-eof
+content/docs/zh/adr/** whitespace=-blank-at-eol,-blank-at-eof
+content/docs/plugin-dev/api-reference.generated.mdx whitespace=-blank-at-eol,-blank-at-eof

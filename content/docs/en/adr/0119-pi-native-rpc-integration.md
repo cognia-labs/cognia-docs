@@ -1,0 +1,227 @@
+---
+title: ADR-0119 — Pi native RPC integration
+description: "Adds a built-in `pi-rpc` protocol that controls `pi --mode rpc` directly. It replaces the community ACP bridge and preserves the mandatory external-agent sandbox."
+---
+
+# ADR-0119 — Pi native RPC integration
+
+**Current verification (2026-10-05):** Pi `1.0.2` is the certified target; `0.85.1` remains the minimum accepted version. Other accepted versions remain unverified. The latest audit covers the real Pi process, Cognia extension and production macOS sandbox launcher, including native codemode nested-tool approval. Native Pi now supports MCP; Cognia's existing `pi-mcp-adapter` configuration target is retained as a stable persisted ID for `mcp.json`, without requiring the former third-party extension. See `docs/research/2026-10-05-pi-agent-compatibility.md` for fixes, checks and explicit limits. Earlier version statements below describe the historical decisions.
+
+**Status**: Accepted (2026-08-14)
+
+## Context
+
+Pi was reachable only through the community ACP bridge `npx -y pi-acp` (`lib/ai/agent/external/ecosystem-adapters.ts`). That bridge projects Pi's native RPC onto the smaller ACP vocabulary, so thinking levels, the steering and follow-up queues, the compaction lifecycle, the session tree with its forks, and usage detail were all lost or flattened. The bridge is also third-party code on the execution path, outside Cognia's certification.
+
+Pi does expose a first-class local protocol: `pi --mode rpc` speaks a JSONL command/event stream over stdio. It is **not** JSON-RPC — frames are `{type, id, …}` command objects with `{"type":"response", "command", "success", …}` replies — so `json-rpc-peer.ts` cannot be reused, only imitated.
+
+Four properties of that protocol were established by running Pi 0.84.1 locally rather than read from documentation, because each one breaks a naive implementation:
+
+1. **Responses are not FIFO.** An `abort` reply arrived after the reply to a `get_state` issued later. Correlation must be by `id` only.
+2. **A malformed inbound frame does not kill Pi.** It answers `{"type":"response","command":"parse","success":false}` **with no `id`**, so a correlator that assumes every response carries an id will leak a pending request forever.
+3. **`set_thinking_level` accepts invalid input.** It returns `success: true`, silently clamps to `off`, and emits `thinking_level_changed` first. Validation must happen on the Cognia side against `get_available_thinking_levels`, whose result is per-model.
+4. **`--no-extensions` does not isolate.** Skills under `~/.agents/skills/` and Pi's built-in inline extensions still load.
+
+Separately, Node's `readline` — which `cli/src/runtime/external/node-backend.ts` uses to frame every external agent's stdout — splits on U+2028 and U+2029. `JSON.stringify` does not escape those characters, so a single valid Pi frame whose payload contains U+2028 is shredded into several unparseable fragments. The Rust host (`BufReader::lines()`) is byte-oriented and unaffected.
+
+## Decision
+
+Add `pi-rpc` as a built-in `ExternalAgentProtocol` with a `PiRpcAdapter` registered in `ExternalAgentManager.registerDefaultAdapters()`. No new execution rail, no Dexie schema version, and no ACP anywhere in the path.
+
+**Framing.** The adapter owns a strict LF-only codec: split on the `\n` byte only, strip one trailing `\r`, never treat U+2028/U+2029 or a lone `\r` as a delimiter. It tolerates partial and multiple frames per chunk and enforces a 16 MiB frame and 32 MiB buffer ceiling, reporting `protocol_frame_invalid` past either. To feed it unframed bytes, `node-backend.ts` gains an opt-in raw-chunk forwarding mode used only by `pi-rpc`; ACP, Codex, and OpenCode keep the existing `readline` path unchanged. Their exposure to the same U+2028 defect is real but pre-existing and out of scope here.
+
+**Sessions.** One Pi process per Cognia session, never shared via `switch_session`. Cognia mints the session UUID and passes `--session-id`, which Pi treats as "use this exact id, creating it if missing" — so resume is the same flag again and the persisted link stores only that UUID, cwd, and Pi version. No absolute session-file path enters any cross-device payload. Forking uses `--fork`. A per-host cap of four processes reclaims the least-recently-used idle process, or returns `resource_limit`.
+
+**Versioning.** `0.84.1` is the certified version. Lower versions are refused with `runtime_version_unsupported`. Higher versions run but are reported as unverified and emit a signal, so a Pi upgrade degrades to a warning rather than an outage.
+
+**Sandbox.** No exception. Pi runs under the same mandatory `cognia-external-agent-launcher` as every other external agent; when the launcher is missing or the platform is not macOS/Linux, the session is refused with `sandbox_unavailable`. ADR-0077's "never falls back to an unsandboxed process" is reaffirmed unchanged, and the escape hatches considered during planning (a desktop one-time confirmation, a CLI flag, a headless env var) were all rejected — Pi must not be the precedent that erodes that invariant.
+
+**Extensions and permissions.** A first-party Cognia extension ships as raw TypeScript (Pi loads `.ts` directly; no build step) with a build-time SHA-256 pin. Isolation means `--no-extensions --no-skills --no-prompt-templates --no-approve`; `AGENTS.md`/`CLAUDE.md` context files are deliberately still loaded because they are data, not executable code. Because Pi retains its own built-in inline extensions even when isolated, the extension's `session_start` handshake asserts the expected extension set rather than asserting emptiness. No handshake within five seconds, or a hash mismatch, fails the session closed with `extension_handshake_failed`.
+
+The extension intercepts every native Pi tool call through `pi.on("tool_call")` and maps the five canonical permission modes onto Pi's `read`/`grep`/`find`/`ls`/`edit`/`write`/`bash` tools. `plan` and `dontAsk` additionally pin Pi's own `--tools` allowlist at spawn, so the restrictive modes have a process-level floor instead of resting on interception alone.
+
+**Tool projection.** The extension reuses the existing tool host rather than introducing a new channel: it reads `COGNIA_TOOLHOST_{SOCKET,TOKEN,SERVER}` from its environment and speaks the established `hello` / `authorize` / `exec` protocol to the broker. The session-scoped control file proposed during planning was dropped as redundant and strictly worse than the env + `0600` unix socket already in place.
+
+## Consequences
+
+- The tool-host token now enters the Pi process environment, where the model's `bash` tool can read it. Today that token reaches only the trusted bridge. This is accepted because `authorize()` in the broker — not possession of the token — is the permission authority: every call is re-checked against tool visibility, workspace confinement, `needsApproval`, and the approval gate, so a leaked token confers nothing the sandboxed process could not already reach through the same-uid socket. It is recorded here because it is a genuine narrowing of defence in depth, not a non-issue.
+- Windows and any host without a working sandbox launcher cannot run Pi locally. They reach it through a paired desktop or headless host, the same as every other external agent.
+- Isolation disables the user's own Pi extension stack inside Cognia-run sessions. That is the point: community permission engines such as `pi-permission-system` also hook `tool_call`, and two engines intercepting the same call produce double prompts and unpredictable blocking.
+- Cognia never reads Pi's credentials. Authentication diagnostics call only `pi auth check --provider <id> --json --no-refresh`; `--credentials`, `print-api-key`, and `print-bearer-token` are forbidden.
+- `pi-acp` is retained as a separate experimental compatibility preset. Migration is explicit and reversible, updates the config in place so team, scheduler, and runtime references to the agent id survive, and does not assume an ACP session id maps onto a Pi session. **(Withdrawn 2026-08-27 — the bridge and its migration are removed; see the revision log.)**
+
+## Revision record
+
+### 2026-08-18 — Pi's configuration surface and package system
+
+The original ADR covered Pi's *runtime* only. Reviewing the integration end to
+end showed the shape of the gap: Pi was the deepest runtime integration in the
+repo and simultaneously the emptiest configuration one — no settings, slash
+command, subagent, skill, MCP or memory import, no `VendorRoots` entry (so
+`PI_CODING_AGENT_DIR` was ignored and the session path was hard-coded), no entry
+in the migration wizard, and **zero code anywhere touching Pi's npm packages**.
+
+This revision closes the closable half and records the rest as explicit
+non-goals rather than leaving them as apparent oversights.
+
+#### One clause is narrowed, not withdrawn
+
+The Consequences section says:
+
+> Cognia never reads Pi's credentials. Authentication diagnostics call only
+> `pi auth check --provider <id> --json --no-refresh`; `--credentials`,
+> `print-api-key`, and `print-bearer-token` are forbidden.
+
+That still holds exactly as written, and is deliberately kept above rather than
+rewritten. What has changed is that Cognia now *reads and writes*
+`<pi agent dir>/settings.json`, which it previously never opened. The boundary
+moved from "do not open the file" to:
+
+- **A key allowlist.** `lib/pi-packages/settings-io.ts` parses `packages` and
+  nothing else reaches a caller; the rest of the parsed object is dropped rather
+  than returned, logged, or attached to telemetry or a support report.
+- **Prefer letting Pi write its own file.** Mutations shell out to
+  `pi install` / `pi remove` / `pi update --extension`, and edit `settings.json`
+  directly only when Pi is not on PATH.
+- **Never clobber an unparseable file.** An existing-but-unparseable
+  `settings.json` refuses the write, mirroring the guard in `lib/claude/sync.ts`.
+- **`auth.json` and `models-store.json` are still never opened.** Pi keeps
+  credentials in a separate mode-600 file, which is out of scope entirely.
+
+`PI_` is still absent from `ENV_PREFIX_ALLOWLIST`. That was a deliberate choice
+in the original ADR and remains one — it is not an oversight to be corrected.
+
+#### Now in scope
+
+The integration supports settings, prompt-template, subagent, skill and memory
+import. `VendorRoots.piAgentDir` / `piSessionDir` respect `PI_CODING_AGENT_DIR`.
+The migration wizard includes Pi with an explicit per-artifact support matrix.
+MCP uses a 14th adapter, `pi-mcp-adapter`, with its own id because Pi's core ships
+no MCP and the file belongs to a third-party package. The package manager is at
+`/plugins` → Agent packages.
+
+#### Explicit non-goals
+
+1. **Lifecycle hooks stay `sidecarOnly`.** Not a Pi limitation — this is uniform
+   across every external backend. Changing it for Pi alone would make Pi the
+   exception in a place where uniformity is the design.
+2. **Rate limits and MCP logs stay `sidecarOnly` / `agentOwned`.** Same reason.
+3. **No per-session `mcpServers`.** Pi's RPC protocol has no such parameter —
+   `mcpServers` appears nowhere in its distribution. The `COGNIA_TOOLHOST_*`
+   environment channel recorded above is the accepted trade-off; closing this
+   needs a protocol change upstream, not a change here.
+4. **No local Pi on Windows.** A consequence of the mandatory sandbox, already
+   recorded above. Windows can now *configure* Pi — read its settings, manage its
+   packages for another machine — but still cannot run it locally.
+5. **No package registry integration.** pi.dev/packages is an npm-keyword gallery
+   with no JSON API, and npm exposes only versions and download counts — never
+   the overlap group, context cost or maintenance signal that make a catalog
+   entry useful. The catalog is therefore curated in-repo and dated, with its
+   prose in i18n so both locales stay checkable.
+
+#### Known limitation
+
+Cognia cannot read a Pi package's own configuration file, so overlap detection
+works from the curated catalog alone. Concretely: `pi-permission-modes` ships a
+Plan mode, but the recommended configuration removes `plan` from its
+`cycleOrder` so the standalone plan package owns planning. The catalog therefore
+does not list `plan` for it — and a user who re-enables `plan` there gets no
+overlap warning.
+
+
+### 2026-08-27 — The `pi-acp` bridge is removed, and credentials are diagnosable
+
+Two follow-ups, one of which retires a decision this ADR originally made.
+
+#### Retired: "`pi-acp` is retained as a separate experimental compatibility preset"
+
+The Impact section above kept the community bridge alongside the native adapter, with an explicit,
+reversible migration between them. That decision is withdrawn. The `pi-acp` runtime, its `pi`
+preset, its ecosystem surface, its `npx` allowlist entry, its capability refinement, and the
+in-place migration (`lib/ai/agent/external/pi-migration.ts` plus its settings card) are all deleted.
+
+The bridge had stopped buying anything measurable:
+
+- it requires the **same** mandatory sandbox and the **same** macOS/Linux platform set as the
+  native adapter, so it was never a Windows or unsandboxed escape hatch;
+- it bridges to `pi --mode rpc`, the protocol Cognia now speaks directly, so it is strictly a
+  longer path to the same place with a third-party process added to the execution path;
+- its only functional difference was covering Pi 0.80.4–0.84.0 — a range this ADR *already*
+  refuses natively with `runtime_version_unsupported`. Supporting, through an unpinned third-party
+  process, a version band the product declares unsupported is an inconsistency, not a feature.
+
+Removing it also shrinks `unpinnedLaunchWaivers` from four entries to three. `pi-acp` launched via
+`npx -y pi-acp`, which re-resolves the package from the network on every start. The catalog says
+that list may only shrink and that an entry may only be removed by pinning a distribution — this
+removes the runtime instead, which satisfies the same invariant more directly. The other three
+waivers (`codex-acp`, `gemini-cli`, `qwen-code`) are deliberately untouched: unlike Pi, those
+agents have no first-party alternative, so their waivers are load-bearing.
+
+Pinning `pi-acp` was considered and rejected. It would have made Cognia the de-facto distributor of
+a third-party bridge — owning its frozen lock, its transitive tree and its CVE response — and would
+have commissioned the managed-distribution path (lock verification, provider install, rollback) for
+the first time in production on the one runtime we wanted to delete. No runtime in the catalog has
+ever carried a `distributions` entry.
+
+The security policy no longer allowlists the `pi-acp` package, so a hand-written config that still
+points at it is refused at launch rather than silently running an unpinned bridge.
+
+#### Added: the credential diagnostic this ADR specified but never built
+
+The Impact section states that authentication diagnostics call only
+`pi auth check --provider <id> --json --no-refresh`. That constraint was written down and never
+implemented — an unauthenticated Pi surfaced as a failed first prompt rather than as a diagnosis.
+`lib/ai/agent/external/runtimes/pi/pi-auth.ts` and a "Pi credentials" card on the agent's settings panel now
+implement it, verified against Pi 0.84.1's own `dist/cli/auth-check.d.ts` rather than inferred:
+
+- the CLI's **exit code cannot lead the classification**: `1` means `not_ready` on the happy path
+  but also means "the arguments failed to parse", and `2` covers both a genuine `invalid` verdict
+  and a usage error. Only parseable JSON on stdout is authoritative;
+- `--json` is **not honoured on the error paths** — argument and usage errors print prose to stderr
+  and leave stdout empty, so a probe with no verdict resolves to `unreadable`, never to
+  "not authenticated";
+- `--no-refresh` is load-bearing rather than cosmetic: it makes Pi open its credential store
+  through `ReadOnlyAuthStorage`, which is what guarantees a Cognia diagnostic cannot refresh,
+  rotate or expire the user's own credentials.
+
+`print-api-key`, `print-bearer-token` and `--credentials` remain banned, and are now refused at the
+argv builder rather than by convention.
+
+### 2026-09-12 — Full Cognia tool projection on the current native protocol
+
+The certified minimum is now Pi `0.85.1` (`@earendil-works/pi-coding-agent`). The native RPC transport remains the only Pi execution protocol; the retired ACP bridge is not restored.
+
+The earlier per-session MCP non-goal is superseded: the first-party extension consumes session-owned MCP definitions through `COGNIA_TOOLHOST_PI_MCP_SERVERS`, connects with the official MCP SDK, and registers the discovered tools before acknowledging readiness. This includes Cognia built-in tools, plugin tools and assigned MCP servers. Additional roots remain explicit Cognia broker grants. A fork copies its own source session's launch options, rather than the last unrelated session's options.
+
+Cognia tool calls use the common permission, confinement, PreToolUse argument review, PostToolUse result review and PII paths. Native Pi tools retain the existing native permission path; their tool results also pass the extension's PII redaction. Tool cancellation and session shutdown close requests and MCP transports. This does not claim that a remote MCP server's internals or a third-party Pi extension run Cognia's own hooks.
+
+Desktop resources retain the source extension with its pinned digest and bundled sidecar dependencies. Standalone CLI/brain packaging verifies that source pin, bundles the extension's runtime dependencies, and writes a digest for the resulting artifact. No optional external package installation is required to activate Cognia tools. The launch allowlist admits the exact `PI_CODING_AGENT_DIR` and `PI_CODING_AGENT_SESSION_DIR` keys so the selected runtime configuration survives both hosts; it does not admit an arbitrary `PI_` prefix.
+
+See `docs/research/2026-09-12-external-agent-capability-parity.md` for the cross-agent capability matrix and verification boundaries.
+
+### 2026-10-02 — Plugin-shipped Pi packages (ADR-0210)
+
+Plugins can now ship Pi packages (capability `pi-package`, manifest `piPackages`). This revision records only what changes in the native RPC integration; the capability itself is decided in ADR-0210.
+
+- **Opt-in per agent.** A `pi-rpc` agent lists package references in `metadata.piPackages` (`<pluginId>/<packageId>`). An agent with no references takes the unchanged path — the adapter does not even consult the resolver.
+- **Load order.** Each declared extension is appended as `-e <absolute path>` in reference order, **before** Cognia's own extension, which remains the last `-e` Pi loads. `-e` still loads under `--no-extensions`, so plugin packages work under `isolated`.
+- **No silent skips.** References are resolved through an injectable resolver (default: the plugin registry) before capacity is reclaimed. A missing or disabled plugin, a `builtin://` plugin, an unprepared package, a package without `hostedSession`, a workspace binding without a working directory, a conflicting env value or a `minPiVersion` above the running Pi fails the start with `PiPackageUnavailableError` (`pi_package_unavailable`).
+- **Env.** Package values are forwarded only as `COGNIA_PIPKG_<NAME>`, a prefix added to `ENV_PREFIX_ALLOWLIST` (and the CLI mirror) for exactly this purpose. Values come from the manifest, the plugin's own configuration or the workspace path, never from the model, and are spread before every Cognia-owned key.
+- **Permissions.** Package tools are extension tools to the per-call table and take the mode's `fallback`. Under `dontAsk`, a declared package tool (`hostedSession.tools`) that the session pre-approved by name is allowed and kept on the `--tools` floor; built-in names can never be re-declared by a package.
+- **Handshake budget.** `session_start` waits for plugin extensions too, so the budget grows by `PI_PLUGIN_EXTENSION_HANDSHAKE_EXTRA_MS` per plugin extension, inside the existing 120 s cap, and a timeout names them.
+- **Double load.** A package that is also installed in a Pi scope the session loads (`global`: user; `trusted-project`: user and project), whose hosted extensions lie outside the package directory, is refused with `double-load`: Pi deduplicates `-e` against installed-package extensions only by canonical path (`ResourceLoader.mergePaths`) and has no per-session package exclusion. Hosted extensions inside the package directory keep their `-e` and load once.
+- **Sandbox.** The desktop wrapper mounts package directories read-only for Pi only, from `COGNIA_TOOLHOST_PI_PACKAGE_ROOTS`, keeping an entry only when it canonicalizes to an existing directory under the host-derived plugin store and does not touch a forbidden, protected or denied root (ADR-0210 §4); remote spawns drop the key. Packages are not loadable when the agent runs on a paired host or under Bot isolation.
+
+
+### 2026-10-05 — Shared session operations and Pi 1.0.2
+
+The certified target is Pi `1.0.2`. Optional session operations now belong to the common `ExternalAgentProtocolAdapter` contract and manager: structured steering/follow-up input and queue recovery, queue policy, runtime controls, command refresh/execution, entry/tree inspection, entry-specific fork, clone, rename, HTML export, and direct shell execution/cancellation. Capability reporting combines actual adapter methods with runtime advertisement; adding Pi methods does not advertise them on ACP, Codex or other runtimes.
+
+Extension presentation uses a shared structured event and reducer for status, above/below-editor widgets, title, editor replacement and notifications. Desktop chat and CLI consume the same payload; prompts and queued-image recovery use the existing composer intent path. Native session identity is held in the existing transient per-chat runtime store, so the displayed controls address the current native session after a fork or clone. It is separate from persisted gateway routing.
+
+Direct shell execution uses the existing permission callback and hook policy. Pi's `user_bash` hook accepts the first handler result, so a separate, pinned shell guard loads before configured extensions; Cognia's main extension remains the last explicit `-e` argument for native tool-result redaction. Both files are checked by the Node and Rust host verifiers and packaged together. Shell capability requires the verified host path and the guard handshake; a metadata path alone does not grant it. The guard preserves Pi's configured shell and redacts bounded output before it enters native session context. Cancellation retires and resumes the process when necessary to stop preflight work as well as an already-running shell.
+
+See the dated compatibility report at `docs/research/2026-10-05-pi-agent-compatibility.md` for verification scope and remaining platform/provider limits.
+
+
+Background execution is an explicit shared `backgroundTurns` capability, requiring event subscription support and an affirmative runtime advertisement. Command support alone does not imply it. A supporting native session retains the existing tool-host lease across prompt acknowledgements, while per-call permissions remain active. The current chat/session link controls ownership; switching runtime or native session, resetting or closing releases that ownership. Normal owned streams and out-of-band turns use the same transcript/event reducers, with handoff ordering preventing the old turn's cleanup from overwriting the next run.

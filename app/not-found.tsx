@@ -3,8 +3,8 @@ import { ThemeProvider } from "next-themes"
 
 import { NotFoundContent } from "@/components/not-found-content"
 import { i18n } from "@/lib/i18n"
-import enMessages from "../../i18n/messages/en.json"
-import zhMessages from "../../i18n/messages/zh-CN.json"
+import enMessages from "@/messages/en.json"
+import zhMessages from "@/messages/zh-CN.json"
 
 /**
  * The site's only 404 surface. A static export can't route unknown paths, so

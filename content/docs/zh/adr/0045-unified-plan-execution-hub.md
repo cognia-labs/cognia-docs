@@ -1,0 +1,251 @@
+---
+title: "ADR-0045 — 统一计划执行中心"
+description: "将内置代理的计划模式从 SDK 原样传递改为使用结构化 AgentPlan，作为所有多步代理执行的规范中间表示（IR）。计划由带类型的 PlanSteps 组成 DAG；批准后，它运行在一个混合自适应引擎上，该引擎在对话中执行简单的线性计划，并将delegation/parallel计划编译到现有的工作流编排器中。计划有四种编写方式（ExitPlanMode捕获、显式代理工具、规划器LLM和Team/Goal投影），支持手动、步骤失败或判断偏差触发的重新规划，并统一了之前断开的三种拆解驱动机制（计划模式、目标模式、Agent Team）。"
+---
+
+# ADR-0045 — 统一计划执行中心
+
+**状态**：提议（2026-06-03）**作者**：Max Qian + Claude Opus 4.8 **基于**基础：SDK计划权限直通（`lib/claude/build-options.ts:resolveSendOptions` → `sidecar/dispatch/anthropic.mjs`）、计划模式→任务桥接（`lib/agent/plan-mode-bridge.ts`）、目标命令（ADR-0019;`lib/goal/*`）、Agent Team 运行时（ADR-0022/0032;`lib/ai/agent/*`）、以及可视化工作流程编排器（ADR-0011/0022;`lib/workflow/runtime/orchestrator.ts`） **影响**：`types/agent/plan.ts`（孤儿`types/agent/agent.ts`重写）、`lib/agent/plan/*`（新：`runtime`、`synthesize-workflow`、`context-injector`、`prompts`、`planner`、`projections`、`pii-gate`）、`lib/db/schema.ts`（Dexie **v71**） + `lib/db/plans.ts`（新）、`lib/claude/build-options.ts`（`appendPlanContext` + `session.activePlan`）、`lib/claude/types.ts`（`SendOptions`/session plan字段）、`lib/workflow/nodes/built-ins.ts` + `catalog.ts` + `params-schemas.ts`（新`action.plan.step.dispatch`节点）、`sidecar/plan-tools/*`（新的显式`CreatePlan`/`UpdatePlan`工具def，镜像`sidecar/a2ui-tools/tool-defs.mjs`）、`hooks/chat/use-claude-chat.ts`（ExitPlanMode捕获+工具调度）、`components/agent/plan/*`（新UI）、`stores/agent/*`、`i18n/messages/{en,zh-CN}.json`
+
+## 背景
+
+内置代理的**计划模式很薄**。存在三层，但没有一层拥有统一的平面图：
+
+1. **权限直通** — `permissionMode: "plan"`通过优先链（`build-options.ts:750`：会话→模式→字符→ appSettings）解析，并逐字交付给Claude Agent SDK `query()` `sidecar/dispatch/anthropic.mjs:242`。**所有计划语义都存在于SDK中;本仓库不拥有这些内容。**
+2. **任务桥接** — `lib/agent/plan-mode-bridge.ts`将SDK的 `TodoWrite` / `TaskCreate` / `ExitPlanMode` tool_use 块映射到`agent-team-store`中，作为合成`solo:<sessionId>`团队，由 `components/agent/workspace/plan-mode-tasks-sheet.tsx` 只读浮出。
+3. **渲染** — `components/chat/message-parts/mcp-renderers/plan-card.tsx`渲染一个带有本地`PlanStep`接口的`ExitPlanMode`块。
+
+整个**结构化计划模型是死代码**：`types/agent/agent.ts`（`AgentPlan`、`PlanStep`、`PlanRefinementRequest/Result`、`CreatePlanInput`、`AgentExecutionContext`、`PLAN_REFINEMENT_PROMPTS`）仓库范围内**零导入者**。其配套插件hook `onAgentPlanCreate` / `onAgentPlanStepComplete` 被降级为 `DEPRECATED_HOOK_POINTS`（ADR-0016）。这是一种“计划→、批准→完善→执行”的理想设计，但从未建成。
+
+与此同时，**编排功能成熟，但尚未与内置聊天 Agent 连接**。Agent Team 运行时（`lib/ai/agent/team/agent-team-runtime.ts:runTeamLifecycle`）执行能力检查与计划审批，然后**将任务 DAG 编译成 `VisualWorkflow`**（`lib/ai/agent/team/synthesize-workflow.ts`），并委派给 `runWorkflow`——继承幂等性、崩溃恢复、并发和事件日志。但**内置的聊天代理无法直接访问编排**：唯一的聊天→团队路径是 `action.team.run` 工作流节点。而**Goal**子系统（`lib/goal/*`）是一个*第三*自驱动循环（turn-driver + judge + subgoal 分解），与两者都不共享。
+
+结果是**三个并行的分解-驱动机制**，且没有统一表示：
+
+| 机制 | 数据模型 | 触发器 | 发动机 | 聊天关系 |
+| --- | --- | --- | --- | --- |
+| 计划模式 | 无（SDK + 任务桥接） | Shift+Tab | Claude SDK | 本地，唯读 |
+| 目标 | `Goal` / `GoalSubgoal`（Dexie v30） | `/goal` | 转向驱动器环路 | 注入系统提示 |
+| 团队 / 工作流程 | `AgentTeam` / `AgentTeamTask` | `action.team.run` | 工作流程编排器 | 只有通过工作流程 |
+
+## 决策
+
+为每个多步代理执行创建一个**重`AgentPlan`写的“规范中间表示（IR）”，并构建运行它的**执行中心**。死`types/agent/agent.ts`被重写为`types/agent/plan.ts`（`agent.ts`通用名称本身就是对更广泛`types/agent/*`领域的一种气味）;随着重写的清理，孤儿文件会被移除。
+
+### 1. AgentPlan类型step-DAG IR
+
+计划是`PlanStep`s的一大块的 DAG。每个步骤都携带一个执行者类型**，因此一个表示可以表达会话中的推理、委托、工具调用、子工作流和批准门禁：
+
+```ts
+// types/agent/plan.ts
+export type PlanStepKind =
+  | "agent_turn"        // an in-session turn by the main agent (visible, conversational)
+  | "teammate_dispatch" // delegate to a teammate / subagent — reuses dispatchTeammate
+  | "tool_call"         // a specific tool invocation with fixed input
+  | "sub_workflow"      // run a nested VisualWorkflow — reuses runWorkflow
+  | "approval_gate"     // human approval checkpoint — reuses lib/runtime/approval-bus
+
+export type PlanStepStatus =
+  | "pending" | "ready" | "in_progress" | "completed" | "failed" | "skipped" | "blocked"
+
+export interface PlanStep {
+  id: string
+  title: string
+  description?: string
+  kind: PlanStepKind
+  status: PlanStepStatus
+  order: number
+  dependencies: string[]           // DAG edges (step ids)
+  params?: PlanStepParams          // kind-tagged union: { teammateId } | { toolName, input } | { workflowId } | ...
+  result?: string
+  output?: unknown
+  error?: string
+  attempts?: number
+  toolCallIds?: string[]
+  startedAt?: Date
+  completedAt?: Date
+  estimatedDurationMs?: number
+  actualDurationMs?: number
+}
+
+export interface AgentPlan {
+  id: string
+  sessionId: string
+  characterId?: string
+  title: string
+  description?: string
+  source: "exit_plan_mode" | "agent_tool" | "planner_llm" | "team_projection" | "goal_projection" | "manual"
+  executionMode: "in_session" | "orchestrated" | "auto"  // "auto" = hybrid-adaptive (default)
+  steps: PlanStep[]
+  status: "draft" | "awaiting_approval" | "approved" | "executing" | "paused" | "completed" | "failed" | "cancelled"
+  currentStepId?: string
+  totalSteps: number
+  completedSteps: number
+  config: PlanConfig
+  generationId: number             // staleness guard, mirrors Goal.generationId
+  createdAt: Date
+  updatedAt: Date
+  startedAt?: Date
+  completedAt?: Date
+  metadata?: Record<string, unknown>
+}
+
+export interface PlanConfig {
+  requireApproval: boolean         // gate before execution (default true)
+  executionMode: AgentPlan["executionMode"]
+  maxAutoRefinements: number       // cap on automatic replans
+  maxStepRetries: number
+  judgeDeviation: boolean          // run a between-steps judge (reuses goal judge pattern)
+  maxTokens?: number
+}
+
+export interface PlanRefinementRequest {
+  planId: string
+  refinementType: "optimize" | "simplify" | "expand" | "reorder" | "repair"
+  trigger: "manual" | "step_failure" | "judge_deviation"
+  failedStepId?: string
+  customInstructions?: string
+}
+```
+
+仅附加`PlanEvent`日志恰好镜像`GoalEvent`（`created | approved | rejected | refined | step_started | step_completed | step_failed | replanned | paused | resumed | exit`）。
+
+### 2. 混合自适应执行
+
+批准计划时，它运行;引擎**从计划形状中选择策略**（`executionMode: "auto"`年）：
+
+- **会话中顺序式**——每一步都`agent_turn`，DAG线性。驱动程序会镜像`lib/goal/turn-driver.ts`：每一步都是*当前可见聊天会话*中的一个轮流，用户观察座席如何对话式地操作计划。这保留了原生Claude-Code计划模式的感觉（“批准，然后观看执行”）。
+- **有序的**——当计划包含`teammate_dispatch`/`sub_workflow`步或任何平行性时。`lib/agent/plan/synthesize-workflow.ts:synthesizePlanWorkflow(plan)`将计划编译成`action.plan.step.dispatch` `VisualWorkflow`节点（纯函数镜像`synthesizeTeamWorkflow`、`__plan__:<planId>:<nonce>` id、Kahn周期检查），然后交`runWorkflow`。因此，该计划将编排器的幂等性、崩溃恢复、并发和事件日志都白箱化，而不是重新实现它们。
+
+这正是聊天代理获得直接编排的原理：`teammate_dispatch`步骤*是委托，由现有的`dispatchTeammate`/`runTeamLifecycle`接缝执行——无需新的编排引擎，也无需强制绕行工作流程编辑器。
+
+每步节点执行器（`action.plan.step.dispatch` in `lib/workflow/nodes/built-ins.ts`）路由如下`step.kind`：
+
+```
+agent_turn        → in-session turn (executeAgent / sidecar runAndCaptureAssistantReply)
+teammate_dispatch → dispatchTeammate(teamCtx, …)        (reuses ADR-0022 primitive)
+tool_call         → resolved tool invocation
+sub_workflow      → nested runWorkflow(params.workflowId)
+approval_gate     → waitForDecision(scope, id, signal)  (reuses approval-bus)
+```
+
+### 3. 四位计划作者，一个模型
+
+一个计划可以有四种方式，都会产生相同的`AgentPlan`（`source`记录来源）：
+
+1. **捕捉`ExitPlanMode`**——当SDK的计划模式`ExitPlanMode` tool_use出现（`hooks/chat/use-claude-chat.ts`，与现有`applyPlanModeBridge`并列），构建`AgentPlan(draft, source="exit_plan_mode")`并接口审批。这是原生计划模式从未有过的关闭：它现在拥有*批准后发生的事情*。
+2. **显式代理工具** — 通过`sidecar/plan-tools/tool-defs.mjs`（单一names/schemas源，镜像`sidecar/a2ui-tools/tool-defs.mjs`模式;在渲染器中调度，因sidecar无法导入`lib/`而向代理展示`CreatePlan`/`UpdatePlan`）。让代理在计划运行时构建和更新。
+3. **Planner LLM** — `lib/agent/plan/planner.ts:decomposeIntoPlan`将一行目标转化为步骤DAG，重复使用`LlmClient`抽象和`extractJson`，完全像`lib/goal/subgoals.ts:decomposeObjective`一样。
+4. **团队/目标预测** — `lib/agent/plan/projections.ts`转换`AgentTeamTask[]`⇄ `PlanStep[]`和`GoalSubgoal[]` → `PlanStep[]`（以及反向），使两种现有机制共享相同的执行+跟踪流水线。
+
+### 4. 三次重新规划触发器（PlanRefinement）
+
+`lib/agent/plan/runtime.ts:refinePlan(request)`重复利用以下部位的`PLAN_REFINEMENT_PROMPTS`和发射：
+
+- **阶梯失败**——当阶梯耗尽`maxStepRetries`时，运行时自动发出`repair`细化（Devin式重规划环），并以 `config.maxAutoRefinements` 封闭。
+- **手动** — 用户在套餐面板上点击优化/简化/展开/重新排序。
+- **裁判偏差** — 当`config.judgeDeviation`开启时，步间调节器（重复使用`lib/goal/judge.ts`模式+`LlmClient`）检查对齐并触发漂移细化。
+
+### 5. 整合接缝——重复使用，绝不重建
+
+- **`build-options.ts`** — 新`lib/agent/plan/context-injector.ts:appendPlanContext` `appendGoalContext`（`context-injector.ts:26`）并被调用在球门阻挡（`build-options.ts:~1239`）旁边;`session.activePlan`与`session.activeGoal`遵循相同的优先顺序模式。执行计划状态（当前+剩余步数）被注入到`appendSystemPrompt`中。
+- **PII 门禁**——`lib/agent/plan/pii-gate.ts`在任何LLM/embed之前就运行计划titles/steps到`hasNoLeakingPii`，正如`lib/goal/redact-objective.ts`和`lib/connectors/ai-loop/safe-send-prompt.ts`所做的那样。
+- **通知**——步骤启动/完成/阻止/重新规划通过`lib/notifications/notify()`（ADR-0042）。
+- **权限** — `tool_call` / `teammate_dispatch` 步通过ADR-0041自动模式三级安全门禁。
+- **持久性** — **Dexie v71**，加法，无升级hook：`agentPlans` + `agentPlanEvents`，索引镜像`chatGoals` / `chatGoalEvents`（`schema.ts:1092`）：每会话一个活跃计划，由作者强制执行（`lib/db/plans.ts`），每个计划仅添加事件上限。
+
+### 6. UI
+
+- **在线 approval/edit 卡片**在聊天（`components/agent/plan/plan-approval-card.tsx`）中 — 审核、编辑步骤、批准/拒绝/优化后再执行。
+- **在现有代理工作区中规划追踪面板** — 带有状态的实时步骤DAG，重复使用目前托管`PlanModeTasksSheet`的工作区壳层。
+- 两者都有精细控制（优化/简化/扩展/重新排序/修复）。
+
+## 后果
+
+- 内置代理的计划模式成为真正的、拥有的闭合：结构化计划→ approve/edit/refine →跟踪执行→重新规划——而非SDK黑箱。
+- 聊天代理可以直接编排：委派步骤可以重复使用`dispatchTeammate`而无需工作流编辑器的绕道。
+- 其中一个IR统一了计划/目标/团队;这三个重复的分解与驱动循环合并为一个执行 + 跟踪 + 持久化流水线。
+- 执行引擎是现有的工作流编排器（幂等性、崩溃恢复、并发、事件日志）——无需维护第二引擎。
+- `types/agent/agent.ts`从死代码变成了一个活跃的中央模型（更名为`types/agent/plan.ts`）。
+- 成本：新Dexie版本、新节点类型、新sidecar工具定义，以及跨聊天+工作区UI的区域接口。通过相位（如下）在每个相位门禁绿灯来缓解。
+
+## 考虑的替代方案
+
+- **保持SDK直通，只改进UI**（设计讨论已拒绝）——使三种机制断开，结构化模型死寂;违反了“禁止简化”的规定。
+- **定制计划执行者** 不是编译为`VisualWorkflow`——而是复制了编排器的idempotency/recovery/concurrency;已拒绝用于重复使用。
+- **始终在会话中**或**始终被编排**——每种方式都损失了一半的价值（平行扇出，或原生的会话式计划模式感觉）;混合自适应默认保留了两者。
+
+## 分阶段
+
+参见`docs/plans/2026-06-03-unified-plan-execution-hub.md`。每个阶段都是绿色（`pnpm typecheck`，`pnpm test:coverage` ≥90%，`pnpm lint:i18n`，`pnpm sidecar:test`被触及）：
+
+- **P1 — 模型 + 持久性**：重写`types/agent/plan.ts`，删除`types/agent/agent.ts`，Dexie **v71** + `lib/db/plans.ts` CRUD（每次会话的活动计划不变，事件日志封闭），计划运行时生命周期骨架（创建/批准/拒绝/暂停/恢复/取消 + AbortController注册表），`appendPlanContext` + `session.activePlan` 布线。
+- **P2 — 执行引擎**：`synthesizePlanWorkflow`，`action.plan.step.dispatch`节点+逐种路由，会话中驱动，混合自适应模式选择，PII 门禁。
+- **P3 — 聊天→编排**：`teammate_dispatch`接线`dispatchTeammate`;ExitPlanMode捕获;显式`CreatePlan`/`UpdatePlan`工具 defs + 渲染器调度。
+- **P4 — 进球/团队投射**：`projections.ts`双向;通过计划流程路由目标子目标和团队任务。
+- **P5 — 规划者 + 重新规划 + UI**： `decomposeIntoPlan`;三种精炼触发器;批准卡、追踪面板、精炼控制;通知。
+
+## 当前状态修订（2026-08-13）
+
+Plan persistence、approval、projection、execution 以及 plan/goal/team integration 已经实现。提案中若干路径后来发生迁移；canonical owner 是当前 plan repository、projections、goal orchestration 与 AgentTeam execution modules。不得根据历史路径清单再建一套 plan engine。
+
+## 工作区修订（2026-08-26）
+
+§3 说计划是「一张由带类型的 `PlanStep` 组成的 DAG」，却没有说这些步骤**在哪里**执行。`step-dispatch.ts` 调 `executeAgent` 时根本不传 `cwd`，于是每个 `agent_turn` 步骤都跑在应用默认工作目录里——而不是计划所属的工作区。在项目里创建的计划看起来就像 agent 无视了仓库，而且这在任何并发度下都成立，不只是并行时。
+
+**一次运行只有一个目录，且只解析一次。** `resolvePlanExecutionRoot`（`lib/agent/plan/step-workspace.ts`）读取计划所属工作区的主根，退回到会话自己的工作目录；`PlanRunContext` 在整次运行期间携带它。解析不出来仍然是一个真实的答案：两者都没有的计划本来就没有目录可指，凭空造一个路径比让运行器用它自己的默认值更糟。
+
+**逐步骤隔离是被否决的，不是被推迟的。** 早先的草案让每个步骤通过 `AgentTeamRegistryWorkspaceController` 各切一个工作树。那对团队是对的——成员做的是彼此独立的事，最后再收敛；对计划是错的：看不见第 2 步写了什么的第 3 步，根本不成其为计划。计划是一件事，它的步骤共用同一个检出。
+
+**而这恰恰是并行步骤不能重叠的理由。** `config.maxConcurrency` 会同时放行多个步骤，两个带工具的 agent 在同一个检出里会把编辑、构建和 git 操作交织在一起——正是 `lib/execution/slot-key.ts` 存在要防的那类损坏。现在步骤会占用其目录的执行位。审批门、MCP 调用，以及没有目录的计划里的任何步骤都不占位，并行度与以前相同。
+
+**租约刻意不带 `sessionId`。** broker 会豁免任何指向「已有活跃 leg 的会话」的租约——这条规则是为了让前台聊天回合不被自己的流阻塞。计划的每个步骤共享计划的会话，所以带上它会让第一个之后的每个步骤都被豁免，执行位将什么都不串行。取消仍然能到达这些步骤：计划自己的 `AbortController` 作为调用方信号链进了租约。
+
+## 文档界面修订（2026-11-25）
+
+§6 提到了两个界面（审批卡、追踪器），但计划的*文档*形态一直是隐式的。plan-preview 原型工作把它确定下来，落地遵循 Cursor 与 Windsurf 采用的「计划文件即界面」模型，而非自定义查看器。
+
+**`metadata.planText` 是忠实来源；`steps[]` 是它的投影。** 从 `exit_plan_mode` 捕获的计划通过 `PlanDocument`（`components/agent/plan/plan-document.tsx`）渲染其 markdown 正文 —— 而非有损的标题列表。可执行步骤内嵌在文档自身步骤列表的位置，因此编辑步骤行就是在改写 markdown 本身（`lib/agent/plan/plan-doc.ts` 围绕步骤章节切分正文并重建）。`steps[]` 与文档不可能再出现漂移，这正是同时携带两者的意义。
+
+投影收集正文中的*每一个*列表项（`parsePlanText` 语义），因此在多列表文档上，内嵌编辑器只拥有映射到步骤章节的那段连续 `steps[]` 窗口 ——`## Files` 清单保持为正文，一次编辑只重写它所属于的章节。
+
+**编辑是文件语义，而非表单语义。** 步骤行就地编辑并防抖自动保存，经由 `applyPlanEditPatch`（`lib/agent/plan/draft-edit.ts`）—— 审批卡与 dock 面板共享同一持久化路径，两个界面对「一次编辑」的定义不可能不一致。概念性的调整仍走聊天侧的 refinement / keep-planning 通道；文档界面上没有 Save/Reset 底栏，因为根本不存在待提交的草稿缓冲。
+
+**计划拥有了自己的 dock 面板。** `PlanPanel`（`components/agent/plan/plan-panel.tsx`，面板 id `plan`，`review` 活动组）按时间倒序列出会话的全部计划 —— 即 CLI `/plan list` 的 GUI 对应物，`listPlansBySession` 存储层早已支持但此前没有界面消费它。终态计划以只读呈现并附 `agentPlanEvents` 动态轨迹（对应 `/plan show`）；执行状态仍归属 `PlanTrackerPanel`，不进入审批前的编辑器。
+
+**用 React 而非 iframe。** 文档界面经由 `MarkdownRenderer` 渲染，并基于渲染出的标题 DOM 做 scroll-spy —— 刻意不走 `srcdoc` + 内联脚本路径，ADR-0158 已记录该路径在打包后的 Tauri 中不可用。交互式 iframe 编辑器仍作为 `planSettings.interactiveHtmlView` 之后的可选增强保留。
+
+## 审批卡修订（2026-09-25）
+
+上面的文档界面被放在一张给*自身*设了 `45vh` 上限的卡片里，卡片还同时承载标签行、来源行、审批前的进度条（永远是 `0/N` —— 审批前什么都没执行）、反馈框和六个按钮。这些外框吃掉了上限，文档的 `flex-1` 区域被压成几个像素高的一条；在手机上则完全消失。dock 也漂移到了窗格顶部。现在的卡片：
+
+**位于输入框上方的计划槽位**，与 `PlanTrackerDock`、`PlanComposerDock` 共用（按计划状态互斥），紧挨着它的决策所要恢复的输入框 —— 而不是压在窗格标题栏下面。
+
+**上限加在正文上，而不是卡片上。** 文档的最大高度取*视口*的一部分（手机 `34dvh`，`md` 起 `min(42dvh, 30rem)`），因为必须始终可见的决策按钮和输入框都在正文之外。卡片分三段：头部（状态 · 来源 · 步骤数、标题、视图控制）、正文，以及底部。底部在窄卡片里把决策按钮纵向铺满，这个切换用容器查询实现，因为分屏窗格在宽屏上也可能很窄。正文可折叠（grid-rows `0fr↔1fr`，隐藏时 `inert`）；「在侧边面板中打开」经由 `revealSessionPanel`（`lib/artifacts/reveal.ts`，与会话摘要共用）打开 dock 的 `PlanPanel`，同时折叠卡片中的文档副本，两处不会并排显示同一份文档。
+
+**文档的 `# H1` 就是计划的名字。** 捕获时从开头的 H1 推导标题（`planDocTitle`，去掉 `Plan:` 前缀），而不再取第一条列表项；已经显示标题的界面会跳过复述标题的 H1；重命名会同步改写它（`retitlePlanText`）。
+
+**编辑入口已收敛。** 步骤行在文档中就地编辑（Enter 在下方插入，空行上 Backspace 删除，Alt+↑/↓ 移动）。只有 markdown 计划有第二条路径，即编辑原始源文，用于修改正文。「每行一个步骤」的文本框与就地编辑重复，已移除。「编写计划」编辑器（步骤类型）移入溢出菜单。
+
+**编辑不会丢失，也不会被抢先。** dock 把自动保存串行化到同一条链上，每次都作用于当前最新的行。此前，另一次写入进行中时到达的编辑会被丢弃，而文档仍显示「已保存」。焦点离开文档（以及卸载）时会立即写入待保存的编辑，每个决策都会先等待这条链并重新读取计划。因此在点击「批准」前刚输入的修改，正是被批准、并被嵌入恢复提示词的版本。
+
+**优化会改写文档。** `refinePlan` 过去只替换 `steps[]`，不动 `metadata.planText`，卡片仍显示旧列表；又因为没有 `userEdited` 标记，恢复提示词会让模型去实现它最初的提议。现在对 markdown 计划，规划器看到的是读者看到的步骤章节，结果写回该章节，并重新投影 `steps[]`。每次生效的优化都会打上 `userEdited` 标记。
+
+## 任务面板修订（2026-10-29）
+
+智能体自己的任务清单（`TodoWrite`，以及 SDK 和 sidecar 都会发出的增量工具 `TaskCreate` / `TaskUpdate` / `TaskList`）和本 ADR 的计划，过去分散在六个界面上，有五套状态图标、两个解析器和两个进度条。桌面 dock 里根本没有任务清单；之后任何一轮没有调用任务工具，清单就会被清空；已批准的 `exit_plan_mode` 计划永远停在 `approved`。
+
+**一个视图模型，一套组件。** 存储仍然分开 —— 一轮对话的草稿清单和已批准的执行契约含义不同 —— 但所有来源都适配成 `TaskViewItem`（`lib/tasks/task-view.ts`），并通过 `components/tasks/` 绘制（覆盖全部状态的状态图标，包括仅用于显示的 `stopped`，表示运行结束后仍停在进行中的项；进度条；长清单会把已完成项折叠起来的列表）。计划步骤、ACP 计划条目和 AI Shell 步骤共用同一个图标和进度条。
+
+**任务清单是会话级的，从对话记录派生**（`lib/chat/session-tasks.ts`）：取最近一次 `TodoWrite` 快照，或按 id 重放 `Task*` 调用（同时解析 SDK 文本和 sidecar JSON 输出），以最近调用的那一类工具为准。把 `TodoWrite` 镜像到合成 `solo:` 团队的 plan-mode bridge 已删除，`/plan from-team` / `to-team` 的 solo 分支一并删除。
+
+**dock 的 `plan` 面板就是任务面板**（id 仍为 `plan`，以兼容已保存的布局）：当前任务（全部完成后折叠为「上次任务」）、进行中的计划（待审批时显示审批卡，通过 `stores/agent/plan-decision-store.ts` 调用决策拥有者的处理函数；执行中显示带暂停 / 继续 / 取消的进度跟踪），以及历史计划。在手机和平板上它是底部 Sheet 的一个标签页；只有任务清单时也会占据位置；首次出现任务清单时只在收起的 dock 上提示，不强制展开。
+
+**输入框上方只保留需要决策的内容**：审批卡（任务面板正在显示该计划时折叠为一行，只保留主要的批准按钮）、处理停在某一步的 in-session 计划的 `PlanHaltDock`，以及运行面板上一个点击即可打开任务面板的进度 chip。`PlanTrackerDock`、`PlanComposerDock`、`PlanPanel` 和 `PlanModeTasksSheet` 已删除；「编写计划」入口移到计划模式横幅和面板的空状态中。对话记录中，一串连续的任务调用只渲染为一行变化摘要；`exit_plan_mode` 卡片改为紧凑形式（状态、打开面板的链接、折叠起来的提议正文）。
+
+**在聊天中批准的计划以其实施轮次运行**（`lib/agent/plan/chat-handoff.ts`，记录在 `metadata.chatHandoff` 中，不新增状态）：批准 → `executing`；该轮结束时（`finishDirectChatExecutionRun`，所有通道）→ `completed`，失败或被中断则 → `paused` 并保留可继续的内容；如果该轮随上一次加载一起中断，启动恢复时会将其暂停。审批 dock 上提供「继续 / 标记完成」，面板上提供「标记完成 / 取消」。
+
+**生命周期修复**：删除会话时在同一事务中删除其计划和事件（并写入同步墓碑）；`refinePlan` 拒绝运行中、已拒绝和已结束的计划，并保留未改名步骤的类型、参数和依赖；捕获时记录 `tool_use` id，重复事件不会再次创建计划（也就不会取消已有计划）；从团队投影出的步骤会带上团队 id。
+
+**未生效的配置项**（规则 7）：`PlanConfig.maxStepRetries`、`judgeDeviation` 和 `maxTokens` 带有 `@deprecated Inert` 文档说明，工作流表单不再提供 `judge_deviation` 触发器，若有计划执行器开始读取它们，`lib/agent/plan/inert-config.test.ts` 会失败。
+
+**原决策之后迁移的路径**：`sidecar/plan-tools/*` 和 `sidecar/builtin-tools/plan-tools.mjs` → `sidecar/src/tools/builtin/plan/`（工具名为 `create_plan` / `update_plan`，`CreatePlan` / `UpdatePlan` 别名已删除）；`lib/workflow/nodes/built-ins.ts` → `lib/workflow/nodes/built-ins/index.ts`；`docs/plans/2026-06-03-unified-plan-execution-hub.md` → `docs/plans/archive/`；`lib/agent/plan-mode-bridge.ts` 和任务 sheet 已删除；计划上下文注入位于 `lib/claude/build-options.ts` 中目标块旁边。

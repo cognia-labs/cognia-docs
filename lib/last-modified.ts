@@ -1,7 +1,8 @@
 import { execFileSync } from "node:child_process"
+import { pageOrigin } from "./page-origin"
 
 /** Where the MDX tree lives, relative to the repository root. */
-export const DOCS_CONTENT_ROOT = "docs/content/docs"
+export const DOCS_CONTENT_ROOT = "content/docs"
 
 let repositoryRoot: string | null | undefined
 
@@ -31,7 +32,7 @@ function findRepositoryRoot(): string | null {
  * "Edit this page" link that 404s on GitHub.
  */
 export function docsSourcePath(contentPath: string): string {
-  return `${DOCS_CONTENT_ROOT}/${contentPath}`
+  return pageOrigin(contentPath).sourcePath
 }
 
 /**
@@ -42,6 +43,8 @@ const timestamps = new Map<string, string | null>()
 
 /** Build-time git timestamp; null keeps the footer hidden outside a Git checkout. */
 export function getDocsLastModified(contentPath: string): string | null {
+  const origin = pageOrigin(contentPath)
+  if (origin.lastModified) return origin.lastModified
   const cached = timestamps.get(contentPath)
   if (cached !== undefined) return cached
 

@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+.source
+.cache
+.wrangler
+coverage
+playwright-report
+test-results
+next-env.d.ts
+pnpm-lock.yaml
+content/docs
+artifacts
+integrations/cognia.json
+patches

@@ -5,8 +5,8 @@ import { baseOptions } from "@/lib/layout.shared"
 import { findTopLevelPage, homeGroups, type TreeNode } from "@/lib/home-sections"
 import { source } from "@/lib/source"
 import { REPO_URL, SITE_NAME, absoluteUrl, websiteUrl } from "@/lib/site"
-import enMessages from "../../../i18n/messages/en.json"
-import zhMessages from "../../../i18n/messages/zh-CN.json"
+import enMessages from "@/messages/en.json"
+import zhMessages from "@/messages/zh-CN.json"
 
 type Props = { params: Promise<{ lang: string }> }
 

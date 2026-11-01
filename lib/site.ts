@@ -24,7 +24,7 @@ type SiteEnv = {
   CF_PAGES_URL?: string
 }
 
-/** The GitHub repository the docs and the product live in. */
+/** The product repository linked from the global navigation. */
 export const REPO_URL = "https://github.com/cognia-labs/cognia"
 
 /** Strip trailing slashes so callers can always concatenate `/`-prefixed paths. */

@@ -1,13 +1,15 @@
 // Relative rather than `@/`: the repo's Jest runner maps that alias to the app
 // root, not to `docs/`, and this component has tests.
 import { formatDocsDate } from "../lib/time-zone"
+import type { PageOrigin } from "../lib/page-origin"
 
-const REPO = "cognia-labs/cognia"
-const BRANCH = "master"
+const DEFAULT_OWNER = { repository: "cognia-labs/cognia-docs", branch: "main" }
+type PageOwner = Pick<PageOrigin, "repository" | "branch" | "revision">
 
 type Props = {
   /** Page slug, e.g. ["en", "getting-started"]. May be empty for the index. */
   slug: string[]
+  origin?: PageOrigin
   /**
    * Repo-relative path of the page's source file. Comes from fumadocs'
    * `page.path`, so locale-shared pages (`content/docs/plugin-dev/**`) link
@@ -24,8 +26,8 @@ function detectLocale(slug: string[]): "en" | "zh" | null {
   return null
 }
 
-export function buildEditPath(sourcePath: string): string {
-  return `https://github.com/${REPO}/edit/${BRANCH}/${sourcePath}`
+export function buildEditPath(sourcePath: string, owner: PageOwner = DEFAULT_OWNER): string {
+  return `https://github.com/${owner.repository}/edit/${owner.revision ?? owner.branch}/${sourcePath}`
 }
 
 function buildAlternateHref(slug: string[]): string | null {
@@ -33,24 +35,29 @@ function buildAlternateHref(slug: string[]): string | null {
   if (!locale) return null
   const target = locale === "en" ? "zh" : "en"
   const rest = slug.slice(1).join("/")
-  return rest ? `/docs/${target}/${rest}` : `/docs/${target}`
+  return rest ? `/${target}/docs/${rest}` : `/${target}/docs`
 }
 
-export function buildFeedbackHref(slug: string[], sourcePath: string, helpful: boolean): string {
+export function buildFeedbackHref(
+  slug: string[],
+  sourcePath: string,
+  helpful: boolean,
+  owner: PageOwner = DEFAULT_OWNER
+): string {
   const path = slug.length > 0 ? slug.join("/") : "index"
   const sentiment = helpful ? "Helpful" : "Needs improvement"
   const title = `[Docs feedback] ${sentiment}: ${path}`
   const body = [
-    `Page: https://github.com/${REPO}/blob/${BRANCH}/${sourcePath}`,
+    `Page: https://github.com/${owner.repository}/blob/${owner.revision ?? owner.branch}/${sourcePath}`,
     "",
     helpful ? "What was especially useful?" : "What should we improve?",
     "",
   ].join("\n")
-  return `https://github.com/${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=documentation`
+  return `https://github.com/${owner.repository}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=documentation`
 }
 
-export function PageFooter({ slug, sourcePath, lastModified }: Props) {
-  const editHref = buildEditPath(sourcePath)
+export function PageFooter({ slug, sourcePath, lastModified, origin }: Props) {
+  const editHref = buildEditPath(sourcePath, origin)
   const altHref = buildAlternateHref(slug)
   const locale = detectLocale(slug)
   const altLabel = locale === "en" ? "中文版本" : locale === "zh" ? "English version" : null
@@ -119,7 +126,7 @@ export function PageFooter({ slug, sourcePath, lastModified }: Props) {
         </span>
         <div className="flex gap-2">
           <a
-            href={buildFeedbackHref(slug, sourcePath, true)}
+            href={buildFeedbackHref(slug, sourcePath, true, origin)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={locale === "zh" ? "有帮助" : "Helpful"}
@@ -128,7 +135,7 @@ export function PageFooter({ slug, sourcePath, lastModified }: Props) {
             👍
           </a>
           <a
-            href={buildFeedbackHref(slug, sourcePath, false)}
+            href={buildFeedbackHref(slug, sourcePath, false, origin)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={locale === "zh" ? "没有帮助" : "Not helpful"}

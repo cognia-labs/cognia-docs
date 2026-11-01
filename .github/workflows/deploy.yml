@@ -1,0 +1,62 @@
+name: Deploy docs
+run-name: Deploy docs / ${{ inputs.environment }} / ${{ inputs.dry_run && 'dry-run' || 'publish' }}
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deployment environment
+        type: choice
+        options: [staging, production]
+        default: staging
+      dry_run:
+        description: Validate configuration without uploading
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: docs-deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+jobs:
+  deploy:
+    name: Pages — docs (${{ inputs.environment }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: ${{ inputs.environment }}
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      WRANGLER_SEND_METRICS: "false"
+      NEXT_PUBLIC_DOCS_SITE_URL: ${{ vars.DOCS_SITE_URL }}
+      NEXT_PUBLIC_WEB_SITE_URL: ${{ vars.WEB_SITE_URL }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Validate deployment configuration
+        id: prepare
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          CF_DOCS_PAGES_PROJECT: ${{ vars.CF_DOCS_PAGES_PROJECT }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/prepare-deployment.mjs
+      - run: pnpm install --frozen-lockfile
+        if: inputs.dry_run != true
+      - run: pnpm check
+        if: inputs.dry_run != true
+      - run: pnpm exec playwright install --with-deps chromium && pnpm test:e2e
+        if: inputs.dry_run != true
+      - name: Publish the complete static export and search Worker
+        if: inputs.dry_run != true
+        env:
+          CF_DOCS_PAGES_PROJECT: ${{ vars.CF_DOCS_PAGES_PROJECT }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PAGES_BRANCH: ${{ steps.prepare.outputs.pages_branch }}
+        run: pnpm exec wrangler pages deploy out --project-name "$CF_DOCS_PAGES_PROJECT" --branch "$PAGES_BRANCH"

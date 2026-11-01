@@ -6,9 +6,14 @@ const source = readFileSync(join(__dirname, "page.tsx"), "utf8")
 describe("docs page chrome", () => {
   it("mounts the page footer with build-time git metadata", () => {
     expect(source).toContain("getDocsLastModified(page.path)")
-    expect(source).toContain(
-      "<PageFooter slug={footerSlug} sourcePath={sourcePath} lastModified={lastModified} />"
-    )
+    const footer = source.match(/<PageFooter\b[\s\S]*?\/>/)?.[0]
+    for (const prop of [
+      "origin={pageOrigin(page.path)}",
+      "slug={footerSlug}",
+      "sourcePath={sourcePath}",
+      "lastModified={lastModified}",
+    ])
+      expect(footer).toContain(prop)
   })
 
   it("resolves the source path from fumadocs rather than lang + slug", () => {

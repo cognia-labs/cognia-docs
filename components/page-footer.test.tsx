@@ -1,18 +1,18 @@
 import { render, screen } from "@testing-library/react"
 import { buildEditPath, buildFeedbackHref, PageFooter } from "./page-footer"
 
-const SOURCE = "docs/content/docs/en/getting-started.mdx"
-const SHARED_SOURCE = "docs/content/docs/plugin-dev/api-overview.mdx"
+const SOURCE = "content/docs/en/getting-started.mdx"
+const SHARED_SOURCE = "content/docs/plugin-dev/api-overview.mdx"
 
 describe("buildEditPath", () => {
   it("links to the file fumadocs reported, not a reconstructed path", () => {
     expect(buildEditPath(SOURCE)).toBe(
-      "https://github.com/cognia-labs/cognia/edit/master/docs/content/docs/en/getting-started.mdx"
+      "https://github.com/cognia-labs/cognia-docs/edit/main/content/docs/en/getting-started.mdx"
     )
   })
 
   it("handles locale-shared pages, which have no language segment", () => {
-    expect(buildEditPath(SHARED_SOURCE)).toContain(`/master/${SHARED_SOURCE}`)
+    expect(buildEditPath(SHARED_SOURCE)).toContain(`/main/${SHARED_SOURCE}`)
   })
 })
 
@@ -25,7 +25,7 @@ describe("PageFooter", () => {
 
   it("points the feedback body at the real source file", () => {
     const href = buildFeedbackHref(["en", "plugin-dev", "api-overview"], SHARED_SOURCE, true)
-    expect(decodeURIComponent(href)).toContain(`blob/master/${SHARED_SOURCE}`)
+    expect(decodeURIComponent(href)).toContain(`blob/main/${SHARED_SOURCE}`)
   })
 
   it("shows last-modified metadata only when supplied", () => {
@@ -119,4 +119,27 @@ describe("PageFooter", () => {
       expect.stringContaining("/issues/new?")
     )
   })
+})
+
+it("keeps imported ADR editing in the source repository", () => {
+  const owner = {
+    repository: "cognia-labs/cognia",
+    branch: "dev",
+    sourcePath: "docs/content/docs/en/adr/example.md",
+    revision: "a".repeat(40),
+  }
+  expect(buildEditPath(owner.sourcePath, owner)).toBe(
+    `https://github.com/cognia-labs/cognia/edit/${owner.revision}/docs/content/docs/en/adr/example.md`
+  )
+  expect(
+    decodeURIComponent(buildFeedbackHref(["en", "adr", "example"], owner.sourcePath, false, owner))
+  ).toContain(`/blob/${owner.revision}/docs/content/docs/en/adr/example.md`)
+})
+
+it("switches language within the localized documentation route", () => {
+  render(<PageFooter slug={["en", "getting-started"]} sourcePath={SOURCE} />)
+  expect(screen.getByRole("link", { name: "中文版本" })).toHaveAttribute(
+    "href",
+    "/zh/docs/getting-started"
+  )
 })

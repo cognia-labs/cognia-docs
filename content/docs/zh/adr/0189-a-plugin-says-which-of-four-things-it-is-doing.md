@@ -1,0 +1,145 @@
+---
+title: "0189 — 插件必须说明自己在做四件事中的哪一件"
+description: "插件参与请求分为 observe / transform / guard / around 四种语义，区分观察、请求改写、否决和执行包装。四者共用注册表、排序规则、存活规则和调度器，next 至多调用一次，各扩展点声明失败策略。修复 chat middleware 重复请求模型、插件写入忽略目标会话，以及 transport 按方法名推测重试安全性的问题。"
+---
+
+# ADR 0189 — 插件必须说明自己在做四件事中的哪一件
+
+**Status:** Accepted — 已实现 **Date:** 2026-09-16 **Related:** [ADR-0026](./0026-plugin-extension-points-v2)（扩展点 v2、`ctx.chat.use`、`onBuildOptions`）、[ADR-0155](./0155-plugin-author-boundary)（SDK 作者边界）、[ADR-0145](./0145-python-plugin-runtime)（契约目录与其镜像）、[ADR-0020](./0020-computer-use)（三档权限模型）
+
+## 背景
+
+插件此前可以从三个互相独立的入口接入宿主管线：
+
+- `activate()` 返回的 `PluginHooks` 包；
+- `ctx.chat.use(...)`，around 风格的 chat middleware；
+- 跨进程运行时用的 `before`/`after` 桥接对。
+
+每扇门都有自己的存储、自己的排序规则，以及各自对「这个插件已被禁用」的理解。它们向宿主呈现的形状完全相同——一个函数——所以运行时无从知道某个处理器是在观察、改写、否决还是包裹。而这个区分恰恰决定了三件宿主必须做对的事：失败能否被吞掉、处理器能否并发、返回值能否顶替真实结果。
+
+由此产生了三个确认缺陷。
+
+**chat middleware 链可能把一次轮次发送两遍。** `runChatMiddlewareChain` 自己组装链路，在 middleware 超时或抛错时再次调用 `next(req)`：
+
+```ts
+const result = await raceWithTimeout(callMiddleware(), entry.timeoutMs)
+if (result.kind === "timeout") { …; return next(req) }   // ← 第二次调用
+if (result.kind === "error")   { …; return next(req) }   // ← 第二次调用
+```
+
+只有在 middleware 从未委派时这才正确。而常见写法恰恰是 `await next()` 之后做后处理——此时下游 terminal 为委派执行一次，再为「恢复」执行一次。middleware 自己调用两次 `next()` 会走同一条路径；**同步**抛错则完全逃出 `Promise.race`，因为 race 能捕获 rejection，捕获不了 promise 尚未产生时就抛出的异常。
+
+**`ctx.chat.appendMessagePart` 忽略了显式目标会话。** 它读取 `options.sessionId`，却调用 `store.appendMessage(msg)`，而后者只写入当前有焦点的会话——插件向后台会话追加的消息，落在了用户正在阅读的那个会话里。
+
+**transport 靠方法名猜测重试安全性。** `isIdempotentPluginApi` 用 `/:(get|list|read|stat|…|watch|…)/` 匹配，命中即视为可安全重试。两个方向都错：`managedIdeState:watch` 会**创建**订阅，超时后重试会留下两个；而契约里声明为非幂等的 `fs:stat`，仅因名字以读动词开头就白得一次重试。
+
+还有一个更安静的问题。`PluginEventHooks.dispatchChatRequest` 让每个插件面对**同一个** `messages` 数组，再倒序扫描取最后一个成功结果——装了两个插件时，实际只有一个生效，而是哪一个取决于注册顺序。
+
+## 决定
+
+插件参与是五种机制，不是一种。其中四种是 *interceptor*；第五种（`contribution`）是既有的声明式注册路径，保持不变。
+
+| 机制 | 回答的问题 | 执行语义 |
+| --- | --- | --- |
+| `observe` | 发生了什么？ | 不改变结果；异步、有界、可丢弃 |
+| `transform` | 输入或投影应如何改变？ | 独立快照、返回新值、可重复、不得改变身份与授权 |
+| `guard` | 是否允许继续？ | pass / deny / requireApproval；不能把上层的 deny 翻成 allow |
+| `around` | 如何包裹一次执行？ | 有类型的输入输出、`next` 至多一次、显式错误与取消语义 |
+
+### 一个注册表、一套排序、一条存活规则
+
+所有接入面都归一化为 `InterceptorRegistration`（`lib/plugin/interceptors/normalize.ts`），落进同一个注册表（`lib/plugin/interceptors/registry.ts`）。旧的门继续开着——它们是作者侧的写法，不是第二套运行时。
+
+排序分四级：**信任层级** → **before/after DAG** → **priority** → 稳定的 **registrationId**。信任层级来自安装来源（`Plugin.source`），绝不来自 manifest——能自报层级的插件只会报最高的那一档，而层级决定谁先看到并改写载荷。DAG 用 Kahn 算法，就绪队列按层级/优先级排序，因此在图未作约束的地方这个意图得以保留。悬空的 `after: ["not-installed"]` 或成环时，丢弃的是引发问题的**边**、保留全部注册，并给出诊断：一个作者的笔误不该让整个扩展点对其他插件停摆。
+
+存活判定统一为 `isPluginHooksEnabled`，抽到两个注册表都能引用的叶子模块。缓存只覆盖纯排序；启用状态每次调度都重新读取——它在插件 store 里翻转，不会触碰这个注册表。
+
+### 十条调度规则
+
+`lib/plugin/interceptors/dispatch.ts` 强制执行：
+
+1. 单次 invocation 中 `next` 至多进入一次；第二次调用直接 reject，下游操作**不**重跑。
+2. 同步抛错与异步 rejection 走同一条捕获路径。
+3. 只有在尚未委派且未提交任何副作用时，处理器才可被跳过。
+4. 一旦开始委派，失败意味着等待**同一个**操作（或暴露它的错误），绝不另起一个。
+5. 后处理失败绝不重新发起模型或工具调用。
+6. 下游耗时与下游错误归属下游。将同一次缓慢模型调用归责于每层包装处理器，会导致三个健康插件同时熔断。
+7. 超时不等于取消成功：撤销该次能力，拒绝迟到的提交，同时不假装回滚了已在别处提交的工作。
+8. transform 默认串行，除非扩展点声明其取值互不相交。
+9. 重入按 operation 维度在调用图上检测。
+10. 由扩展点的失败策略裁决；注册方只能**收窄**（`fail-open` → `fail-closed`），不能放宽。
+
+失败记账是注入的而非自有的，所以 chat middleware 保留设置面板已订阅的三振熔断器，而不是多出一个与之打架的。
+
+### 扩展点
+
+声明在 `lib/plugin/contracts/plugin-points.ts` 的新 `kind: "interceptor"` 下，与其他扩展点契约并排——这样 `audit:slots`、生成的 `plugin-points.json` 镜像与文档看到的仍是同一份目录。
+
+| 扩展点 | 语义 | 触发位置 |
+| --- | --- | --- |
+| `agent.context.prepare` | transform | `hooks-system.ts:dispatchBuildOptions` |
+| `model.request.prepare` | transform | `chat-middleware/runner.ts` |
+| `model.request.invoke` | around | `chat-middleware/runner.ts` |
+| `tool.call.prepare` | transform | `invoke-plugin-tool.ts` |
+| `tool.execute` | around | `invoke-plugin-tool.ts` |
+| `tool.result.project` | transform | `hooks-system.ts:dispatchPostToolUse` |
+| `ui.action.invoke` | guard | `commands/registry.ts:executeCommand` |
+| `operation.completed` | observe | `interceptors/dispatch.ts` |
+| `model.stream.transform` | transform | `interceptors/consumers.ts`，在 standalone / AI SDK 事件映射之前 |
+| `agent.turn.decide` | guard | AI SDK `prepareStep`，复用 Sidecar hook 往返 |
+| `ui.surface.project` | transform | 两种 slot 渲染器共用异步 `useSurfaceProjections` |
+
+实现更新（2026-10-29）：这三个点位已接入可等待的实际消费端。Web/mobile 的 `executeAgent` 文本回退复用相同消费者：单次模型调用在发起前等待 guard，由现有逐次权限回复器处理审批，没有回复器则拒绝继续。投影只改变展示文本，结构化结果仍来自原始模型输出。
+
+- 流变换在 mapper 累积之前改写展示文本，最终 assistant 快照使用同一结果；传输身份、工具参数和 Sidecar 的模型对话不被改写。Standalone 再次发送派生的 assistant 历史前会执行 PII 检查。
+- AI SDK 的每个模型 step 在既有准备与预算策略后等待 guard。遇到 deny 即停止；其他 guard 的审批请求统一收集，批准前一个请求不会跳过后面的 deny。审批复用现有会话隔离的等待与回复入口，复用会话也会逐轮刷新或清空 interceptor 配置。
+- UI 投影在 render 外处理可序列化的展示 DTO，普通 slot、overflow 和存在性判断共用 hook；宿主上下文与归属身份不可改写。注册版本、装饰插件启停和取消状态阻止迟到结果提交，收紧为严格失败策略时隐藏该 surface。
+
+声明式 interceptor 在注册和回调完成时都必须满足其规范权限，取消与过期注册不能提交结果。原生 Claude SDK 不暴露内部模型 step，因此启用流或轮次 interceptor 时会拒绝使用该运行时，避免静默绕过；Standalone Anthropic BYOK 实际使用 AI SDK，支持这些点位。
+
+### 哪些旧 hook 被归一化
+
+`onChatRequest`、`onBuildOptions`、`onPostToolUse` 本身就是 interceptor 形状，成为 transform 注册。`onPreToolUse` **不**归一化：它的形状是 allow/deny/modify——guard 与 transform 的融合体——塞进 transform 链会让后面的插件把前面插件的 `deny` 翻回 `allow`。它保留「首个非 allow 胜出」的调度器；`tool.execute` 是它有类型的继任者。
+
+### 契约驱动的重试
+
+`isIdempotentPluginApi` 按 transport 实际看到的顺序查声明：先查 `packages/plugin-sdk/contract/catalog.json` 中新增的 `wireOps` 数组（网关逐字收到的宿主代理操作，如 `window:getSize`、`db:commit`），再查与作者侧方法一一对应的 ctx 方法目录。**未声明**的操作不重试；调用方的 `idempotent` 提示只能收窄——安全分类属于方法的所有者，不属于恰好在调用它的人。
+
+### 作者写法
+
+```ts
+import { defineInterceptors } from "@cognia/plugin-sdk"
+
+export function activate(ctx: PluginContext) {
+  return defineInterceptors([
+    {
+      point: "tool.result.project",
+      after: ["@cognia/redact"],
+      failurePolicy: "fail-closed",
+      handler: (value) => ({ ...value, projection: redact(value.projection) }),
+    },
+  ])
+}
+```
+
+这个 helper 是纯的——它构造描述并返回。注册发生在宿主读取 `activate()` 返回值时，因此绑定到激活租约（plugin id、generation、realm、信任层级），而不是绑定到某个模块恰好被 import 的时刻。调用即注册的 helper 会让插件在热重载后处于半活状态，上一代际的闭包仍留在链上。
+
+`activate()` 可以返回历史的 hook 包、`defineInterceptors` 的结果，或同时携带两者的一个对象。
+
+## 影响
+
+**行为变化。**
+
+- 委派之后失败的 chat middleware 不再造成第二次模型请求。也不再造成第二次**任何**事情——下游操作是被等待，而不是被重跑。
+- `next()` 现在转发 middleware 手上的那个请求，所以请求改写真正生效。旧 runner 始终转发原始请求。
+- `onChatRequest` 与 `onPostToolUse` 成为管线：每个插件看到前一个的输出。前面插件做的脱敏对后面的插件可见，后者也无法靠返回收到的原值把它撤销。
+- `appendMessagePart` 写入目标会话；目标不存在时返回 `null`，而不是凭空播种一个幽灵会话。
+- 未声明的 wire op 不再重试。在用的 25 个宿主代理操作已在 `wireOps` 中声明；新增的必须声明才能拿回重试，transport 会对每个缺口告警一次。
+
+**失败策略按扩展点声明，旧 hook 支撑的扩展点保持原有行为。** `agent.context.prepare`、`model.request.prepare`、`model.request.invoke` 与 `tool.result.project` 为 `fail-open`，与今天的 `onBuildOptions` / `onChatRequest` / `onPostToolUse` 一致——归一化旧 hook 包不该让按旧行为编写的插件突然开始阻断输出。脱敏类 interceptor（崩溃绝不能读作「没什么要脱敏的」的那种场景）把自己的注册收窄为 `fail-closed`，宿主予以尊重，插件永远无法再放宽回去。`tool.execute` 与 `ui.action.invoke` 是全新的，从一开始就是 `fail-closed`。
+
+**明确不在范围内。** 不做 `CompositionPlan`、不扩大 service realm override、不做 MCP Apps 适配层、不做统一长任务句柄。
+
+vNext 设计中另外三个拟议契约字段同样缺席，且是有意为之而非遗漏：`inputSchema` / `outputSchema` / `schemaRevision`（运行时 wire 校验）、`requiredResourceGrant`、`streaming`。每一个背后都需要一套机制——780 余个方法的 JSON Schema、资源授予账本、分块协议——只声明字段而不落地机制，产出的是无人读取的元数据，正是这个扩展点目录本身要防止的「建好即休眠」模式。它们应与实现它们的工作一起交付。
+
+**代价。** hook 与其处理器之间多了一层模块，以及两个纯粹为打断循环依赖而抽出的叶子模块（`plugin-liveness.ts`、`hook-telemetry.ts`）。

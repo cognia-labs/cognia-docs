@@ -1,0 +1,225 @@
+---
+title: "0194 — A judgment is a provider, not a prompt"
+description: "Provides System-1 decisions as a host capability (`ctx.decisions`): typed yes/no, pick-one and score questions answered in one pass with calibrated probabilities. A provider registry uses laya locally and TypeSafe-compatible endpoints remotely. Every request is redacted and PII-gated regardless of reported provider locality. Providers return typed envelopes rather than throwing."
+---
+
+# ADR 0194 — A judgment is a provider, not a prompt
+
+**Status:** Accepted — implemented
+**Date:** 2026-09-25
+**Related:** [ADR-0145](./0145-python-plugin-runtime-alignment) (python-backed contributions, the contract catalog), [ADR-0156](./0156-every-in-tree-plugin-is-a-third-party-plugin) (in-tree plugins use the SDK alone), [ADR-0026](./0026-plugin-extension-points-v2) (lazy-factory module bridges)
+
+## Context
+
+Two things arrived at once.
+
+`jev-chat/jev-chat-jarvis` (MIT) is an Android chat copilot whose core loop
+never asks a language model "what do you think?". It asks a **System-1
+decision model** seven typed questions — is the latest message literal, what
+does the other person actually want, how close is this to a fight (0–9), what
+do they need, should the next message carry substance, what action fits, is
+the tension resolved — and gets calibrated probabilities back in about a
+second. An LLM then drafts three replies. The same decision model ranks
+them. The protocol is small: `POST {model, state, questions}` → `{answers}`,
+with question types `noul` (yes/no), `choice` (pick one key) and `score`
+(ordered levels).
+
+`plugins/cognia-laya-guard` already ran **laya**, a local encoder that speaks
+exactly that question format, for inbound IM moderation. Its `laya_decide`
+tool was a passthrough nobody in the host could call, and the plugin could not
+offer its engine to anything else.
+
+Porting the copilot as one feature that calls one backend would have repeated
+the pattern the plugin already showed: a capability locked inside whichever
+code happened to need it first.
+
+## Decision
+
+### 1. `ctx.decisions` is a host capability with a provider registry
+
+`lib/decisions/` owns the subsystem:
+
+- `types/decisions` — wire question / answer types, `DecisionProvider`,
+  `DecisionResult` (ok with typed answers, or a typed error kind), settings.
+- `registry.ts` + `host-registry.ts` — one registry for the built-in remote
+  endpoint and plugin contributions, with `subscribe()` and a stable `list()`
+  snapshot for `useSyncExternalStore`.
+- `run-decision.ts` — **the one entry point.** Validation, provider
+  resolution (explicit id, else `settings.decisions.providerId`), a recursion
+  guard, redaction, the PII gate, a deadline, and normalization all live here.
+  The reply copilot, the settings probe and the plugin API all call it.
+
+Plugins consume through `ctx.decisions.decide()` (`decisions:run`) and
+contribute through `manifest.decisionProviders[]` or
+`ctx.decisions.registerProvider()` (`decisions:provide`). A python plugin
+backs a provider with `@cognia.contribution("<id>")`: the host reads
+`describe()` once for the plain descriptor and proxies `decide` / `status`.
+
+### 2. Every request is redacted and gated, whoever the provider is
+
+`runDecision` runs `redactText` over every string **value** in the state and
+the question text (keys are untouched, so choice keys survive), then refuses
+with `pii` if `hasNoLeakingPiiDeep` still finds anything. This applies to local
+providers too. `locality: "local"` is a claim a plugin makes about itself; the
+host cannot verify it, so it is display-only.
+
+### 3. Providers reply with an envelope, never an exception
+
+`decide()` returns `{ok: true, answers, latencyMs, routing?, truncation?,
+stateTrimmed?}` or `{ok: false, error: {kind, message}}`. A python-backed
+provider crosses an RPC where exceptions arrive as bare strings, so a typed
+kind has to travel as data. Unknown kinds become `provider_error`; laya's
+`not_ready` / `invalid_question` / `predict_failed` map onto the host's
+`provider_unavailable` / `invalid_request` / `provider_error`. Only the
+request crosses the RPC — the host's `AbortSignal` is not serializable, so
+`runDecision` races the call against the signal and a deadline instead.
+
+### 4. Local laya and remote decision adapters share the same host contract
+
+- **Local**: the laya plugin contributes `laya-local`. `describe()` advertises
+  the routed checkpoint's token budgets (`limits`), which callers use to pick
+  compact question wording. `decide` honors `stateTrim` — the path of a list
+  whose *oldest* entries may be dropped to fit — because laya otherwise cuts
+  the serialized state from the tail, which for a chat drops the newest
+  messages. Truncation is reported, never hidden.
+- **Remote**: `builtin:decisions-http` posts through `createPlatformFetch`
+  (the network-egress gate's managed transport) to OpenRouter
+  `api/alpha/decisions` or a `/v1/systemone` gateway (Bocha, TypeSafe, Vercel,
+  OpenCode Zen, custom). Plain http is refused except for loopback. The key
+  lives in the keyring per preset, never in settings.
+
+`AppSettings.decisions` is `device-local`: the selected provider is often a
+plugin that exists on one machine only, and the key is in that machine's
+keyring.
+
+#### AI SDK adapter extension (2026-10-06)
+
+The built-in provider now routes native TypeSafe, OpenRouter, Bocha, Vercel
+TypeSafe proxy, and OpenCode Zen presets through `@ai-sdk/typesafe-ai` and
+`experimental_decide`. The path remains consumer → `runDecision` →
+`DecisionProvider` → SDK adapter. The adapter maps host `noul` to SDK
+`boolean` and maps the result back; local laya and custom legacy HTTP
+providers keep their existing protocol. Native presets retain their full POST
+URL, including OpenRouter's alpha path.
+
+Explicit OpenAI, Anthropic, Google and AI Gateway adapters are also selectable.
+These presets accept an API **base URL** and a provider model ID. Keys remain
+per preset in the keyring; every adapter receives `createPlatformFetch`. No
+ambient default provider or environment key is used. The existing one-attempt
+policy is explicit (`maxRetries: 0`); the deadline covers body parsing as well
+as transport, and host cancellation propagates to in-process providers.
+
+Results expose the resolved model, safe token usage, rounding and probability
+semantics. Native confidence remains a separate provider statistic; missing
+confidence and distributions are never fabricated. LLM adapters produce
+estimates; Gateway semantics are unknown because its selected model can vary.
+These choices do not make an unmeasured model eligible for the reply copilot.
+Changing presets clears URL/model overrides and unsaved key input.
+
+### 5. No provider is a labelled state, not a hidden one
+
+Without a provider, a consumer gets `no_provider`. Features that need a judge
+render that as an explicit inert state (the reply copilot still drafts, unranked)
+rather than quietly skipping the judgment.
+
+### 6. Calibrated is not validated — features gate on measured question sets
+
+`calibrated: true` says a provider's probabilities are honest, not that it is
+right about a given task. A provider lists the named question sets it was
+measured on and passed in `validatedQuestionSets`; a feature built on a set
+uses only providers that list it.
+
+The reply copilot's judge + rank set is `jev-judge/v1`. The built-in endpoint
+counts as validated for its Jev presets (the models Jarvis calibrated it on)
+only when the preset URL and default model are unchanged. Custom endpoints,
+model overrides, and the generic SDK adapters do not inherit that validation. Laya was measured with
+`plugins/cognia-laya-guard/tools/calibrate_jev.py` on Jarvis's 30-case labeled
+set and scored near chance (intent 17–23% on six options, danger MAE 2.2,
+against a bar of ≥60% / <1.0), in both the compact and the full wording. It
+therefore declares no set: with laya selected the copilot reports
+`not_validated`, drafts without ranking, and says so. Laya stays a provider
+for everything it does measure well (inbound moderation) and for plugins'
+own questions.
+
+### 7. An inbound hook can annotate, not only block
+
+`onConnectorInbound` gains a fourth decision, `{ action: "annotate", labels }`:
+keep the message and attach labels (a key, a 0..1 score, an optional
+severity / label / note). The dispatcher validates the raw plugin output
+(key shape, finite score, redacted notes), caps it (8 per plugin, 16 per
+message), stamps the source plugin, and returns the labels alongside allow or
+transform; a block still wins. The bus carries them on the event's top-level
+`inboundLabels` (not `channelData`, which recovery compaction drops),
+`insertInboundMessage` persists them as `metadata.inboundLabels`, an edit
+clears them, and the transcript renders them as chips. Outbound ignores
+annotate. Laya's observe mode uses it: a would-be block now shows its scores on
+the message instead of only bumping a counter.
+
+### 8. The desktop copilot reads pixels once, asks first, and never types
+
+On the desktop the same copilot runs over another app's chat window, from a
+shortcut (`chat-copilot.capture`, unbound by default).
+
+- **Its own permission surface.** `Surface::ChatCopilot` accepts exactly one
+  command, `capture_frontmost_window`, and nothing else. It is not silenced by
+  the automation switch and does not inherit the default tier, which govern
+  agents driving the desktop. `off` and `perCall` both ask every time;
+  `whitelist` captures the apps on the surface's own list without asking and
+  never falls back to the Computer Use whitelist. Its consent prompt carries no
+  screen thumbnail, because that thumbnail would travel to paired phones.
+- **The target is pinned before the prompt.** The command reads focus, refuses
+  Cognia's own windows and the hard-target list (password managers, system
+  auth), preflights Screen Recording without ever requesting it, and only then
+  asks. Answering can move focus to Cognia, so the capture uses the pinned
+  process, not whatever is frontmost afterwards. A focused credential window
+  blanks the frame, and the renderer says so instead of reading nothing.
+- **Local OCR only, never cached.** The frame is read by the first ready local
+  engine (Apple Vision, PaddleOCR, Tesseract) with cloud fallback forced off,
+  and the result skips the OCR cache.
+- **Sides are inferred, and admitted when unknown.** `bubble-grouper.ts`
+  rebuilds messages from line geometry: the focused composer, when there is
+  one, bounds the conversation pane; timestamps and centered system lines drop;
+  a line hugging the left edge is theirs, the right edge mine. A single-column
+  app (Slack, Discord, Teams), an unlisted app that never shows the user's side,
+  or a bubble too close to call makes the transcript unsided (`unsided`
+  reason): drafts are still written, but the judge and the ranking are skipped
+  and the overlay says why. Group sender names become "Person A/B"; contact
+  knowledge is used only when the chat header or window title names exactly
+  one contact.
+- **An overlay beside the chat, copy only.** The pipeline runs in the main
+  window, where plugin providers live; a non-activating panel beside the chat
+  window shows the prompt, the read and the candidates. The main window's
+  consent overlay stands back for this surface while the copilot holds a
+  claim (`lib/automation/consent-routing.ts`) and takes the prompt back if the
+  panel cannot open. The panel is kept out of screen capture, copies through
+  the host clipboard, and has no path to type into the chat app.
+
+## Alternatives rejected
+
+- **Silently replace the validated judge with the chat LLM.** It yields model
+  self-reported confidence, not calibrated probabilities, and it would look
+  identical to a real judge in the UI. Rejected in favor of an explicit "no
+  provider" state.
+- **Let the copilot call laya's tool directly.** Couples a host feature to one
+  plugin's tool name and argument shape, and leaves every other consumer
+  without a way in.
+- **Trust `locality` to skip redaction for local providers.** A plugin can
+  declare anything; the gate has to hold without believing it.
+- **Reuse the Computer Use permission for the screen copilot.** One grant would
+  have covered both "an agent may drive this app" and "read my chat when I
+  press a key"; revoking either would have revoked both.
+- **Read the chat through accessibility APIs, as Jarvis does on Android.**
+  Desktop chat apps (WeChat, QQ, most Electron clients) expose little or no
+  message text to accessibility, and walking another app's tree is the
+  driving-grade access this feature is designed not to need.
+
+## Consequences
+
+- One more capability family in the contract catalog (`decision-provider`,
+  `decisionProviders[]`, `ctx.decisions`, two permissions) and its mirrors.
+- The laya plugin becomes a general local System-1 backend rather than a
+  single-purpose moderation hook.
+- Redaction means a judge sees `<PHONE_001>`, not the number. For typed
+  judgments about intent and tone that is the right trade; a future question
+  that genuinely needs the raw value will have to be answered by a different
+  mechanism, not by weakening this gate.

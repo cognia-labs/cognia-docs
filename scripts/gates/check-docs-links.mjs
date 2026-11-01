@@ -26,7 +26,7 @@ import { fileURLToPath } from "node:url"
 import { dirname, join, relative } from "node:path"
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..")
-export const CONTENT_ROOT = join(REPO_ROOT, "docs", "content", "docs")
+export const CONTENT_ROOT = join(REPO_ROOT, "content", "docs")
 
 /** Locales that get a URL prefix, mirroring `docs/lib/i18n.ts`. */
 export const LOCALES = ["en", "zh"]

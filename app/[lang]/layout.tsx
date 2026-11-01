@@ -8,8 +8,8 @@ import { IntlProvider } from "@/components/intl-provider"
 import { Provider } from "@/components/provider"
 import { i18n } from "@/lib/i18n"
 import { SITE_NAME, siteUrl } from "@/lib/site"
-import enMessages from "../../../i18n/messages/en.json"
-import zhMessages from "../../../i18n/messages/zh-CN.json"
+import enMessages from "@/messages/en.json"
+import zhMessages from "@/messages/zh-CN.json"
 
 // `metadataBase` is what lets every page emit absolute canonical/OG URLs; a
 // static export has no request origin to infer one from at runtime.

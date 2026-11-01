@@ -1,0 +1,440 @@
+---
+title: ADR-0045 — Unified Plan Execution Hub
+description: "Promote the built-in agent's Plan mode from an SDK passthrough into a first-class, structured AgentPlan that serves as the canonical intermediate representation (IR) for all multi-step agentic execution. A plan is a DAG of typed PlanSteps; approving one runs it under a hybrid-adaptive engine that executes simple linear plans in-conversation and compiles delegation/parallel plans into the existing workflow orchestrator. Plans are authored four ways (ExitPlanMode capture, an explicit agent tool, a planner LLM, and Team/Goal projection), support manual / step-failure / judge-deviation replanning, and unify the three formerly disconnected decompose-and-drive mechanisms (Plan mode, Goal, Agent Team)."
+---
+
+# ADR-0045 — Unified Plan Execution Hub
+
+**Status**: Proposed (2026-06-03)
+**Authors**: Max Qian + Claude Opus 4.8
+**Builds on**: the SDK plan-permission passthrough (`lib/claude/build-options.ts:resolveSendOptions` → `sidecar/dispatch/anthropic.mjs`), the plan-mode → tasks bridge (`lib/agent/plan-mode-bridge.ts`), the Goal command (ADR-0019; `lib/goal/*`), the Agent Team runtime (ADR-0022/0032; `lib/ai/agent/*`), and the Visual Workflow orchestrator (ADR-0011/0022; `lib/workflow/runtime/orchestrator.ts`)
+**Affects**: `types/agent/plan.ts` (rewrite of the orphaned `types/agent/agent.ts`), `lib/agent/plan/*` (new: `runtime`, `synthesize-workflow`, `context-injector`, `prompts`, `planner`, `projections`, `pii-gate`), `lib/db/schema.ts` (Dexie **v71**) + `lib/db/plans.ts` (new), `lib/claude/build-options.ts` (`appendPlanContext` + `session.activePlan`), `lib/claude/types.ts` (`SendOptions`/session plan fields), `lib/workflow/nodes/built-ins.ts` + `catalog.ts` + `params-schemas.ts` (new `action.plan.step.dispatch` node), `sidecar/plan-tools/*` (new explicit `CreatePlan`/`UpdatePlan` tool defs, mirroring `sidecar/a2ui-tools/tool-defs.mjs`), `hooks/chat/use-claude-chat.ts` (ExitPlanMode capture + tool dispatch), `components/agent/plan/*` (new UI), `stores/agent/*`, `i18n/messages/{en,zh-CN}.json`
+
+## Context
+
+The built-in agent's **Plan mode is thin**. Three layers exist and none of them owns a plan:
+
+1. **Permission passthrough** — `permissionMode: "plan"` resolves through the precedence chain (`build-options.ts:750`: session → mode → character → appSettings) and is handed verbatim to the Claude Agent SDK `query()` in `sidecar/dispatch/anthropic.mjs:242`. **All plan semantics live inside the SDK; this repo does not own them.**
+2. **Tasks bridge** — `lib/agent/plan-mode-bridge.ts` maps the SDK's `TodoWrite` / `TaskCreate` / `ExitPlanMode` tool_use blocks into the `agent-team-store` as a synthetic `solo:<sessionId>` team, surfaced read-only by `components/agent/workspace/plan-mode-tasks-sheet.tsx`.
+3. **Render** — `components/chat/message-parts/mcp-renderers/plan-card.tsx` renders an `ExitPlanMode` block with its own local `PlanStep` interface.
+
+A whole **structured plan model is dead code**: `types/agent/agent.ts` (`AgentPlan`, `PlanStep`, `PlanRefinementRequest/Result`, `CreatePlanInput`, `AgentExecutionContext`, `PLAN_REFINEMENT_PROMPTS`) has **zero importers** repo-wide. Its companion plugin hooks `onAgentPlanCreate` / `onAgentPlanStepComplete` were demoted to `DEPRECATED_HOOK_POINTS` (ADR-0016). It is an aspirational "plan → approve → refine → execute" design that was never built.
+
+**Orchestration is mature but disconnected from the built-in chat agent**. The Agent Team runtime (`lib/ai/agent/team/agent-team-runtime.ts:runTeamLifecycle`) gates capability + plan approval, then **compiles a task DAG into a `VisualWorkflow`** (`lib/ai/agent/team/synthesize-workflow.ts`) and delegates to `runWorkflow` — inheriting idempotency, crash recovery, concurrency, and an event log. But the **built-in chat agent cannot reach orchestration directly**: the only chat→team path is the `action.team.run` workflow node. The **Goal** subsystem (`lib/goal/*`) is also a *third* self-driving loop (turn-driver + judge + subgoal decomposition) that shares nothing with either.
+
+The result is **three parallel decompose-and-drive mechanisms** with no common representation:
+
+| Mechanism | Data model | Trigger | Engine | Chat relationship |
+| --- | --- | --- | --- | --- |
+| Plan mode | none (SDK + tasks bridge) | Shift+Tab | Claude SDK | native, read-only |
+| Goal | `Goal` / `GoalSubgoal` (Dexie v30) | `/goal` | turn-driver loop | injects system prompt |
+| Team / Workflow | `AgentTeam` / `AgentTeamTask` | `action.team.run` | workflow orchestrator | only via workflow |
+
+## Decision
+
+Make a **rewritten `AgentPlan` the canonical intermediate representation (IR)** for every multi-step agentic execution, and build the **execution hub** that runs it. The dead `types/agent/agent.ts` is rewritten as `types/agent/plan.ts` (the generic `agent.ts` name is itself a smell against the broader `types/agent/*` domain); the orphan file is removed as cleanup the rewrite creates.
+
+### 1. AgentPlan as a typed step-DAG IR
+
+A plan is a DAG of `PlanStep`s. Each step carries an **executor kind** so a single representation can express in-session reasoning, delegation, tool calls, sub-workflows, and approval gates:
+
+```ts
+// types/agent/plan.ts
+export type PlanStepKind =
+  | "agent_turn"        // an in-session turn by the main agent (visible, conversational)
+  | "teammate_dispatch" // delegate to a teammate / subagent — reuses dispatchTeammate
+  | "tool_call"         // a specific tool invocation with fixed input
+  | "sub_workflow"      // run a nested VisualWorkflow — reuses runWorkflow
+  | "approval_gate"     // human approval checkpoint — reuses lib/runtime/approval-bus
+
+export type PlanStepStatus =
+  | "pending" | "ready" | "in_progress" | "completed" | "failed" | "skipped" | "blocked"
+
+export interface PlanStep {
+  id: string
+  title: string
+  description?: string
+  kind: PlanStepKind
+  status: PlanStepStatus
+  order: number
+  dependencies: string[]           // DAG edges (step ids)
+  params?: PlanStepParams          // kind-tagged union: { teammateId } | { toolName, input } | { workflowId } | ...
+  result?: string
+  output?: unknown
+  error?: string
+  attempts?: number
+  toolCallIds?: string[]
+  startedAt?: Date
+  completedAt?: Date
+  estimatedDurationMs?: number
+  actualDurationMs?: number
+}
+
+export interface AgentPlan {
+  id: string
+  sessionId: string
+  characterId?: string
+  title: string
+  description?: string
+  source: "exit_plan_mode" | "agent_tool" | "planner_llm" | "team_projection" | "goal_projection" | "manual"
+  executionMode: "in_session" | "orchestrated" | "auto"  // "auto" = hybrid-adaptive (default)
+  steps: PlanStep[]
+  status: "draft" | "awaiting_approval" | "approved" | "executing" | "paused" | "completed" | "failed" | "cancelled"
+  currentStepId?: string
+  totalSteps: number
+  completedSteps: number
+  config: PlanConfig
+  generationId: number             // staleness guard, mirrors Goal.generationId
+  createdAt: Date
+  updatedAt: Date
+  startedAt?: Date
+  completedAt?: Date
+  metadata?: Record<string, unknown>
+}
+
+export interface PlanConfig {
+  requireApproval: boolean         // gate before execution (default true)
+  executionMode: AgentPlan["executionMode"]
+  maxAutoRefinements: number       // cap on automatic replans
+  maxStepRetries: number
+  judgeDeviation: boolean          // run a between-steps judge (reuses goal judge pattern)
+  maxTokens?: number
+}
+
+export interface PlanRefinementRequest {
+  planId: string
+  refinementType: "optimize" | "simplify" | "expand" | "reorder" | "repair"
+  trigger: "manual" | "step_failure" | "judge_deviation"
+  failedStepId?: string
+  customInstructions?: string
+}
+```
+
+An append-only `PlanEvent` log mirrors `GoalEvent` exactly (`created | approved | rejected | refined | step_started | step_completed | step_failed | replanned | paused | resumed | exit`).
+
+### 2. Hybrid-adaptive execution
+
+Approving a plan runs it; the engine **picks the strategy from plan shape** (`executionMode: "auto"`):
+
+- **In-session sequential** — when every step is `agent_turn` and the DAG is linear. A driver mirrors `lib/goal/turn-driver.ts`: each step is a turn in the *current visible chat session*, so the user watches the agent work the plan conversationally. This preserves the native Claude-Code plan-mode feel ("approve, then watch it execute").
+- **Orchestrated** — when the plan contains `teammate_dispatch` / `sub_workflow` steps or any parallelism. `lib/agent/plan/synthesize-workflow.ts:synthesizePlanWorkflow(plan)` compiles the plan into a `VisualWorkflow` of `action.plan.step.dispatch` nodes (a pure function mirroring `synthesizeTeamWorkflow`, `__plan__:<planId>:<nonce>` id, Kahn cycle check) and hands it to `runWorkflow`. The plan thus **white-boxes the orchestrator's idempotency, crash recovery, concurrency, and event log** instead of reimplementing them.
+
+This is exactly how the **chat agent gains direct orchestration**: a `teammate_dispatch` step *is* the delegation, executed by the existing `dispatchTeammate` / `runTeamLifecycle` seam — no new orchestration engine, no mandatory detour through the workflow editor.
+
+The per-step node executor (`action.plan.step.dispatch` in `lib/workflow/nodes/built-ins.ts`) routes by `step.kind`:
+
+```
+agent_turn        → in-session turn (executeAgent / sidecar runAndCaptureAssistantReply)
+teammate_dispatch → dispatchTeammate(teamCtx, …)        (reuses ADR-0022 primitive)
+tool_call         → resolved tool invocation
+sub_workflow      → nested runWorkflow(params.workflowId)
+approval_gate     → waitForDecision(scope, id, signal)  (reuses approval-bus)
+```
+
+### 3. Four plan authors, one model
+
+A plan can be born four ways, all producing the same `AgentPlan` (`source` records provenance):
+
+1. **Capture `ExitPlanMode`** — when the SDK's plan-mode `ExitPlanMode` tool_use is seen (`hooks/chat/use-claude-chat.ts`, alongside the existing `applyPlanModeBridge`), build an `AgentPlan(draft, source="exit_plan_mode")` and surface it for approval. This is the closure the native plan mode never had: it now owns *what happens after approval*.
+2. **Explicit agent tool** — expose `CreatePlan` / `UpdatePlan` to the agent via `sidecar/plan-tools/tool-defs.mjs` (single source of names/schemas, mirroring the `sidecar/a2ui-tools/tool-defs.mjs` pattern; dispatched in the renderer because the sidecar cannot import `lib/`). Lets the agent structure and update a plan as it works.
+3. **Planner LLM** — `lib/agent/plan/planner.ts:decomposeIntoPlan` turns a one-line objective into a step DAG, reusing the `LlmClient` abstraction and `extractJson` exactly as `lib/goal/subgoals.ts:decomposeObjective` does.
+4. **Team / Goal projection** — `lib/agent/plan/projections.ts` converts `AgentTeamTask[]` ⇄ `PlanStep[]` and `GoalSubgoal[]` → `PlanStep[]` (and back), so the two existing mechanisms feed the same execution + tracking pipeline.
+
+### 4. Three replan triggers (PlanRefinement)
+
+`lib/agent/plan/runtime.ts:refinePlan(request)` reuses `PLAN_REFINEMENT_PROMPTS` and fires from:
+
+- **Step failure** — when a step exhausts `maxStepRetries`, the runtime auto-issues a `repair` refinement (Devin-style replan loop), capped by `config.maxAutoRefinements`.
+- **Manual** — the user clicks optimize / simplify / expand / reorder on the plan panel.
+- **Judge deviation** — when `config.judgeDeviation` is on, a between-steps judge (reusing the `lib/goal/judge.ts` pattern + `LlmClient`) checks alignment and triggers a refinement on drift.
+
+### 5. Integration seams — reuse, never rebuild
+
+- **`build-options.ts`** — new `lib/agent/plan/context-injector.ts:appendPlanContext` mirrors `appendGoalContext` (`context-injector.ts:26`) and is invoked next to the goal block (`build-options.ts:~1239`); `session.activePlan` rides the same precedence pattern as `session.activeGoal`. Executing-plan state (current + remaining steps) is injected into `appendSystemPrompt`.
+- **PII gate** — `lib/agent/plan/pii-gate.ts` runs plan titles/steps through `hasNoLeakingPii` before any LLM/embed, exactly as `lib/goal/redact-objective.ts` and `lib/connectors/ai-loop/safe-send-prompt.ts` do.
+- **Notifications** — step start / completion / block / replan fan out through `lib/notifications/notify()` (ADR-0042).
+- **Permissions** — `tool_call` / `teammate_dispatch` steps pass the ADR-0041 auto-mode three-tier safety gate.
+- **Persistence** — **Dexie v71**, additive, no upgrade hook: `agentPlans` + `agentPlanEvents`, indices mirroring `chatGoals` / `chatGoalEvents` (`schema.ts:1092`): one active plan per session enforced by the writer (`lib/db/plans.ts`), append-only events capped per plan.
+
+### 6. UI
+
+- **Inline approval/edit card** in chat (`components/agent/plan/plan-approval-card.tsx`) — review, edit steps, approve / reject / refine before execution.
+- **Plan tracker panel** in the existing agent workspace — live step DAG with status, reusing the workspace shell that today hosts `PlanModeTasksSheet`.
+- Refinement controls (optimize / simplify / expand / reorder / repair) on both.
+
+## Consequences
+
+- The built-in agent's Plan mode becomes a real, owned closure: structured plan → approve/edit/refine → tracked execution → replan — not an SDK black box.
+- The chat agent can orchestrate directly: a delegation step reuses `dispatchTeammate` with no workflow-editor detour.
+- One IR unifies Plan / Goal / Team; the three duplicate decompose-and-drive loops collapse onto one execution + tracking + persistence pipeline.
+- The execution engine is the existing workflow orchestrator (idempotency, crash recovery, concurrency, event log) — no second engine to maintain.
+- `types/agent/agent.ts` goes from dead code to a live, central model (renamed `types/agent/plan.ts`).
+- Cost: a new Dexie version, a new node type, new sidecar tool defs, and surface area across chat + workspace UI. Mitigated by phasing (below) with green gates each phase.
+
+## Alternatives considered
+
+- **Keep the SDK passthrough, only improve UI** (rejected by the design discussion) — leaves the three mechanisms disconnected and the structured model dead; violates the "no simplification" mandate.
+- **A bespoke plan executor** instead of compiling to `VisualWorkflow` — duplicates the orchestrator's idempotency/recovery/concurrency; rejected for reuse.
+- **Always in-session** or **always orchestrated** — each loses half the value (parallel fan-out, or the native conversational plan-mode feel); the hybrid-adaptive default keeps both.
+
+## Phasing
+
+See `docs/plans/2026-06-03-unified-plan-execution-hub.md`. Each phase ships green (`pnpm typecheck`, `pnpm test:coverage` ≥90%, `pnpm lint:i18n`, `pnpm sidecar:test` where touched):
+
+- **P1 — Model + persistence**: rewrite `types/agent/plan.ts`, delete `types/agent/agent.ts`, Dexie **v71** + `lib/db/plans.ts` CRUD (active-plan-per-session invariant, capped event log), plan runtime lifecycle skeleton (create / approve / reject / pause / resume / cancel + AbortController registry), `appendPlanContext` + `session.activePlan` wiring.
+- **P2 — Execution engine**: `synthesizePlanWorkflow`, the `action.plan.step.dispatch` node + per-kind routing, the in-session driver, hybrid-adaptive mode selection, PII gate.
+- **P3 — Chat → orchestration**: `teammate_dispatch` wired to `dispatchTeammate`; ExitPlanMode capture; explicit `CreatePlan`/`UpdatePlan` tool defs + renderer dispatch.
+- **P4 — Goal / Team projection**: `projections.ts` both directions; route Goal subgoals and Team tasks through the plan pipeline.
+- **P5 — Planner + replan + UI**: `decomposeIntoPlan`; all three refinement triggers; approval card, tracker panel, refinement controls; notifications.
+
+## Current-state amendment (2026-08-13)
+
+Plan persistence, approval, projections, execution, and the plan/goal/team integration are implemented. Several paths named by the proposal have since moved; the canonical owners are the current plan repository, projections, goal orchestration, and AgentTeam execution modules. No separate plan engine should be created from the historical path list.
+
+## Completion amendment (2026-08-19)
+
+The gaps a wiring audit found between the proposal and the shipped subsystem
+are closed. What changed, and why each was a defect rather than a preference:
+
+- **`approval_gate` steps are answerable.** The step waited on approval-bus
+  scope `agent-plan`, but nothing ever produced a decision for that scope, so
+  the step blocked until the run's 24h timeout. `step-dispatch.ts` now registers
+  the gate in `pending-gates-store` before blocking (and clears it in a
+  `finally`), `GateModalsHost` moved from the team workspace page to the app
+  root so a gate is answerable from whatever surface the user is on, and
+  `PlanRuntime` sweeps a plan's gates on reject / cancel / finish / delete.
+- **`PlanSource: "agent_tool"` has a producer.** §3.2's `CreatePlan` /
+  `UpdatePlan` were never built. They now ship as `create_plan` / `update_plan`
+  in `sidecar/builtin-tools/plan-tools.mjs` (both dispatch paths, opt-out via
+  `planSettings.agentAuthoring` → `SendOptions.planTools`), acknowledged in the
+  sidecar and written by the renderer capture
+  (`lib/agent/plan/agent-tool-capture.ts`) — the same seam `ExitPlanMode` uses,
+  so no new IPC transport was introduced.
+- **Every step kind is authorable.** The planner and the composer emitted only
+  `agent_turn`, leaving delegation / tool / MCP / sub-workflow / approval steps
+  reachable only from a workflow node. The composer now has a per-step kind
+  picker with per-kind params, validated by the shared
+  `lib/agent/plan/step-params.ts` that the agent-tool capture also uses.
+- **Plans cross shells.** `agentPlans` had no companion sync handler while
+  `chatGoals` did, so the companion mounted the approval dock against an empty
+  mirror. Added the `plans` protocol table (TS handler, desktop reader, Rust
+  allowlist) and `approve` / `deny` to the plan run-control handler, so a
+  decision made off-host travels back as a command instead of a doomed local
+  write.
+- **Notifications exist.** §5 promised a `notify()` fan-out that was never
+  built. `notify.ts` now posts a directed approval row with working Approve /
+  Discard actions (handler installed at boot by
+  `PlanNotificationInitializer`) and an ambient terminal row.
+- **Plan ⇄ workflow is bidirectional and durable.** The run path's compile is
+  ephemeral by contract; `workflow-conversion.ts` adds `planWorkflowDraft`
+  (plan → a real, laid-out, manually-triggered workflow row) and
+  `planInputFromWorkflow` (workflow → an approval-gated `sub_workflow` plan),
+  surfaced as `/plan to-workflow` and `/plan from-workflow`.
+- **Plugin + external surfaces.** `ctx.plans` (`plan:read` / `plan:write`) joins
+  `ctx.goals` and `ctx.team`; the External Bridge gains `plan_list` / `plan_run`
+  under the existing `agent:dispatch` scope.
+- **Presentation is one choice, not one screen's.** `planSettings.interactiveHtmlStyle`
+  now also drives the live tracker, and the unified runs detail renders the step
+  list for a plan started headlessly.
+
+Not done, deliberately: the CLI's markdown plans (`~/.cognia/plans/*.md`) remain
+a separate, file-backed concept — bridging them into `AgentPlan` needs a CLI↔app
+handoff design (ADR-0078) rather than a conversion function.
+
+## Workspace amendment (2026-08-26)
+
+§3 said a plan is "a DAG of typed `PlanSteps`" and said nothing about where they
+run. `step-dispatch.ts` called `executeAgent` with no `cwd`, so every
+`agent_turn` step ran wherever the app's default working directory pointed —
+not in the workspace the plan belongs to. On a plan created inside a project the
+agent looked like it was ignoring the repository, and that was true at any
+concurrency, not only in parallel.
+
+**A run has one directory, resolved once.** `resolvePlanExecutionRoot`
+(`lib/agent/plan/step-workspace.ts`) reads the plan's workspace primary root,
+falling back to the session's own working directory, and `PlanRunContext`
+carries it for the life of the run. Undefined stays a real answer: a plan with
+neither has nothing to point an agent at, and inventing a path is worse than
+letting the runner use its own default.
+
+**Per-step isolation is rejected, not deferred.** An earlier sketch had each
+step take its own worktree through `AgentTeamRegistryWorkspaceController`. That
+is right for a team, whose members do independent work and reconcile at the end,
+and wrong for a plan: step 3 that cannot see what step 2 wrote is not a plan. A
+plan is one piece of work and its steps share one checkout.
+
+**Which is exactly why parallel steps must not overlap.** `config.maxConcurrency`
+admits several steps at once, and two tool-enabled agents editing the same
+checkout interleave edits, builds and git operations — the corruption
+`lib/execution/slot-key.ts` exists to prevent. Steps now take the execution slot
+for their directory. Approval gates, MCP calls, and any step in a plan with no
+directory take none and stay as parallel as before.
+
+**The lease deliberately omits `sessionId`.** The broker exempts any leg naming a
+session that already has an active leg — the rule that keeps a foreground chat
+turn from blocking on its own stream. Every step of a plan shares the plan's
+session, so naming it would exempt every step after the first and the slot would
+serialize nothing at all. Cancellation still reaches the steps: the plan's own
+`AbortController` is chained into the lease as its caller signal.
+
+## Document-surface amendment (2026-11-25)
+
+§6 named two surfaces (approval card, tracker) and left the plan's *document*
+shape implicit. The plan-preview prototype work pinned it down, and what shipped
+follows the "the plan file is the interface" model that Cursor and Windsurf use
+rather than a bespoke viewer.
+
+**`metadata.planText` is the faithful source; `steps[]` is its projection.** A
+plan captured from `exit_plan_mode` renders its markdown body — not the lossy
+title list — through `PlanDocument`
+(`components/agent/plan/plan-document.tsx`). The executable steps are embedded
+in place of the document's own steps list, so editing a step row literally
+rewrites the markdown (`lib/agent/plan/plan-doc.ts` splits the body around the
+steps section and rebuilds it). `steps[]` and the document cannot drift apart,
+which is the whole point of carrying both.
+
+The projection collects *every* list item in the body (`parsePlanText`
+semantics), so on multi-list documents the embedded editor owns only the
+contiguous window of `steps[]` that maps to the steps section — a `## Files`
+checklist stays prose, and an edit rewrites just the section it lives in.
+
+**Editing is file-semantics, not form-semantics.** Step rows edit inline and
+autosave (debounced) through `applyPlanEditPatch`
+(`lib/agent/plan/draft-edit.ts`) — one persistence path shared by the approval
+card and the dock panel, so the two surfaces cannot disagree about what an
+edit means. Conceptual changes still go through the chat-side refinement /
+keep-planning channels; the document chrome carries no Save/Reset footer
+because there is no draft buffer to commit.
+
+**A plan gets a dock panel.** `PlanPanel`
+(`components/agent/plan/plan-panel.tsx`, panel id `plan`, `review` activity)
+lists the session's plans newest-first — the GUI counterpart of the CLI's
+`/plan list`, which the `listPlansBySession` store already supported but no
+surface consumed. Terminal plans render read-only with their `agentPlanEvents`
+trail, the counterpart of `/plan show`; execution status stays on
+`PlanTrackerPanel` and out of the pre-approval editor.
+
+**React, not iframe.** The doc surface renders through `MarkdownRenderer` and
+uses `IntersectionObserver`-free scroll-spy over the rendered heading DOM —
+deliberately not the `srcdoc` + inline-script path, which ADR-0158 records as
+nonfunctional inside packaged Tauri. The interactive iframe editor remains an
+opt-in enhancement behind `planSettings.interactiveHtmlView`.
+
+## Approval-card amendment (2026-09-25)
+
+The document surface above shipped inside a card that capped *itself* at
+`45vh` while also carrying a label row, a source line, a pre-approval progress
+bar (always `0/N` — nothing has run before approval), a feedback box and six
+buttons. The chrome consumed the cap and the document's `flex-1` region
+collapsed to a strip a few pixels tall; on a phone it disappeared. The dock had
+also drifted to the top of the pane. What the card is now:
+
+**It lives in the plan slot above the composer**, the slot it shares with
+`PlanTrackerDock` and `PlanComposerDock` (mutually exclusive by plan status),
+beside the composer its decisions resume — not under the pane header.
+
+**The cap is on the body, not the card.** The document is capped at a share of
+the *viewport* (`34dvh` on phones, `min(42dvh, 30rem)` from `md`), because what
+must stay visible — the decisions and the composer — sits outside it. The card
+has three bands: a header (status · provenance · step count, the title, view
+controls), the body, and a footer whose decisions stack full-width in a narrow
+card. The footer switch is a container query, since a split pane is narrow on a
+wide screen. The body collapses (grid-rows `0fr↔1fr`, `inert` while hidden),
+and *Open in side panel* reveals the dock's `PlanPanel` through
+`revealSessionPanel` (`lib/artifacts/reveal.ts`, shared with the session
+summary). Opening the panel folds the card's copy of the document, so the two
+never show it side by side.
+
+**The document's `# H1` is the plan's name.** Capture derives the title from
+the leading H1 (`planDocTitle`, a `Plan:` label dropped) rather than the first
+list item, a surface that already prints the title skips a restated H1, and a
+rename rewrites it (`retitlePlanText`).
+
+**Editing paths were consolidated.** Step rows edit inline in the document
+(Enter inserts below, Backspace on an empty row removes it, Alt+↑/↓ moves it).
+Only a markdown plan gets a second path, its raw source, for prose edits. The
+one-title-per-line textarea duplicated the inline rows, so it is gone. The
+"Write a plan" editor (step types) moved into the overflow menu.
+
+**Edits cannot be lost or outrun.** The dock serializes autosaves on one chain
+and applies each to the row as it is now. It previously dropped an edit that
+landed while another write was in flight, while the document still showed
+"Saved". A pending autosave flushes when focus leaves the document (and on
+unmount), and every decision waits for the chain and re-reads the plan. An
+edit typed just before *Approve* is therefore what gets approved, and what the
+resume prompt embeds.
+
+**Refinement edits the document.** `refinePlan` used to replace `steps[]` and
+leave `metadata.planText` untouched. The card kept showing the old list, and
+with no `userEdited` stamp the resume prompt told the model to implement its
+original proposal. For a markdown plan the planner now sees the steps section
+a reader sees. Its result is written back into that section and `steps[]` is
+re-projected. Every applied refinement stamps `userEdited`.
+
+## Tasks-panel amendment (2026-10-29)
+
+The agent's own task list (`TodoWrite`, and the incremental `TaskCreate` /
+`TaskUpdate` / `TaskList` both the SDK and the sidecar emit) and the plans of
+this ADR were shown on six surfaces with five status-glyph maps, two parsers
+and two progress bars. The desktop dock had no task list at all, the list
+blanked after any later turn without task calls, and an approved
+`exit_plan_mode` plan never left `approved`.
+
+**One view model, one set of components.** Storage stays separate — a turn's
+scratch list and an approved execution contract mean different things — but
+every producer adapts into `TaskViewItem` (`lib/tasks/task-view.ts`) and draws
+through `components/tasks/` (status icon over every state, including a
+display-only `stopped` for an item left in progress by a run that ended;
+progress bar; list that folds completed items of long lists). Plan steps, ACP
+plan entries and AI-shell steps use the same icon and bar.
+
+**The task list is session-level and read from the transcript**
+(`lib/chat/session-tasks.ts`): the latest `TodoWrite` snapshot, or the
+`Task*` calls replayed by id (SDK text and sidecar JSON outputs), whichever
+family was called last. The plan-mode bridge that mirrored `TodoWrite` into a
+synthetic `solo:` team is gone, with the solo branches of `/plan from-team` /
+`to-team`.
+
+**The dock's `plan` panel is the Tasks panel** (the id stays `plan` for stored
+layouts): current tasks (folding to "last tasks" when finished), the open plan
+(the approval card on the decision owner's handlers, through
+`stores/agent/plan-decision-store.ts`; or the tracker with pause / resume /
+cancel), and earlier plans. It is the Sheet tab on phones and tablets, claims
+its slot for a task list alone, and a first task list flags a shut dock without
+raising it.
+
+**Above the composer only decisions stay**: the approval card (folded to one
+line with the primary approve while the Tasks panel shows the plan),
+`PlanHaltDock` for a halted in-session step, and a progress chip on the run
+panel that opens the Tasks panel. `PlanTrackerDock`, `PlanComposerDock`,
+`PlanPanel` and `PlanModeTasksSheet` are removed; "Write a plan" lives in the
+plan-mode banner and the panel's empty state. In the transcript a run of task
+calls is one line saying what changed, and the `exit_plan_mode` card is compact
+(status, link to the panel, the proposal behind a disclosure).
+
+**A plan approved in chat runs as its implementing turn**
+(`lib/agent/plan/chat-handoff.ts`, recorded in `metadata.chatHandoff`, no new
+status): approve → `executing`; the turn's end (`finishDirectChatExecutionRun`,
+every lane) → `completed`, or `paused` with a resumable continuation when it
+fails or is stopped; boot recovery pauses one whose turn died with the previous
+load. Resume / Mark done are on the approval dock; the panel offers Mark done /
+Cancel.
+
+**Lifecycle fixes**: deleting a session deletes its plans and events
+(tombstoned) in the same transaction; `refinePlan` refuses running, rejected
+and closed plans and keeps the kind / params / edges of steps it did not
+retitle; capture stamps the `tool_use` id so a repeated event never re-creates
+(and so cancels) a plan; team-projected steps name their team.
+
+**Inert knobs** (rule 7): `PlanConfig.maxStepRetries`, `judgeDeviation` and
+`maxTokens` carry `@deprecated Inert` docs, the workflow form no longer offers
+the `judge_deviation` trigger, and `lib/agent/plan/inert-config.test.ts` fails
+if a plan executor starts reading them.
+
+**Paths that moved since the decision above**: `sidecar/plan-tools/*` and
+`sidecar/builtin-tools/plan-tools.mjs` → `sidecar/src/tools/builtin/plan/`
+(`create_plan` / `update_plan`; the `CreatePlan` / `UpdatePlan` aliases are
+gone); `lib/workflow/nodes/built-ins.ts` → `lib/workflow/nodes/built-ins/index.ts`;
+`docs/plans/2026-06-03-unified-plan-execution-hub.md` → `docs/plans/archive/`;
+`lib/agent/plan-mode-bridge.ts` and the tasks sheet are removed; the plan
+context injection sits in `lib/claude/build-options.ts` beside the goal block.

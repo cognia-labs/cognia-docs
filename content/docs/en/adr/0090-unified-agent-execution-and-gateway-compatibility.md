@@ -1,0 +1,1095 @@
+---
+title: "0090 — Unified Agent Execution and Gateway Compatibility"
+description: "Unifies Agent runtime selection, Anthropic-compatible deployment routing, headless hosting, heterogeneous delegation, and recovery without replacing existing execution engines."
+---
+
+# ADR 0090 — Unified Agent Execution and Gateway Compatibility
+
+- **Status:** Accepted
+- **Date:** 2026-07-23
+- **Builds on:** ADR-0022, ADR-0028, ADR-0043, ADR-0059, ADR-0062, ADR-0064, and ADR-0082
+- **Research record:** `docs/research/agent-sdk-gateway-non-claude-models-2026-07-23.md`
+
+## Context
+
+Cognia currently has three real Agent runtime rails:
+
+1. the Claude Agent SDK rail in the Node sidecar;
+2. the provider-neutral AI SDK tool-loop rail in that same sidecar;
+3. the external-Agent rail behind one `ExternalAgentManager`, with ACP, Codex app-server,
+   OpenCode, and A2A protocol adapters.
+
+Chat, plugins, workflows, and Agent Teams are callers or orchestrators. Gateway versus direct is a
+route decision. Native subagents versus Cognia-orchestrated children are delegation modes.
+Desktop, headless, and remote are hosts. None of those dimensions creates another runtime rail.
+The `executeAgent` text channel is a completion fallback without tools, not a fourth Agent runtime.
+
+The implementation exposes this simpler reality poorly. Sidecar dispatch selects Claude Agent SDK
+only when the provider id is literally `anthropic`; otherwise it selects AI SDK. `claude-host.mjs`
+hosts both engines but exposes Claude-specific commands. Agent execution policy is distributed
+across caller-specific configuration. Some callers silently degrade to text completion when the
+desktop sidecar is unavailable. The built-in Gateway has an Anthropic `/v1/messages` surface and
+cross-protocol translation, but it is started only by the Tauri application, consumes a
+renderer-produced routing snapshot, and does not implement the complete evolving Claude Code
+gateway contract.
+
+Several providers expose Anthropic-wire endpoints. GLM and Kimi are examples, not special cases.
+Protocol similarity alone does not establish Claude Agent SDK compatibility: streaming details,
+tool-call fragmentation, error envelopes, beta headers, session behavior, prompt caching,
+thinking blocks, and future Claude Code fields may differ. Anthropic also explicitly does not
+support routing Claude Code to non-Claude models through a gateway. Cognia therefore needs its own
+versioned compatibility contract rather than presenting third-party endpoints as officially
+supported Claude deployments.
+
+Headless Cognia already owns a `HeadlessSidecarHost` and external-process control plane, but it
+does not instantiate the built-in LLM Gateway. Agent Teams already have durable Workflow
+orchestration, permission cascade, budgets, recovery, and delegation controls. A new solution must
+deepen those modules instead of creating a second headless Gateway, Team engine, permission bus,
+budget governor, or session format.
+
+## Decision
+
+### 1. One logical execution service, three runtime adapter families
+
+Cognia will expose one logical `AgentExecutionService`.
+
+```text
+Chat / Plugin / Workflow / Team
+                |
+                v
+      AgentExecutionService
+                |
+       resolveAgentExecutionSpec()
+                |
+     +----------+-----------+
+     |                      |
+ Agent Host          ExternalAgentManager
+     |                      |
+ +---+----+        ACP / Codex / OpenCode / A2A
+ |        |
+Claude   AI SDK
+Agent SDK tool loop
+```
+
+The runtime adapter families remain:
+
+- `ClaudeAgentSdkRuntimeAdapter`;
+- `AiSdkRuntimeAdapter`;
+- the existing external protocol adapters behind `ExternalAgentManager`.
+
+There are two physical services, not one process:
+
+- a generic Node `agent-host.mjs` containing the Claude Agent SDK and AI SDK adapters;
+- the existing external-Agent manager and its process/transport boundary.
+
+External agents will be reachable through the logical service, but will not be forced into the
+Node sidecar. `agent_send` and `agent://message` become the canonical command and event names.
+Existing `claude_*` commands and `claude://message` remain compatibility aliases during migration.
+
+### 2. Resolve and freeze every Agent session
+
+`AgentExecutionPolicy` lives in `@cognia/agent-config-types`. It includes, at minimum:
+
+- `runtimePolicy`: `auto`, `claude-agent-sdk`, or `ai-sdk`;
+- `routePolicy`: `gateway-required`, `gateway-preferred`, or `direct`;
+- deployment/model binding, credential profile reference, and credential-affinity policy;
+- execution target: `colocate`, `auto`, or `pinned`;
+- required and preferred capabilities;
+- explicit fallback policy;
+- Team delegation and depth constraints where applicable.
+
+One `resolveAgentExecutionSpec()` intersects hard policy constraints and then applies preferences.
+It produces an immutable `ResolvedAgentExecutionSpec` for one session. The spec pins the runtime
+adapter, deployment, model bindings, route, host, compatibility evidence, capability projection,
+credential lease reference, and execution fingerprint. A session never silently changes route or
+host mid-run.
+
+Desktop defaults to `gateway-preferred`. Headless and managed deployments default to
+`gateway-required`; administrators may lock this. A preferred route may fall back to direct only
+when the Gateway fails before contacting an upstream. Policy rejection, quota rejection, upstream
+errors, or any response bytes forbid a direct replay.
+
+`auto` chooses Claude Agent SDK only for a native, vendor-certified, or Cognia-verified execution
+path. A generic compatible endpoint stays on AI SDK. Users may explicitly request an experimental
+Claude Agent SDK path, but the UI and trace must identify it as experimental.
+
+### 3. Separate provider, deployment, transport, and compatibility
+
+The versioned Provider Profile Store becomes the source of truth:
+
+- `ProviderProfile` represents the vendor or account;
+- `DeploymentProfile` represents an endpoint, protocol, region, credential reference, and model
+  inventory;
+- `TransportProfile` represents wire behavior: protocol, base URL, authentication scheme,
+  permitted static/semantic headers, and model bindings;
+- `AgentRuntimeCompatibility` represents evidence for a specific execution path.
+
+This replaces overloaded provider ids such as `zhipu` plus `glm-anthropic`, `moonshot` plus
+`kimi-anthropic`, and similar relay presets. Existing ids remain legacy deployment aliases during
+migration. No runtime or Gateway branch may hard-code GLM, Kimi, MiniMax, OpenRouter, or any other
+provider name.
+
+Transport profiles are data-driven. Supported authentication shapes include `x-api-key`, bearer,
+and allowlisted custom headers. Reserved, hop-by-hop, browser-forwarded, and internal `x-cognia-*`
+headers cannot be supplied by a profile. Secrets remain in the platform Secret Store and are
+referenced by id; they never appear in a resolved spec, event log, export, or trace.
+
+Desktop persists non-secret profiles through existing settings/Dexie projections and secrets
+through the OS keyring. Headless uses the existing SQLite/AppStore boundary plus an encrypted
+secret store. CLI, admin/service RPC, and declarative import manage headless profiles. Environment,
+mounted-secret, or stdin values are bootstrap inputs, not the long-term authority.
+
+### 4. Compatibility is a matrix and a certification artifact
+
+`anthropic` protocol, `anthropic-native`, and Claude Agent SDK compatibility are orthogonal.
+Compatibility is scoped by:
+
+```text
+runtime + ingress protocol + route mode + translation mode + deployment + model
+        + Agent SDK version + Claude Code version + Gateway version + suite version
+```
+
+Evidence levels are `native`, `vendor-certified`, `cognia-verified`, `experimental`, and
+`unsupported`. Capability levels are `core`, `extended`, and `full`, backed by explicit fields for
+streaming, ordinary and parallel tools, fragmented JSON, tool results/errors, MCP, permission
+interruption/resume, multi-turn and session resume, prompt caching, thinking, context management,
+images, beta features, rate limits, upstream errors, and stream interruption.
+
+The effective capability set is the intersection of model metadata, runtime, Gateway/transport,
+host/platform, compatibility evidence, permissions, and available resources. Unknown hard
+requirements are unsupported. Tasks declare `requires` and `prefers`; an unsupported requirement
+fails before spending a model turn. Optional unsupported features are disabled before the request
+and recorded in the trace.
+
+A connectivity probe proves only that an endpoint is callable. It never upgrades compatibility.
+An explicit, billable Agent Core smoke test may produce local evidence. Official/CI certification
+runs the complete suite and produces a signed manifest. Cross-protocol Claude Agent SDK routing is
+eligible for `auto` only when the complete execution path, including Gateway translation, is
+certified.
+
+The bundled `@anthropic-ai/claude-agent-sdk` is pinned exactly. Any Agent SDK, embedded Claude Code,
+Gateway, or suite-version change makes matching compatibility evidence stale and requires
+recertification. The previous certified artifact remains available for rollback.
+
+### 5. The Gateway is the preferred security and routing boundary
+
+The built-in `cognia-gateway` crate is deepened into a host-neutral service. A `GatewayHost`
+boundary supplies events, settings, secret resolution, and persistence:
+
+- Tauri uses Tauri events, settings, and keyring;
+- headless uses EventBus, SQLite/AppStore, and the encrypted secret store.
+
+`GatewayState` becomes part of `HeadlessServices` and is started by `cognia-server`. Desktop and
+headless consume the same provider-profile projection and the same Gateway implementation. The
+Gateway can keep serving its last valid snapshot without a renderer; routing authority no longer
+depends on an open window.
+
+Agent sessions use an explicit, ephemeral `GatewayRouteTicket`. The Agent Host resolves the
+execution spec and asks the Gateway to mint a ticket whose secret is supplied to Claude Code as
+the local Gateway credential. The ticket binds:
+
+- route pin id and execution fingerprint;
+- frozen ordered deployment/model candidates;
+- allowed model aliases and role bindings;
+- session lineage, route policy, and expiry;
+- credential-affinity and failover constraints.
+
+The Gateway bypasses live alias rerouting for a ticket. It may move only within the ticket's frozen
+candidate list and only before response bytes. Native subagents inherit the parent ticket.
+Cognia-orchestrated child sessions receive their own ticket. Ticket secrets are never persisted;
+recovery reissues a ticket for the same frozen spec or pauses/fails.
+
+Model roles `primary`, `fast`, and `powerful` map inbound Claude selectors such as `sonnet`,
+`haiku`, and `opus` to concrete deployment models. A deployment may map every role to the same
+model. Bindings are frozen per session, and an unmapped selector fails. Ordinary Chat and AI SDK
+traffic may continue using dynamic global aliases.
+
+Agent credential affinity defaults to `sticky-with-failover`; completion traffic may remain
+per-request. An Agent session keeps one credential lease and moves to another preauthorized
+credential only for an allowed transient failure, then remains sticky. Account failover after
+401/403 is off unless explicitly allowed. Revocation invalidates affected tickets and leases.
+
+For same-protocol traffic, the Gateway is security-mediated semantic transparency: it preserves
+safe Anthropic version/beta/semantic headers, compatible response headers, SSE byte order, status,
+and upstream error bodies while replacing authentication and stripping hop-by-hop, browser, and
+internal headers. Cross-protocol traffic uses the canonical IR and reports every semantic loss.
+Gateway-generated errors are reserved for Gateway rejection, exhausted candidates, and
+translation failures.
+
+### 6. The Agent Host is generic and environment-safe
+
+`claude-host.mjs` evolves into `agent-host.mjs`; desktop and headless use the same host supervisor.
+Both built-in runtime adapters accept the same resolved spec and emit the same canonical events.
+
+Per-query environment construction uses a clean allowlisted base environment required for
+subprocess operation, then overlays resolved session variables. It explicitly removes inherited
+provider routing and authentication variables before applying the route. The current
+`{ ...process.env, ...sendOptions.env }` behavior is not sufficient because credentials can bleed
+between sessions; passing only `sendOptions.env` is also incorrect because Agent SDK 0.3.183 treats
+the map as the complete Claude Code subprocess environment.
+
+Gateway routes inject only the local Gateway endpoint and ticket. Upstream secrets remain in the
+Gateway. Direct routes resolve a credential reference ephemerally on the execution host. Native
+subagents inherit the parent environment and ticket; orchestrated children get independently
+resolved sessions.
+
+### 7. Native subagents and heterogeneous Teams are distinct
+
+Claude Agent SDK native `AgentDefinition` can vary model, tools, and prompt, but cannot provide an
+independent provider, base URL, credential, route, runtime, or host. Therefore:
+
+- same runtime, same Gateway ticket, and only a model-role change: native subagent is preferred;
+- different provider/deployment, credential, route, runtime, host, or hard capability:
+  Cognia creates an orchestrated child Agent session.
+
+Team members select an execution target through `inherit`, a pinned profile, or an approved pool.
+The coordinator selects candidate ids, never raw URLs, headers, or keys. Precedence is member
+pinned/pool, Team-run policy, Team default, then application default; only an explicit
+administrator force-all policy overrides this.
+
+Nested Teams reuse the existing `delegation-orchestrator`. Parent and child keep separate durable
+boards and exchange a serializable `HandoffEnvelope`. `maxTeamDelegationDepth` is configurable and
+defaults to 2: root depth 0, child depth 1, grandchild depth 2, with no further delegation. It is
+separate from native `subagentDepth`.
+
+The Team lead is colocated with the workspace owner by default. Headless Cognia is a local
+execution host. Native subagents always remain on the same host. An orchestrated child may cross
+hosts only when its handoff is serializable, workspace/resources have stable references, the
+target satisfies runtime/tool/sandbox/credential policy, and ADR-0082's remote-host rules permit
+it. Credentials stay host-local. Side-effecting work never moves silently during recovery.
+
+### 8. Reuse the existing authorities for permissions, budgets, retry, and recovery
+
+The existing permission cascade remains authoritative. Effective permission is the intersection
+of Team policy, parent ceiling, child request, and runtime capability. Unknown permissions fail
+closed. The Agent Host is the tool-permission authority; the Gateway is not. A headless run with
+no interactive approver denies a request unless predeclared policy authorizes it.
+
+The Team budget guard is extracted/reused as the single `RunBudgetGovernor` for a Team/run. It
+limits total executions, concurrency, fan-out, and spend across the identity hierarchy. Duplicate
+plugin budget accounting is migrated or removed. Gateway tenant/API-key quota and usage accounting
+remain transport-level limits. Every failed attempt counts.
+
+There is no silent external-Agent-to-built-in fallback. The Gateway owns only request-internal,
+pre-byte candidate failover. A runtime adapter owns its handshake and transport recovery.
+Workflow/Team owns task retry and reassignment. Unknown or irreversible side effects forbid
+automatic replay.
+
+Recovery reuses the existing Workflow event log, checkpoints, leases, and idempotency. Zustand is
+only a UI projection. Desktop Dexie and headless persistence implement the same port. Approvals are
+never reconstructed as approved.
+
+Recovery inputs may include Cognia's canonical log, runtime artifacts, checkpoints, and imported
+sessions. Cognia uses canonical hub-and-spoke codecs, extending the existing session-import
+registry, rather than N-by-N converters. Conversion fidelity is `native-exact`, `structured`,
+`contextual`, `summary-only`, or `unsupported`, with an explicit loss report. Runtime artifacts
+may rebuild a missing/corrupt canonical store; canonical history may materialize a new runtime
+session when the target runtime supports it. Cognia will not fabricate private Claude JSONL when
+the SDK offers no supported import API.
+
+`RecoveryPlanner` proceeds automatically only when one candidate provably dominates. Tool or
+side-effect conflicts always pause. Last-modified-wins is forbidden. Headless recovery enters
+`recovery_required` or fails according to policy.
+
+### 9. One event envelope, handle, and identity hierarchy
+
+The canonical event contract deepens the existing `CaptureStreamEvent`; it does not create a
+parallel stream. Every event carries an envelope containing event id, sequence, session, run,
+turn, attempt, parent, host, runtime, and timestamp. Event kinds cover lifecycle, messages,
+thinking, tools, permission, subagent, usage, compaction, checkpoint, warning, and failure.
+Claude Agent SDK, AI SDK, and external adapters map their native events into it. Raw runtime events
+are diagnostic attachments only.
+
+Workflow persists the envelope with at-least-once delivery and idempotent consumers.
+`AgentExecutionHandle` exposes ids, resolved spec, events, send, cancel, interrupt,
+`resolvePermission`, and capability-gated `steer`, `setModel`, `setPermissionMode`, and checkpoint.
+Commands have idempotency ids. `setModel` may select only a frozen ticket binding; unsupported
+operations return a typed capability error.
+
+Identity is:
+
+```text
+session -> run -> turn -> attempt -> providerAttempt
+```
+
+A Gateway pre-byte candidate switch creates a new `providerAttempt`. Host resume creates a new
+attempt for the same run/turn. Team reassignment creates a new child run. A native subagent is a
+canonical child run with its SDK id stored only as `runtimeBinding`.
+
+### 10. Completion fallback becomes explicit
+
+An Agent request whose hard capabilities cannot be satisfied fails closed by default.
+`toolsEnabled: false` means an intentional completion. Degradation occurs only when
+`fallbackPolicy: "completion"` is explicit, and the result includes `degradedReason`. Headless and
+managed defaults prohibit completion fallback.
+
+Legacy configuration migrates as follows:
+
+| Legacy state | Migrated meaning |
+| --- | --- |
+| `toolsEnabled: false` | `executionKind: "completion"` |
+| `toolsEnabled: true`, `requireTools: true` | Agent requires tools; no fallback |
+| `toolsEnabled: true`, `requireTools` missing/false | Explicit completion fallback with `legacyMigrated: true` |
+| New Agent configuration | No fallback unless explicitly selected |
+
+Managed policy may override legacy compatibility. Old `runtime: "claude"`, `proxyMode`, provider
+relay ids, and `claude_set_*` calls remain read/command adapters only; all new writers use the new
+schema.
+
+## First delivery slice
+
+The first vertical slice proves an arbitrary custom Anthropic-protocol deployment through the
+built-in Gateway into Claude Agent SDK on both desktop and headless:
+
+- explicit `runtimePolicy: "claude-agent-sdk"`;
+- explicit `routePolicy: "gateway-required"`;
+- experimental opt-in until certification permits `auto`;
+- no provider-name hard-coding;
+- Gateway unavailability is an explicit failure, never a direct fallback.
+
+Acceptance covers real SSE, ordinary and parallel tools, fragmented tool JSON, tool results and
+errors, MCP, permission interruption/resume, multi-turn, native subagent model bindings, sticky
+credentials, restart/recovery, and secret-free tracing. CI uses a deterministic Anthropic
+conformance server. Real-provider certification is an optional, explicitly billable job.
+Heterogeneous Teams and cross-protocol auto-selection follow only after this slice is stable.
+
+## Consequences
+
+- Cognia gains one understandable Agent execution contract without discarding working engines.
+- Anthropic-compatible providers can use Claude Agent SDK when explicitly requested and verified,
+  while AI SDK remains the production-neutral path.
+- Desktop and headless share the same Agent Host and Gateway semantics.
+- Team members may use different models, deployments, runtimes, credentials, and hosts when
+  Cognia orchestration is used; native subagents intentionally cannot.
+- Route, host, model bindings, compatibility evidence, and credential affinity are inspectable and
+  stable for a session.
+- The design adds contract and migration work across TypeScript, Node, and Rust. Certification
+  must be maintained as SDK and Gateway versions evolve.
+
+## Rejected alternatives
+
+- **Send every model through Claude Agent SDK.** This makes a private, evolving Claude Code
+  contract the provider-neutral runtime and contradicts Anthropic's support boundary.
+- **Treat every Anthropic-wire endpoint as compatible.** A protocol label does not prove Agent
+  semantics.
+- **Create a separate headless Gateway.** It would duplicate security, routing, translation, and
+  quota logic.
+- **Move external agents into the Node sidecar.** Their process and protocol boundary already has
+  a shared manager and headless transport.
+- **Implement heterogeneous Teams with native Agent SDK subagents.** Native definitions cannot
+  carry independent provider, route, credential, runtime, or host state.
+- **Allow silent text completion or runtime fallback.** It hides lost tools and can replay
+  side effects under different semantics.
+- **Convert recovery formats pairwise.** N-by-N conversion is unmaintainable and obscures loss.
+- **Let the Gateway choose from live global aliases during an Agent session.** It breaks session
+  reproducibility, credential affinity, and recovery.
+
+## Security and operational requirements
+
+- No upstream secret, ticket secret, or raw credential is persisted or emitted.
+- Profile custom headers are allowlisted; reserved and internal headers are rejected.
+- Every route, capability, credential-lease, fallback, and recovery decision is auditable.
+- Gateway tickets are scoped, expiring, revocable, and bound to the frozen execution spec.
+- Permission decisions remain fail-closed and approvals never survive as implicit authorization.
+- Compatibility and certification records include exact runtime and Gateway versions.
+
+## Addendum (2026-07-24) — implementation record
+
+Phases 0–8 landed on `dev` (contracts → profiles → gateway → agent host →
+conformance → certification → caller migration → teams → recovery). This
+addendum records the operational facts the plan required to be written down.
+
+### Conformance suite location
+
+`tests/conformance/` (top-level, plain `node:test`): the deterministic
+Anthropic-protocol server (`anthropic-server/`), scenario matrix, harness
+(real `cognia-server` binary + real sidecar), and cases. Run with
+`pnpm test:conformance` after `pnpm conformance:prepare`. Certification
+bundles emit from the same suite (`--emit-manifest`); rollback via
+`scripts/certify/rollback-bundle.mjs` restores the previous bundle pointer
+and reports installed-artifact version mismatches that must move with it.
+The contextual-materialization path has its own end-to-end case
+(`cases/session-materialize.test.mjs`, byte-pinned against the codec's
+replay prompt via a shared fixture), and crashed agent runs reconcile at
+bootstrap through the recovery planner
+(`lib/ai/agent/recovery/reconcile-crashed-runs.ts` — park or
+`recovery_required`, never a replay).
+
+### R1 spike verdict (frozen)
+
+`sidecar/dispatch/session-materialize.spike.live.test.mjs`, run against the
+real SDK: no public create-from-external-messages API exists; a foreign-id
+resume never silently succeeds as that id; no private JSONL is forged. The
+claude-code codec's `materialize` fidelity is therefore **contextual**
+(replay prompt). The spike is an SDK-upgrade tripwire — if a materialize API
+appears, its surface assertion fails and the verdict must be revisited.
+
+### Retirement schedule (Phase 9)
+
+Every legacy-path deletion is telemetry-gated and ships as its own commit
+with a flag escape. Observation counters: sidecar `legacy_dispatch`
+(spec-less sends), Rust `DeprecatedCommandCounters` /
+`agent_command_telemetry` (`claude_*` alias calls), and the
+`agent.execution.resolved` event volume.
+
+| Step | Precondition (observation window) | Action |
+| --- | --- | --- |
+| 1 | `agentExecutionResolverV2` default-on for one full release AND `legacy_dispatch` = 0 across desktop + headless for 14 consecutive days | Delete the provider-id branch in `sidecar/dispatch/index.mjs`; spec-less sends fail with `LegacyDispatchRemovedError` |
+| 2 | Release cadence decision after step 1 | Shrink `claude-host.mjs` to a ≤30-line name-adapter wrapper; verify bundle resources via tauri-smoke (the COPY trap) |
+| 3 | `claude_*` alias counters = 0 for 14 consecutive days | Three-stage `claude_set_*` retirement: forward+count → dev-error → delete (+ ACL/registration updates), tauri-smoke each stage |
+| 4 | Step 1 complete | Remove duplicate writers: executeAgent's flag-off legacy branch, relay provider creation paths (readers stay, documented LTS); renderer snapshot publisher becomes control-plane only (closes R3) |
+
+Until step 1's precondition holds, the flag-off legacy paths are the
+production fleet and MUST keep byte-identical behavior (pinned by the
+per-caller parity tests added in Phase 6).
+
+## Addendum (2026-08-03) — Claude Agent SDK 0.3.220 parity
+
+The Anthropic runtime now covers the complete public SDK surface through a versioned nested options contract, generated/audited control and session-function manifests, exhaustive canonical message mapping, all hook events, structured output, dynamic MCP/plugins/skills, checkpoint controls, background tasks, child telemetry, a tenant-isolated Rust `SessionStore`, and fingerprint-isolated prewarming.
+
+Desktop, CLI, headless, and companion surfaces share one secret-free capability snapshot. The desktop additionally exposes guarded advanced-feature toggles and native SDK-session management; `cognia-agent sdk` provides typed session operations without a raw-options escape hatch. Rollout is controlled by `claudeSdkParityV1`, with independent `claudeSdkSessionStore`, `claudeSdkCheckpoint`, and `claudeSdkPrewarm` risk flags. Session storage and checkpointing are fail-closed as mutually exclusive.
+
+Conformance suite version `2` expands certification to the complete 40-capability vocabulary. An SDK version, surface manifest, suite version, and certification bundle are one rollback unit.
+
+### Long-lived gates
+
+`check:provider-name-branches` (greps runtime code for provider-name
+special-casing), `check:runtime-versions` (stale-detection version pins), the
+suite-manifest hash pin, and the colocated-test audit all run in `check:all`.
+
+## Addendum (2026-08-04) — Gateway-local routing policy V2
+
+Gateway snapshots now carry a versioned, secret-free routing policy. The Rust
+Gateway selects explicit aliases locally with `priority`, `weighted`, or
+`round-robin` distribution; the virtual `auto` model uses the configured
+built-in strategy. Chat, Responses, embeddings, and upstream probes no longer
+wait for the renderer's `gateway://decide` round trip. Legacy snapshots remain
+readable and keep priority ordering, while invalid V2 snapshots are rejected as
+a whole so the previous valid policy remains active.
+
+Deployment selection precedes the existing per-provider credential rotation.
+Round-robin cursors are process-local and candidate-set scoped, begin at the
+first member, and reset safely when the policy changes. Cooldown filtering is
+fail-fast when every pooled credential is parked; retryable failures use bounded
+exponential backoff and may honor the upstream recovery window. Affinity and
+route-ticket candidate freezing continue to override per-request distribution,
+and no fallback is permitted after response bytes are committed.
+
+The executable protocol boundary remains OpenAI-compatible and Anthropic.
+Other provider protocols are never silently treated as compatible.
+
+## Addendum (2026-08-06) — AgentFleet projection and control plane
+
+AgentFleet is the observation and control projection of this ADR's canonical execution model; it
+is not a fourth runtime rail or an independent event authority. Built-in, Team, Workflow, Claude
+Code, Codex, and OpenCode sessions attach to the canonical identity hierarchy and publish through
+the existing event envelope. Fleet snapshots and history are projections over that journal.
+
+External adapters publish a versioned capability descriptor. Native lifecycle events take
+precedence over inferred Task/tool heuristics, and inferred lineage is marked as such. Monitor
+shutdown detaches live external sessions rather than fabricating `SessionEnd`; startup reconciles
+detached sessions from provider identity and durable lineage, never PID alone.
+
+Control commands use durable, idempotent envelopes with leases, acknowledgement, retry, expiry,
+and a sanitized result audit. OpenCode question reply/reject and per-session interrupt/abort use
+the bound client's native APIs when advertised. Claude Code and Codex expose only runtime-proven
+controls; Fleet does not inject terminal keystrokes as a substitute for a protocol capability.
+
+Canonical detail events use a 30-day retention window. Redacted summary/history rows remain until explicit user deletion. Raw provider payloads are not promoted into durable or remote projections.
+
+### Provider capabilities and native controls
+
+Provider manifests define only an audited capability ceiling. Effective controls require runtime evidence:
+
+- OpenCode's installed plugin probes the bound SDK client for `session.promptAsync`, V2 `session.interrupt` or V1 `session.abort`, and V2/V1 Question reply plus reject APIs. The plugin publishes the proven mode; prompt, interrupt, answer, and reject controls remain disabled while the probe is absent or incomplete.
+- OpenCode Question events are projected into the same pending-question model used by the island and mobile Fleet UI. Both answer and explicit reject are supported.
+- Codex installation probes the local app-server JSON schema and registers only the intersection with Cognia's audited 11-event ceiling. `SessionEnd` and `SubagentStart` are included when proven.
+- Codex script plus `hooks.json` installation is transactional. A failed merge/write restores the previous script, never overwrites external handlers, and reports degraded diagnostics.
+
+No Fleet control uses terminal keystroke injection. Process signaling is restricted to agents for which process identity and per-turn semantics are provable; shared OpenCode servers use only the native SDK interrupt path.
+
+### Durable OpenCode command outbox
+
+OpenCode prompt and interrupt controls use a durable JSON outbox under the Cognia data directory. Commands move through `queued`, `leased`, `acked`, and `failed` states with:
+
+- unique command/idempotency ids;
+- a 30-second lease and at-least-once redelivery after lease expiry;
+- explicit ack and nack routes;
+- idempotent ack handling;
+- a 24-hour command TTL; and
+- 30-day retention for completed command audit rows.
+
+Storage writes are atomic and mode `0600` on Unix. Corrupt or unavailable storage fails closed; it never falls back to an in-memory queue. Status exposes `healthy`, `corrupt`, or `unavailable`. Repair is explicit: a corrupt file is quarantined with a timestamp before a clean outbox is created.
+
+### Detached lifecycle and startup reconciliation
+
+Stopping the monitor is not treated as ending provider sessions. Active rows become `detached`, pending controls are cleared, and effective controls are disabled. A minimal recovery file stores only provider/session identity, safe metadata, process identity, lifecycle timestamps, and counters—never prompts, tool input, pending approvals, or errors.
+
+At startup, Cognia restores rows as detached and reconciles process identity with both PID and process start time:
+
+- a matching live process restores a live-safe state;
+- a dead or reused PID becomes `ended`;
+- a shared OpenCode host or otherwise unprovable identity remains `detached`;
+- a later native event can reattach the row.
+
+Pending approval or question state is never reconstructed across restart. Previous waiting states resume as `working` only when liveness is proven.
+
+### Lifecycle confidence
+
+Fleet sessions and subagents carry `lifecycleConfidence`:
+
+- `native` for canonical provider lifecycle events, including Codex `SubagentStart`;
+- `inferred` for Task-tool heuristics.
+
+Consumers may display both but must not silently present inferred lifecycle as provider-confirmed fact.
+
+## 2026-08-20 amendment — Phase 9 retirement is done
+
+`agentExecutionResolverV2` is deleted. `AgentExecutionService` is the only
+execution path: `executeAgent` is a thin delegate to `executeAgentTurn`, the
+`toolsEnabled → runAgentRail / runCompletionRail` branch it used to own is gone,
+`recordAgentExecutionShadow` has no reason to exist, and spec stamping in
+`resolveSendOptions` is unconditional (it previously required the flag, so a
+default install never carried an `execution` spec and the sidecar always took
+the legacy provider branch).
+
+The `action.agent.turn` node no longer runs its own `isTauri()` precheck for
+`requireTools` — that was a second implementation of a policy the service
+already enforces fail-closed.
+
+Behaviour is preserved where the migration table says it should be: legacy
+`toolsEnabled: true` without `requireTools` still maps to
+`fallbackPolicy: "completion"`, so the web fallback is unchanged and merely
+labelled `degradedReason: "legacy-completion-fallback"`. It changes exactly where
+the ADR intended: explicit policy, headless hosts, `requireTools`, and
+unsatisfied hard capabilities now fail before spending a turn.
+
+`resolveAgentExecutionShadowSpec` is renamed `resolveAgentExecutionSpecForConfig`
+— the connector runtime depends on it to remint a gateway ticket on a recovery
+turn, which was never shadow work.
+
+`developer.taskWorkspace` is also gone: Task Workspace isolation is GA, so
+`isAgentTeamRemoteDispatchEnabled()` takes no arguments and reads one flag.
+Whether a *remote* host can isolate is still checked per worker against its
+advertised manifest (`evaluateRemoteWorkerPlacement` →
+`task_workspace_unavailable`).
+
+
+## 2026-08-21 amendment — the external-agent capability SSOT
+
+`resolveAgentExecutionSpec()` stays the one execution authority. What this
+amendment fixes is the input it was given for `runtimeAdapter: "external"`.
+
+### The problem
+
+`ResolvedAgentExecutionSpec` v2 carries a **closed** capability vocabulary
+shared with two built-in runtimes and the sidecar. External agents do not fit
+it: there are seven registered protocols, each with its own answer, and the
+answer additionally depends on the preset, on which optional methods Cognia's
+adapter implements, on what the handshake negotiated, and on the host. Nothing
+in the v2 contract can express "we have not measured this yet", so every surface
+that needed a per-protocol answer grew its own table:
+
+- `RUNTIME_CAPABILITIES.external` — one list for every external agent;
+- `PROTOCOL_CAPABILITIES` in `cli/src/agent/runtime/backend-select.ts`;
+- `externalCapabilities()` in `cli/src/tui/runtime/backend-capabilities.ts`;
+- `PROTOCOL_PERMISSION_MODE_SUPPORT` in `permission-modes.ts`.
+
+They disagreed, and the disagreements were the kind users hit: the CLI claimed
+`steer` for OpenCode, whose adapter has no `steerTurn` at all, so a
+`--requires steer` run was admitted and then failed at the first steer. The TUI
+reported MCP as supported on every external backend, including the four with no
+per-session MCP channel. The permission table offered all five modes for the
+DeepSeek Harness SDK transport, whose `respondToPermission` throws.
+
+### The decision
+
+A **separately versioned** `ExternalAgentCapabilityProfileV1` sits beside the
+spec (`@cognia/agent-config-types/external-agent-capability`). It is the
+authority on what an external agent can do; the spec remains the authority on
+how the turn executes, and the profile reaches it only through
+`projectExternalAgentCapabilitiesToSpec()`, which speaks the v2 vocabulary and
+nothing else. No `specVersion: 3`, and no new closed-set ids.
+
+Five merge layers, in fixed precedence:
+
+1. **protocol** — the complete row in `protocol/agent-capabilities.json`;
+2. **refinement** — preset and plugin declarations;
+3. **adapter-methods** — which optional `ProtocolAdapter` methods exist;
+4. **live** — the handshake, host facilities, and probes;
+5. **ceiling** — platform and policy limits; intersect only.
+
+Layers 2 and 3 may fill an `unknown` or tighten, never widen: a preset author
+cannot overrule the wire format. Layer 4 may overwrite in either direction —
+it is measuring the agent in front of us — and a contradiction is recorded as
+`drift` rather than swallowed, because a manifest row a live agent disagrees
+with needs updating.
+
+`unknown` is a first-class level and never satisfies a hard requirement. That
+distinction is what makes the admission two-phase:
+
+- **static preflight** (`preflightExternalAgent`) refuses only what is already
+  definitely wrong — a protocol with no adapter, a `requires` the manifest
+  records as `unsupported`. An `unknown` passes, because refusing it would
+  reject an agent that has not been given the chance to answer.
+- **negotiated admission** (`admitNegotiatedExternalAgent`) runs after the
+  handshake, and `unknown` is fatal there: "we asked everything we can and still
+  do not know" cannot back a promise. A profile whose `negotiated` is false is
+  refused outright, and `resolveAgentExecutionSpec` drops such a projection
+  itself so no caller can opt out.
+
+### No silent substitution
+
+`dispatchTeammate` used to feed the resolver `runtime: "claude"` whenever a
+teammate's external agent failed to resolve, warn once, and run the task on the
+built-in engine. The frozen spec then recorded the built-in rail, so the model,
+the tools, the session store and the cost attribution all described a run the
+user never asked for. That is now an `ExternalRuntimeUnavailableError`. The only
+legitimate fallback is one the teammate DECLARES, and no such field exists yet.
+
+### Consequences for other decisions
+
+- **§4 (compatibility evidence)** — a spec resolved from an external profile
+  records `evidence: "experimental"` with the profile digest as its
+  `recordRef`. The digest is the identity of a capability answer; the profile
+  itself stays on the execution handle rather than growing the wire envelope.
+- **ADR-0059 D6 / R11 (spawn policy)** — the launch-side allowlist moves to
+  `protocol/external-agent-security-policy.json`. TypeScript consumes it;
+  `crates/cognia-external-agent` keeps compiled-in literals (a security
+  allowlist must not depend on runtime JSON parsing) and
+  `pnpm audit:agent-capabilities` fails when the two disagree. It caught three
+  live drifts on introduction: Rust refused the `claude-agent-acp` binary the
+  shipped `claude-code` preset spawns, carried a `cline` entry no preset
+  references, and neither side gave OpenCode a writable state root — so
+  `opencode serve` could not persist a session and resume started over.
+- **ADR-0049 (sandbox)** — the platform gate is now visible in Settings before
+  a user configures an agent, instead of surfacing as a throw at spawn time.
+- **ADR-0119 (Pi)** — Pi's policy and system-prompt injection are unchanged and
+  were never a defect. What is honest now is the tool host: the renderer has no
+  broker, so tool-host-derived capabilities report `unsupported` with
+  `noToolHost` rather than being assumed.
+- **Legacy protocols** — `http` / `websocket` / `custom` have never had a
+  registered adapter. They stay readable so an old config renders and can be
+  migrated, and are excluded from every selector; the two dialogs that offered
+  them as "coming soon" now derive their options from the registered set.
+
+### What is deliberately not done
+
+- No general A2A executable preset: A2A needs a user-supplied endpoint and stays
+  manual configuration.
+- `BackendFeature` is not retired. It is the TUI's display vocabulary and does
+  not map one-to-one onto capability ids — `skills` and `plugins` describe
+  Cognia's tool host, not anything the agent supports, and projecting them onto
+  `skills.native` / `plugins.native` would be a new false claim in place of the
+  old one.
+- The gate does not attempt to prove plugin lifecycle behaviour. Registration on
+  enable and teardown on disable are runtime facts; a regex claiming to have
+  verified them would read as coverage. They are pinned by tests instead.
+
+## 2026-08-29 amendment — imported native-session recovery
+
+An imported transcript is not itself proof that the source runtime can resume it. The canonical header
+may carry a `runtimeBinding`, but recovery becomes executable only after four live checks: a matching
+preset is already configured, its runtime is connected/executable, its negotiated extension state says
+`session/resume: supported`, and the recorded working directory still exists. Cognia then performs the
+resume handshake. Only success changes ownership from `source-mirror` to `native-bound`; failure leaves
+the mirror read-only with a specific diagnostic. The verified native session id is persisted as the
+session composition's runtime binding and reused by `ExternalAgentManager.execute` on later turns.
+
+
+## 2026-09-11 amendment — external tasks using Cognia models
+
+External agents can select an internal Cognia provider/model through the shared
+Cognia model picker in both agent editors. A conversation's explicit Cognia
+model selection takes precedence over the agent default. The binding records
+`providerId`, `modelId`, and an optional subscription `accountId`; it does not
+copy an upstream key into the external-agent configuration.
+
+The managed path supports local Codex app-server/ACP, OpenCode server/ACP, Pi RPC,
+Claude Agent ACP, and Qwen Code ACP runtimes. Codex uses the gateway Responses ingress;
+OpenCode, Pi, and Qwen use Chat Completions; Claude uses Anthropic Messages. A runtime
+without a supported isolated launch contract, an attached remote server, or a
+non-local process backend is refused. ACP support by itself does not imply
+support for this mode. The gateway currently accepts OpenAI and Anthropic
+upstreams for these tasks, subject to its protocol compatibility checks.
+
+Before a process starts, `prepareExternalAgentGatewayRoute` rebuilds and publishes
+an enriched provider snapshot and requires the host to accept it. Provider rows
+carry `apiFlavor` and model metadata: context length, maximum input and output,
+tool calling, reasoning, vision, audio, video, streaming, and structured output.
+Absent facts remain unknown. An explicit subscription account resolves its model
+information transiently, so metadata cached for another account cannot silently
+supply that task's limits. A model explicitly lacking tools or streaming is
+rejected by the launch adapter.
+
+Each task receives a private provider override inside its gateway ticket lease.
+Concurrent tasks can select different accounts without rewriting the shared
+provider snapshot or changing Cognia's active subscription account. The resolved
+account binding is retained for resume: an omitted account is resolved at task
+start, while a frozen `null` account means the configured manual API credential.
+The ticket exposes only the required inference operation plus model discovery
+and token counting. It cannot fall back to a direct upstream connection when
+preparation or gateway routing fails. Local account-generation changes and
+registered subscription-vault mutations invalidate affected gateway authority.
+
+The manager creates a task-owned child agent process and generates runtime
+configuration beneath the host-owned task state directory. Native and Node
+launchers start from runtime essentials rather than inherited provider/auth
+variables, then apply the isolated config home and gateway credential. Upstream
+keys stay in Cognia; generated provider files reference environment variables
+instead of containing the gateway secret. Native subprocesses inherit their
+parent task route. They do not receive permission to choose another provider or
+account independently.
+
+Completion, cancellation, and failures revoke the lease and stop the task
+process. Generated provider files are removed while native conversation history
+and the nonsecret binding are retained for resume. The retained binding also
+records the owning Cognia local account, so another local account cannot resume
+the same task even when its manual provider/model selection matches. Resume
+uses the same task identity and binding with a fresh lease; changing provider/model/account requires
+a new task. Deleting the external session calls
+`external_agent_delete_gateway_task`, which rejects active processes and removes
+the retained task state. Its native and companion interfaces share the same
+backend implementation and Agent Control capability.
+
+Configuration and credential isolation are separate from filesystem/network
+sandboxing. This mode does not create a worktree or container, deny all external
+network access, or stop a fully privileged binary from reading arbitrary host
+files. Those guarantees depend on the selected existing workspace and sandbox
+policy. Remote gateway transport is not inferred from a loopback URL.
+
+Implementation: `lib/gateway/mint-session-ticket.ts`,
+`lib/gateway/snapshot-publisher.ts`, `lib/ai/agent/external/config/gateway-task.ts`,
+`lib/ai/agent/external/manager.ts`,
+`crates/cognia-external-agent/src/gateway_task.rs`, and
+`cli/src/runtime/external/gateway-task.ts`.
+
+### Gateway protocol fields and compatibility boundaries
+
+The inference ingress is `POST /v1/chat/completions`, `POST /v1/responses`, or
+`POST /v1/messages`. OpenAI provider snapshots use `apiFlavor: "chat"` or
+`apiFlavor: "responses"`; Anthropic providers use the Messages protocol.
+Same-protocol requests retain their native wire shape after gateway security,
+model selection, configured field stripping, and model-limit enforcement.
+An explicit native Responses `store: false` is preserved. Cross-protocol
+requests use `ChatIR` directly, including Responses requests; they no longer
+pass through a Chat Completions request as an intermediate representation.
+
+| Capability | Chat Completions | Responses | Anthropic Messages |
+| --- | --- | --- | --- |
+| JSON Schema output | `response_format.json_schema` | `text.format` with `type: "json_schema"` | `output_config.format` with `type: "json_schema"` |
+| Strict function tools | `tools[].function.strict` | `tools[].strict` | `tools[].strict` |
+| Tool selection | `auto`, `required`, `none`, or named function | `auto`, `required`, `none`, or named function/custom tool | `auto`, `any`, `none`, or named tool |
+| Parallel tool preference | `parallel_tool_calls` | `parallel_tool_calls` | Inverse `tool_choice.disable_parallel_tool_use` |
+| Relative reasoning effort | `reasoning_effort` | `reasoning.effort` | `output_config.effort` |
+| Output-token request | `max_completion_tokens` or `max_tokens` | `max_output_tokens` | `max_tokens` |
+| User images | Text/image arrays, including data URLs | `input_text`/`input_image` arrays | Text/image blocks with URL or base64 source |
+| Images inside tool results | No equivalent; rejected | `function_call_output.output` text/image arrays | `tool_result.content` text/image arrays |
+
+JSON schemas and explicit strict flags are preserved rather than relaxed.
+Anthropic structured output has no schema-name/description or non-strict mode
+matching the OpenAI wrapper: only the schema is sent in `output_config.format`,
+and an Anthropic schema rendered toward OpenAI receives a generated name and
+`strict: true`. OpenAI `json_object` has no equivalent on Anthropic and is
+rejected. Invalid tool-choice kinds, undeclared forced tool names, duplicate
+tool names, and malformed strict/parallel flags are rejected before translation.
+Text/image order and image bytes survive supported conversions; assistant-image
+content and provider file-ID tool results have no implemented cross-protocol
+representation and are rejected instead of flattened to text.
+
+Effort mappings preserve relative intent, not an exact reasoning-token budget.
+Cross-protocol Anthropic effort is recorded as an approximation because it also
+applies to non-thinking output. The accepted translated values are
+`low`, `medium`, `high`, and `xhigh` on both families; `none`/`minimal` are
+OpenAI-only, and `max` is Anthropic-only. An incompatible value or an explicit
+Anthropic `thinking` mode/token budget is rejected when targeting OpenAI.
+Responses summary verbosity has no matching cross-protocol control; the gateway
+records an approximation and streams whatever reasoning text the upstream emits.
+
+Function calls/results, namespaced function tools, and text custom tools are
+supported in buffered and streaming Responses turns. Custom tools on a translated
+route are represented by a function accepting a string `input`. A custom grammar
+is included as a descriptive constraint and recorded as an approximation; the
+translated route does **not** enforce native grammar. Hosted tools and encrypted
+reasoning state require their original native Responses upstream. Native
+passthrough is not certification of every provider-specific feature or model.
+
+Translated Responses streaming emits incremental text, reasoning-summary, and
+tool-argument events; truncated upstream streams end as failures rather than
+successful empty responses. `previous_response_id` is scoped to the gateway
+account generation, ticket/key, and model. The in-memory continuation cache is
+bounded to 32 entries, 2 MiB per entry, and one hour. Unknown, expired, or foreign
+IDs are rejected with a request to resend full input. Native Responses IDs still
+depend on upstream state; `store: false` does not promise native continuation.
+
+`GET /v1/models` and `GET /v1/models/{model}` expose only ticket-visible models.
+Published `maxInputTokens`, `maxOutputTokens`, and `contextLength` constrain
+requests; input uses the existing gateway estimator, not a claim of exact
+provider tokenization. Explicitly false `supportsTools`, `supportsStreaming`,
+`supportsStructuredOutput`, `supportsReasoning`, `supportsVision`, `supportsAudio`,
+and `supportsVideo` reject conflicting requests. Unknown facts remain unknown;
+capability metadata does not create a protocol conversion that is otherwise
+unsupported. Ticket output reservations are clamped to the remaining task budget.
+
+Task-ticket inference and Anthropic token-count forwarding reuse
+`cognia_net::outbound_pii::has_no_leaking_pii` before sending data upstream. The
+check includes prompts, history, tool inputs/results/definitions, and structured
+output schemas, while excluding transport credentials and unrelated request
+metadata. Native Responses passthrough uses the same check. Ticket revocation,
+expiry, account changes, and downstream cancellation still terminate the request
+or stream. Existing ordinary gateway-key policy is unchanged.
+
+Implementation: `crates/cognia-gateway/src/translate/`,
+`crates/cognia-gateway/src/server.rs`, `crates/cognia-gateway/src/snapshot.rs`, and
+`crates/cognia-gateway/src/route_ticket.rs`. Evidence consists of focused Rust
+unit/loopback integration checks and an installed Codex CLI tool roundtrip
+against a loopback fixture. This does not establish live Kimi/CommandCode or
+other subscription-provider compatibility.
+
+Sources checked on 2026-09-11:
+[Anthropic structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs),
+[Anthropic effort](https://platform.claude.com/docs/en/build-with-claude/effort),
+[Anthropic tool results](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls),
+[OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling),
+and [OpenAI Responses streaming](https://developers.openai.com/api/docs/guides/streaming-responses).
+
+### Team and plugin subagent dispatch
+
+An external teammate can declare `TeammateConfig.cogniaModel` through its shared
+model picker. Plugin authors can declare the same binding on `PluginSubagentDef`
+or override it for one `ctx.agent.dispatchSubagent` call. A per-call `null`
+explicitly selects native model configuration; `undefined` uses the subagent
+definition. Selecting an executable preset does not inherit the model or account
+of an unrelated saved agent with that preset. Bound dispatches defer native login
+until the task's gateway configuration is ready.
+
+The binding validator is shared by task launch, SDK authoring, manifest
+validation, dynamic subagent registration, and dispatch. It accepts only provider,
+model and optional account references, rejecting malformed values and secret
+fields. Native model names remain a separate option; a gateway binding resolves
+the actual model at task preparation.
+
+Team dispatch records the mapped public external session ID on its existing
+durable child row. Steering, pause, and terminate target that exact session;
+they do not select an arbitrary active session on the shared preset. A resumed
+durable child passes its retained gateway session back to the manager, which
+enforces the original account/model/owner binding and mints a fresh lease.
+Control registration is released after the dispatch, while the existing abort
+signal and PII gates remain in force.
+
+Implementation: `lib/ai/agent/team/teammate/resolve-external-backing.ts`,
+`lib/ai/agent/team/teammate/dispatch-teammate.ts`, `lib/plugin/agent-sdk/dispatch.ts`, and
+`types/agent/external-agent.ts`. CLI/TUI backend selection does not yet expose
+this explicit Cognia model binding; its native model selection remains separate.
+
+## 2026-10-02 amendment — explicit per-agent Cognia model selection
+
+### Selection is per conversation and per agent
+
+A conversation records an explicit model choice for each external agent it
+talks to in `ChatSession.externalAgentModels`, keyed by agent. Each entry has
+three states, kept distinct end to end: absent inherits the agent
+configuration's own `cogniaModel`, `null` selects the agent's native model
+configuration explicitly, and a binding (`providerId`, `modelId`, optional
+`accountId`) runs the agent on a Cognia model through the gateway. The
+built-in agent's model pick is a separate axis and is not changed by, nor does
+it change, any external-agent entry. The eligibility rule for listing a model
+is one pure function, `lib/ai/agent/external/config/cognia-model-options.ts`,
+read by both the desktop picker and the Host catalog below: OpenAI or
+Anthropic protocol, not explicitly lacking tools or streaming, and a credential
+the gateway can use (manual key, API-key subscription, or keyless provider).
+
+### Supported runtimes
+
+The managed path now also covers Kimi CLI and DeepSeek Harness (`dsh` over
+ACP, and the `dsh-sdk` profile) alongside Codex, OpenCode, Pi, Claude Agent ACP
+and Qwen Code. `cogniaGatewaySupport(config)` in `config/gateway-task.ts` is
+the single answer to "can this configuration run on a Cognia model", with a
+refusal reason (`network-endpoint`, `remote-server`, `no-process`,
+`unsupported-runtime`). The final list, including any further runtimes, is
+maintained in `GATEWAY_RUNTIME_TRAITS`:
+
+| Runtime | Ingress | Continuity | Notes |
+| --- | --- | --- | --- |
+| Codex (app-server, ACP) | Responses | native resume | |
+| Claude Agent ACP | Anthropic Messages | native resume | |
+| OpenCode (ACP, V2 with a process), Pi, Qwen Code, DeepSeek Harness ACP | Chat Completions | native resume | |
+| DeepSeek Harness SDK (`dsh-sdk`) | Chat Completions | transcript | |
+| Kimi Code | Chat Completions | native resume | `KIMI_MODEL_*` env; model alias `__kimi_env_model__`; `KIMI_CODE_HOME` is task-owned |
+| Goose | Chat Completions | native resume | env key, keychain disabled |
+| GitHub Copilot CLI | Chat Completions | native resume | `--model` at launch (no model option on this route); GitHub token variables are set to dummies so a build without bring-your-own-model fails to start rather than silently using GitHub models |
+| Aider | Chat Completions | transcript | |
+| OpenCode server (auto-spawn) | Chat Completions | native resume | generated config verified; the legacy-protocol server path itself not run end to end |
+
+Refused with a reason: Cline (`unsupported-runtime`: its key can only live in plain text in `providers.json`), Gemini CLI (no Gemini ingress on the gateway), Cursor, Kiro, Devin, Qoder, Droid (no verified bring-your-own-model contract, or account auth required), and attached servers (`remote-server` / `network-endpoint`). The picker shows these as unavailable with the reason.
+
+Switching Cognia model A → B keeps the agent's own history through an in-task **rebind** when the Cognia owner account, device and runtime are unchanged (enforced by the manager and by sandboxd/the CLI on the retained binding). A Host lane cannot rebind: the switch starts a new task and hands the transcript over. Switching between native and Cognia always starts or resumes the matching side and hands over the turns that side has not seen.
+
+### The Host lane
+
+A phone or browser paired to a Host can run a Host-owned external agent on a
+Cognia model. The binding travels per turn as `external_agent_run_turn.cogniaModel`
+(a nullable object with exactly `providerId`, `modelId` and a nullable
+`accountId`; `additionalProperties: false`). The Host validates it with
+`normalizeCogniaModelBinding`, which refuses any extra or secret field, and
+passes it to `ExternalAgentManager.execute`. The gateway task is prepared on
+the Host with the Host's provider settings and vault
+(`prepareExternalAgentGatewayRoute`, local branch); no credential, header or
+base URL crosses the wire in either direction. The calling device id, injected
+server-side by the RPC layer, rides `context.custom.callerDeviceId` so the
+gateway task is bound to the device that started it. Starting such a turn needs
+the same authority as any Host-run turn: `process.spawn` plus an interactive
+admin lease.
+
+`external_agent_cognia_models { configId }` is a read (`process.spawn`, no
+approval) that answers a `CogniaGatewayModelCatalog`: either
+`{ supported: true, providers }`, where each provider carries ids, names,
+optional vault `accountIds` and per-model capability facts, or
+`{ supported: false, reason }` with `host-update-required`,
+`unsupported-runtime`, `no-eligible-models`, `account-locked` or
+`public-https-required`. The Host advertises the read and a capability marker,
+`external_agent_run_turn_cognia_model`, under `external-agent.host-configs`.
+A client that does not see the marker raises a translatable "update the Host"
+error for a binding or a gateway-session resume instead of sending a field the
+older Host's closed schema would refuse. An explicit `null` is not sent
+to such a Host. The Host continues to use its own configuration to decide. The
+run service does not send its end-of-turn model report for a Cognia-bound turn
+or a `cognia-gateway:` session: the task child is already released, and the
+report would present the gateway route as the agent's native models.
+
+Both Hosts advertise both operations, through different preparation paths.
+The desktop Host takes the local branch above. The headless Host's brain
+hydrates neither the TypeScript provider settings nor the subscription vault,
+so `prepareExternalAgentGatewayRoute` delegates the task lease to the Rust
+gateway (`lib/gateway/host-task-lease.ts`). Three service-only commands do the
+work: `agent_gateway_host_task_prepare`, `agent_gateway_host_task_renew` and
+`agent_gateway_host_task_revoke`.
+
+- **Prepare.** `mint_host_task_lease` in `crates/cognia-gateway/src/task_lease.rs`
+  copies one provider out of the snapshot the gateway already serves into a
+  private per-task deployment. It is minted from the same `task_mint_request`
+  shape as a device lease: one model, `gateway-required`, chat or responses
+  plus models and count-tokens, a 2-minute TTL and no failover. The lease is
+  scoped to the task and the origin device, and ends when that device is
+  revoked.
+- **Renew.** The brain renews every 30 s and aborts the turn if a renewal
+  fails.
+- **Revoke.** The brain revokes the lease when the turn finishes.
+- **Refusals.** A headless binding with an explicit `accountId` is refused,
+  because profile providers have no vault accounts. On `cognia-server`, a
+  service-scope spawn that carries a gateway task must hold a live Host lease
+  for that task and device, with matching endpoints.
+
+On headless, the catalog read answers from `provider_profiles_list` and
+`gateway_provider_capabilities`: names, the enabled flag, the wire family
+(OpenAI or Anthropic) and whether a credential is present. It never returns
+credentials, base URLs or headers.
+
+An operator gives a headless Host its providers through the Rust provider
+profile store. A credential is either an `env` reference or a `secret-store`
+reference. A secret-store value is written while the server is stopped:
+`cognia-server profiles credential-set --id <id>` reads the value from stdin
+and encrypts it under the master key. `credential-delete` and `credential-list`
+manage the stored values. A deployment then refers to the value with
+`credentialProfileRef: { kind: "secret-store", secretId }`. The running server
+caches its secret store, so changes apply on the next start. No credential is
+ever sent to a device.
+
+### Switching models and continuity
+
+A different provider, model or account is a new gateway task. Switching starts
+a new task and hands the conversation over to it; the previous task's native
+history is retained for its own resume. Rebinding inside an existing task is
+permitted only under the same owning Cognia account, the same device and the
+same runtime, and always mints a fresh lease. How a task continues depends on
+its runtime's continuity trait: `native-resume` runtimes resume their own
+session from the retained task home, while `transcript` runtimes (the DSH SDK
+profile, Aider) continue from the conversation transcript Cognia replays.
+
+Implementation: `lib/ai/agent/external/config/cognia-model-options.ts`,
+`lib/ai/agent/external/config/host-config-service.ts` (`getHostCogniaModelCatalog`),
+`lib/ai/agent/external/runtimes/remote/{remote-execute,remote-run-client,remote-run-service,remote-host-configs}.ts`,
+`lib/companion/desktop-write-source.ts`, `lib/platform/host-feature-manifest.ts`,
+`protocol/companion-request-schemas.json` and `protocol/companion-response-schemas.json`.
+
+## 2026-10-09 amendment — a turn's images reach external agents
+
+### The problem
+
+The external lane flattened every turn to one prompt string. The adapters
+already carried image content (ACP image blocks, Pi and OMP `images`, OpenCode
+file parts, Codex image input, DSH content blocks, A2A file parts, Aider image
+files), but `ExternalAgentManager.execute` built a single text block, so no
+attached image and no frame sampled from an attached video ever reached an
+agent. The user learned this from a toast after the send.
+
+### The decision
+
+- **The turn carries its images.** `externalTurnPrompt` returns the turn's image
+  blocks, attached or sampled from a video, with the attachment each came from.
+  `ExternalAgentExecutionOptions.attachments` puts them ahead of the prompt text
+  in the user message on both execute paths. The prompt text now also keeps the
+  fetched link context after the question.
+- **One verdict, decided before the send.**
+  `ExternalAgentManager.resolvePromptAttachments` answers which images the agent
+  can see, through the pure `decidePromptImages`:
+  - The agent's side is the merged profile's `images` cell. ACP's
+    `promptCapabilities.image` defaults to false and varies by agent build, so the
+    ACP row is now `unknown` and the handshake fills it in as the live
+    `imageInput` flag. Vendor overrides such as Cline's `image: false` are applied
+    first. The manager connects first when the agent is not connected yet.
+  - The model's side is the agent's own catalog (`capabilities.vision`) or, for a
+    Cognia model, the app's model metadata.
+  - Only an explicit "no" withholds.
+- **Portable formats only.** `toPortableImage` re-encodes BMP, TIFF or HEIC
+  images to PNG. An image that cannot be decoded is reported as `format`, never
+  sent to be refused.
+- **Codex** sends inline bytes as a `data:` URL in its `image` input, which is
+  what Codex itself produces from a `localImage`.
+- **The Host lane** stages each image through `session.attachment-upload` under
+  the scope `external-run:<runId>:<index>`, then names the refs in
+  `external_agent_run_turn.attachments` (at most 96 items of exactly
+  `{ ref, name, mediaType }`; `additionalProperties: false`).
+  - One scope per image keeps the six-staged-uploads ceiling from capping a
+    sampled video.
+  - The Host resolves each ref only against this run's own scopes and the
+    calling device, and checks the media type it sniffed at commit. It decides
+    the verdict inside the run, so a cold agent start never holds the start RPC
+    open.
+  - What the Host withheld is reported on the run's stream as a frame carrying
+    `attachmentsWithheld` (`agent`, `model` or `upload`). The refs are spent when
+    the run ends.
+  - The Host advertises the capability marker
+    `external_agent_run_turn_attachments`. A client that does not see it reports
+    `host` and sends the text alone.
+- **Guidance, not silence.**
+  - Before the send, `useComposerImageInput` predicts the same verdict
+    (`agent-no-images`, `model-no-vision` or `host-outdated`). The attachment row
+    then shows a notice that explains the reason and offers to send the images'
+    text instead (OCR on the device, included with the message).
+  - After the send, each withheld group is named with its remedy: extract the
+    text, switch the agent to a vision model, update the Host, re-save the image,
+    or check the connection.
+- **The PII gate reads base64 for what it encodes.** Scanned as text, a photo's
+  base64 tripped the detectors by chance (about one 300 KB image in twenty),
+  refusing image turns at random. `hasNoLeakingPiiDeep` now treats a base64
+  `data:` URL, or a bare base64 run of at least 1 KiB, as a payload:
+  - a text-like one is decoded and scanned;
+  - binary bytes, which carry no text, are not scanned;
+  - shorter base64-alphabet strings are still scanned as text, which covers keys
+    and tokens.
+
+  `promptInputPassesGate` sets binary payloads aside the same way.
+
+A Squad's goal stays text only. Its warning now names the images it did not
+take.
+
+Implementation: `lib/ai/agent/external/session/{prompt-attachments,turn-images}.ts`,
+`lib/ai/agent/external/manager.ts` (`resolvePromptAttachments`),
+`lib/ai/agent/external/capability/capability-live-facts.ts`,
+`lib/ai/agent/external/runtimes/remote/{remote-execute,remote-run-client,remote-run-service,remote-host-configs}.ts`,
+`hooks/chat/use-claude-chat-controller.ts`,
+`components/chat/composer/{image-input-notice.tsx,hooks/use-composer-image-input.ts}`,
+`packages/agent-runtime-kit/src/prompt-gate.ts`, `packages/redact/src/index.ts`,
+`packages/ocr/src/image-prep.ts` (`toPortableImage`) and
+`protocol/companion-request-schemas.json`.

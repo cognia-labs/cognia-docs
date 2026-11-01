@@ -3,7 +3,7 @@
 jest.mock("fumadocs-ui/i18n", () => ({
   defineI18nUI: jest.fn(() => ({})),
 }))
-jest.mock("../../lib/i18n", () => ({ i18n: {} }), { virtual: true })
+jest.mock("./i18n", () => ({ i18n: {} }), { virtual: true })
 
 import { render, screen } from "@testing-library/react"
 import { baseOptions } from "./layout.shared"

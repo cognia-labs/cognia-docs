@@ -1,18 +1,37 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
-    // The root config narrows `types` to `["node"]`; the co-located tests in
-    // this workspace need the Jest globals too, and `types` is replaced
-    // wholesale by a child config rather than merged. `next build --webpack`
-    // type-checks this program, so without them the docs build fails on
-    // `describe`/`it`/`expect` before it ever reaches MDX prerender — the one
-    // stage that gate exists to protect (see `.claude/rules/docs.md`).
+    "target": "ES2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "tsBuildInfoFile": ".cache/typescript/docs.tsbuildinfo",
     "types": ["node", "jest"],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
       "@/*": ["./*"],
       "collections/*": ["./.source/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "reports"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", ".cache", "out"]
 }

@@ -6,7 +6,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..")
-export const ADR_ROOT = join(REPO_ROOT, "docs", "content", "docs")
+export const ADR_ROOT = join(REPO_ROOT, "content", "docs")
 export const ADR_LOCALES = ["en", "zh"]
 export const DUPLICATE_ID_ALLOWLIST = new Map([
   ["0013", ["0013-command-manifest", "0013-wasm-plugins"]],

@@ -1,0 +1,351 @@
+---
+title: "0174: The Bot control plane"
+description: "Provides six trigger kinds and four executors through one durable delivery queue. Runs can wait without blocking the host. Phones can arm and replay work without owning a runner. Each host exposes one inbound-webhook address."
+---
+
+# ADR 0174: The Bot control plane
+
+**Status:** Accepted
+**Date:** 2026-09-07
+**Amends:** ADR-0009 (platform connectors)
+**Amended:** 2026-09-15 (Bot plugin API surface, docs/plans/2026-09-15-bot-plugin-api-surface.md)
+**Related:** ADR-0026 (plugin extension points), ADR-0027 (mobile sync), ADR-0045 (plan hub), ADR-0128 (scheduler host placement), ADR-0131 (IM delegation and relay), ADR-0137 (one delegation, one card), ADR-0155 (plugin author boundary)
+
+## Context
+
+Two things in this repository are called a bot, and they are not the same
+thing.
+
+The first is the IM connector, built over ADR-0009 and its successors. It is
+mature: eleven platform adapters, one inbound pipeline, three admission gates,
+and a five-valued routing decision that fans out to three execution targets.
+Every reachable mode in it was already wired.
+
+The second is `lib/bot/`, landed in five commits with no ADR and no changeset.
+It is the general answer to "what kinds of task can run on their own": six
+trigger kinds crossed with four executors, over a persistent step runtime that
+memoises completed steps so a crashed host re-enters from the top without
+redoing work. The runtime was good. The plane around it was not reachable from
+anywhere, and it carried a defect that stranded work permanently.
+
+## Decisions
+
+### A Bot is a binding, not an engine
+
+A Bot definition names an executor that already exists: a workflow, a squad, an
+agent turn, or a plugin handler. It contributes no new way to run anything. The
+value is in the binding, which is the pairing of "when" with "what", and in the
+policy ceiling that pairing carries. This is why `installBot` writes a row
+rather than registering a runtime.
+
+### The delivery is the unit of fan-out, and it must never strand
+
+`listDueBotDeliveries` treated `running` as not due and `running` as
+unconditionally active on its concurrency key. A host that died mid-run left
+that delivery permanently `running`: never retried, never dead-lettered, never
+swept, and its `concurrencyKey` poisoned so every later delivery on that key was
+skipped as `serialised`. A crash therefore took out a branch of work rather than
+one run.
+
+An expired lease now makes `running` due, exactly as it already did for
+`leased`, and the claim records one recovery attempt through the shared
+`decideNextAttempt`, so a delivery that can kill a host eventually dead-letters
+instead of being re-claimed forever.
+
+### Park, do not block
+
+`waitForApproval` polled in place inside a serial drain loop, so one Bot waiting
+on a human held up every other Bot on that host. A waiting run now parks: the
+delivery moves to `parked` with a resume time, keeps its lease cleared, and does
+not spend its retry budget on a person's thinking time.
+
+`parked` is a new status rather than `pending` with a future `nextAttemptAt`.
+Under `pending` the delivery would not count as active on its concurrency key,
+so a second push on the same branch would start while the first was still
+waiting, and the key would silently stop serialising anything.
+
+### Automatic requeue, not `recovery_required`
+
+The connector plane marks an interrupted unit `recovery_required` and waits for
+a human, because its unit of work is a whole model turn with no memoisation, so
+replaying it means sending it again. The Bot plane is the opposite: the run id
+is derived from the delivery id, steps are memoised, and approval interrupt ids
+are derived too. Re-entry is the documented contract, so an interrupted delivery
+is requeued and the attempt is counted.
+
+### `interaction` makes a Bot an observer, not a routing target
+
+An IM conversation can bind to a direct agent, a team, or a workflow. It cannot
+bind to a Bot, and `ImTargetKind` deliberately gained no `bot` value.
+
+A Bot observes the inbound stream in the same position a workflow trigger does,
+after the sibling-bot loop guard has had its say. Putting it earlier would let a
+message the guard just rejected drive a Bot loop, and spend the interaction
+budget on a path the guard had already closed. Putting it in the routing
+decision would make it compete for a conversation that already has an answer.
+
+### The mirror fence lives at the queue's throat
+
+`botRunId` is derived deterministically from the delivery id, and `executionRuns`
+already syncs. So the moment `botEventDeliveries` crossed the companion plane, a
+second host draining a mirrored delivery would mint an `ExecutionRun` with the
+same id as the original host's, and the two would write over each other in one
+shared table.
+
+Mirrored rows carry `syncedFromHost: true` and are excluded inside
+`listDueBotDeliveries`, which is the single chokepoint `drainBotDeliveries`,
+`claimBotDelivery` and `countActiveBotDeliveriesForKey` all flow through. A
+fence in the runner would have missed two of the three.
+
+`BotInstallationRow` carries the same flag for a different reason: without it,
+`syncBotTriggerSchedules` would turn another host's armed cron into a local
+scheduler task, and both hosts would fire.
+
+### `botRunSteps` never crosses
+
+Two reasons, and either alone would be enough. Its `output` is stored verbatim,
+deliberately, because redacting it would corrupt the handler that resumes from
+it, and verbatim output is exactly what every projection strips. Structurally,
+its primary key IS the memoisation key, so a companion that mirrored it would
+read another host's notes as its own.
+
+### Availability is two questions, not one
+
+`resolveBotWriteRoute` is three-way and per-command, because arming a trigger
+only needs the database while running and replaying need a live runner.
+`resolveBotLifecycleWriteAvailability` is binary, because install, configure,
+bind and uninstall have no remote leg at all.
+
+Both begin by asking whether a remote host is active, before asking about local
+capability. `always-on` is a static baseline that a desktop driving a remote
+Cognia still reports while its own runtimes are torn down, so checking
+capability first would route a write into a process that has nothing to execute
+it.
+
+### The idempotency key encodes what a replay must do
+
+Arming uses a key naming the VALUE it sets, `bot-arm:<inst>:<trigger>:<0|1>`, so
+arm, disarm and arm again are three distinct rows and replaying the first still
+leaves the host armed. A toggle command could not be made safe at any key, which
+is why the write is absolute rather than relative.
+
+A manual run mints a fresh key per press, because two presses ARE two runs and
+only a fresh key distinguishes that from a retry of one. A replay derives its
+key and the host arm additionally requires the row to still be dead-lettered, so
+a duplicate finds nothing to do.
+
+### A plugin describes its webhook verification, it does not implement it
+
+`verify_webhook` had hand-written arms for four platforms and refused everything
+else, so a plugin connector declaring the `webhook` transport had a public
+endpoint that answered nothing.
+
+The scheme is now declared in the manifest and executed by Rust. A callback into
+plugin code was rejected for three reasons, the last decisive: there is no
+host-to-plugin request primitive to call through, the platforms that matter
+demand a handshake answer within about three seconds, and a callback would hand
+an unauthenticated public request body to plugin code before anything
+established where it came from.
+
+`secretKey` names a keyring entry, never an inline secret, because a manifest is
+world-readable inside the install directory. A basestring must cover the body: a
+signature over anything less authenticates the sender of some request rather
+than this one.
+
+### The ingress shape follows the host profile
+
+Six adapter forms and the Tunnel tab each derived the public callback URL
+themselves, and all of them assumed the cloudflared tunnel. A cloud install has
+no tunnel and needs none, so it was shown advice for a different host while the
+address that works, `https://host/connectors/webhook/<type>/<id>`, appeared
+nowhere in the product.
+
+One hook now answers it, keyed on the host profile rather than on `isTauri()` or
+on connector reach, which is a different question that reads true on a headless
+host. A phone reads only its paired host's tunnel origin: it also knows a LAN
+base, but that is a private address and offering it for a platform console
+advertises something the platform can never reach.
+
+The empty states stay separate. A missing tunnel, a missing cloud origin and a
+browser with no host behind it have three different remedies, and collapsing
+them is how the cloud case came to be shown the desktop's.
+
+### The declared transport outranks the row
+
+`adapterNeedsInboundServer` read `row.transportMode` and demanded an exact match
+for webhook while defending itself on the reverse-WebSocket branch. Lark, Slack
+and Telegram declare a single transport computed from `settings.transport`,
+which is an independent persisted field with no migration and no invariant tying
+the two together, and WeChat OA speaks webhook and nothing else. Either way, a
+row that failed the exact match started no receiver, and an adapter with no
+receiver reports healthy and answers nothing.
+
+The adapter's declared `transportModes` now decides whenever it names exactly
+one, and the row only disambiguates a genuinely dual-mode adapter.
+
+## Amendment 2026-09-15: the plugin door grows, the engine does not
+
+The Bot plane was reachable from the console but not from plugin code, which
+meant a TypeScript handler had a durable-step surface a Python handler could
+only look at. The amendment opens the plane to plugins without adding an
+engine: everything new is either a declarative field on the definition or a
+plain-value host call on `ctx.bots`. The delivery queue, the park protocol and
+the memoised step table did not change.
+
+### Step parity crosses processes as plain values, not closures
+
+`BotRunContextV1` carries an `AbortSignal`, a `step` object and two callbacks;
+none of it crosses stdio. A Python handler is handed `BotRunSnapshotV1` and
+reaches the same surface through `ctx.bots.*` host calls keyed by `runId`
+(`lib/plugin/api/bots-api.ts`, `plugin-sdk/python/src/cognia/bot.py` `BotRun`).
+
+A wait the host cannot answer returns `{ status: "parked", ... }` rather than
+throwing, because `wrapFailure` preserves only `message` across the boundary —
+an error's identity cannot cross. The host records the park intent in
+`pendingParks` and `bots-bridge` rethrows the recorded `BotRunParkedError`
+once `run` settles, so the recorded intent wins over both a normal result and
+a proxy error. A Python `BotRunParked` raised by the SDK is courtesy only.
+
+### Reads are scoped to the run that asks, and emit carries a namespace
+
+Every `ctx.bots` method is gated on `agent:control` and `requireOwnedBotRun`,
+so a handler sees only its own installation's `BotInstallationSnapshot`
+(projected by `lib/bot/installation-snapshot.ts`: bound-slot booleans, never
+the account/session/adapter ids underneath), its own deliveries
+(`listDeliveries`, bounded, `syncedFromHost` excluded), and sibling run
+results (`getRunResult` answers `null` for both "missing" and "foreign" — an
+existence oracle is a leak).
+
+`emit` must be namespaced `<pluginId>.<type>`; a free-form type could spoof a
+host type like `run.completed` or another plugin's. `writeTriggerState`
+accepts only `cursor`/`watermark`, because host-owned keys (edge memory,
+debounce, last-fired) are exactly what turns an edge trigger into a level one.
+
+### The definition layer says more, still declaratively
+
+`conditions.match` evaluates envelope-rooted dotted paths against scalar
+equality or membership (`lib/bot/events/conditions.ts`): a missing or
+non-scalar leaf never matches, which is routing, not authorization.
+
+`cronConfigKey`, `timezoneConfigKey` and `everyMsConfigKey` let a
+configuration value override the declared schedule; when the value is absent
+or invalid the reconciler uses the declared value and records the reason as
+`configFallback` on the trigger state (`missing`, `invalid-cron`,
+`invalid-timezone`, `below-floor`), which the console surfaces instead of
+silently disagreeing with the manifest.
+
+A trigger's `retry` narrows the queue's policy, never widens it —
+`decideNextAttempt` floors at the host ceiling (`lib/queue/retry-policy.ts`).
+The policy is snapshotted onto `BotEventDeliveryRow.retry` at enqueue time, so
+a retry decision never depends on resolving the definition again.
+
+`waitForApproval`'s `risk` is validated, persisted on the interrupt as
+`approvalRisk` (`types/execution/run.ts`), and folded into the content-drift
+comparison, so the console can show the risk a person is about to approve and
+a replay cannot quietly change it.
+
+### Lifecycle hooks are resolved exports, not events
+
+`PluginBotLifecycleDef` names up to four hooks. The bridge resolves them at
+registration exactly like the handler — named exports of
+`lifecycle.entry ?? entry` for JS, same-named methods on the contribution
+object for Python (`lib/plugin/bridge/bots-bridge.ts`) — and a bad hook fails
+the whole Bot rather than leaving a half-registered definition.
+
+They execute inside the administrative mutation on the owning host
+(`lib/bot/control-writes/lifecycle-hooks.ts`), receive no `runId` because
+there is no run, and must finish within `BOT_LIFECYCLE_HOOK_TIMEOUT_MS`
+(30 s). `onInstall`, `onConfigure` and `onArm` can veto the mutation. `onUninstall`
+is advisory, so its failure is logged without blocking deletion. Remote callers reach them exactly once through
+`mutateBotInstallationOnHost`, never once per peer.
+
+### The payload clamp lives in the envelope, not the caller
+
+`BOT_EVENT_PAYLOAD_MAX_BYTES` (64 KiB) is asserted in `enqueue` and `emit`
+inside `lib/bot/events/envelope.ts`, measured as UTF-8 bytes of the JSON with
+`undefined` counting as zero, so every producer path rejects an oversized
+payload the same way instead of each growing its own estimate.
+
+## 2026-10-28 amendment: delivery identity, automation control and input accounts
+
+A delivery identifies an `(installation, trigger, event)` tuple. One event can
+match several triggers on the same installation; each receives its own queue
+row and durable run. Legacy two-part receipts are reused only by their original
+trigger, so upgrades neither repeat its effects nor consume another trigger's
+intake.
+
+Disarm changes future trigger intake. Installation pause is an independent
+`paused` flag: it stops intake, timed scheduling and new attempts, preserves
+accepted pending/parked work, and lets an active attempt finish. Resume refreshes
+retained queue deadlines; it does not extend a human approval's expiry. Explicit
+cancel retires the accepted set, expires its approvals, signals live and detached
+Workflow/Squad children, and fences late writes and replay. A retried cancel
+operation uses the same accepted set, rather than including later arrivals.
+
+IM `/automation pause|resume|cancel|status` controls independent Workflow/Bot
+subscriptions for that conversation. Responder `manual`/mute settings keep their
+existing meaning. Observer admission and rejection are durable decisions;
+responder completion cannot lose accepted observer work, and restart cannot
+backfill messages rejected during pause. Recovery transfers observers without
+replaying the responder, skips unavailable adapters/full conversations before
+its batch limit, and gives delayed Bot transfers a fresh retention window while
+preserving their original acceptance time for cancellation.
+
+An account-backed trigger declares `inputCredentialSlot`; an installation can
+override it with `triggerInputSlots`. Routing and execution verify the selected
+binding against the saved source identity. An explicit missing, ambiguous or
+wrong-source binding rejects intake. Legacy installs may infer one unambiguous
+input account; definitions using explicit mappings do not infer input from
+unrelated output slots. Changing a credential or input slot cancels accepted work
+before it can resume under the new account. Host and companion controls require
+an explicit `bots.automation` feature advertisement and keep owner/mirror fences.
+No new Dexie schema or indexes are required for these optional fields.
+
+## Known limitations
+
+These are recorded here rather than left for the next person to discover.
+
+1. **A companion cannot answer a Bot approval.** `executionRunInterrupts` is not
+   in `COMPANION_SYNC_PROTOCOL_TABLE_NAMES` and has no reference anywhere in
+   `lib/sync/` or `companion_api/`. The only surface that renders a
+   `bot_approval` interrupt is the desktop attention panel. A phone can arm a
+   trigger, start a run and replay a dead letter, and cannot approve.
+2. **`botEventDeliveries` has no `updatedAt` index.** Every other status-projected
+   table has one. Adding it would reset every existing database, which a mirror
+   does not justify, so the cross-device read is a bounded window scan on
+   `receivedAt` filtered in memory. It is the most expensive read in the sync
+   set.
+3. **`bots:read` and `bots:execute` remain unimplemented by decision.** Every
+   `ctx.bots` method is gated on `agent:control`; the two finer permissions
+   still appear once in `types/plugin/plugin.ts` and nowhere else.
+   Introducing the vocabulary later is additive: the catalog's
+   `requiredPermissions` grows, and `agent:control` stays accepted for one
+   minor version.
+4. **WeCom and DingTalk have an unbuilt second transport.** Both platforms
+   publish an HTTP callback and only their gateway path is implemented here.
+   `SINGLE_TRANSPORT_PLATFORMS` records this as `unbuilt` rather than as a
+   platform limitation, because it is a backlog item with a known path and
+   WeCom's scheme is already implemented for WeChat OA.
+
+## Consequences
+
+The Bot plane is reachable: `/bots` installs, configures, binds credentials,
+arms triggers, runs on demand, replays dead letters, and shows run history
+through the cockpit that already had it. A paired device sees the same list and
+can drive the three controls that do not need a local runner.
+
+A crash no longer strands a branch of work, and a run waiting on a human no
+longer holds up the host.
+
+`plugins/cognia-scheduler-tools` contributes the first Bot, which is what makes
+the plugin path a tested path rather than a bridge with no consumers.
+
+On the connector side, a cloud install can be told where its own callbacks live,
+a plugin connector can receive over webhook, and an adapter whose two transport
+fields disagree no longer sits silently down.
+
+The 2026-09-15 amendment makes a plugin Bot a first-class thing an author can
+ship: TypeScript and Python handlers hold the same durable-step surface, the
+manifest can say more about when and how often work fires and how it retries,
+and four lifecycle hooks let a definition participate in its own install,
+configure, arm and removal — without ever being able to strand a removal.

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { DocsPage, DocsBody, DocsTitle, DocsDescription } from "fumadocs-ui/page"
 import { source } from "@/lib/source"
+import { pageOrigin } from "@/lib/page-origin"
 import { getMDXComponents } from "@/components/mdx-components"
 import { PageFooter } from "@/components/page-footer"
 import { PageActions } from "@/components/page-actions"
@@ -31,7 +32,12 @@ export default async function Page({ params }: Props) {
       <DocsBody>
         <PageActions markdownHref={markdownHref(lang, page.slugs)} />
         <MDX components={getMDXComponents()} />
-        <PageFooter slug={footerSlug} sourcePath={sourcePath} lastModified={lastModified} />
+        <PageFooter
+          origin={pageOrigin(page.path)}
+          slug={footerSlug}
+          sourcePath={sourcePath}
+          lastModified={lastModified}
+        />
       </DocsBody>
     </DocsPage>
   )

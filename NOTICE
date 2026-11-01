@@ -1,0 +1,11 @@
+Cognia documentation repository extraction
+
+Source: https://github.com/cognia-labs/cognia
+Committed source baseline: be4e03e4f856c55f3a211282ce51ca1fd1390a86
+Date: 2026-11-01 (Asia/Shanghai)
+
+The site, product content, docsSite translation namespace and owning build/test
+helpers were extracted with filtered Git history. Original authorship and the
+AGPL-3.0 license are preserved. Source ADRs and generated reference files remain
+owned by the product repository and are published here as versioned snapshots.
+Their exact source provenance is recorded in integrations/cognia.json.

@@ -3,3 +3,9 @@
 / /zh/ 302
 /docs /zh/docs 302
 /docs/* /zh/docs/:splat 302
+
+# Preserve the published URL of the renumbered historical decision.
+/en/docs/adr/0242-macos-screen-off-virtual-display /en/docs/adr/0251-macos-screen-off-virtual-display 301
+/md/en/adr/0242-macos-screen-off-virtual-display.md /md/en/adr/0251-macos-screen-off-virtual-display.md 301
+/zh/docs/adr/0242-macos-screen-off-virtual-display /zh/docs/adr/0251-macos-screen-off-virtual-display 301
+/md/zh/adr/0242-macos-screen-off-virtual-display.md /md/zh/adr/0251-macos-screen-off-virtual-display.md 301
